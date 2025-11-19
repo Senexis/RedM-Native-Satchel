@@ -13,57 +13,58 @@ Satchel = {}
 -- Catalog: Optional. When set to a string, we'll use catalog_sp and catalog_mp to pre-fill data for you
 
 Satchel.items = {
-    { id = "big_game_meat_cooked",           count = 5,  maxCount = nil, special = false, stars = 0, category = "provisions",  folder = "big_game",     catalog = "CONSUMABLE_BIG_GAME_MEAT_COOKED", },
-    { id = "fully_custom_item",              count = 1,  maxCount = 1,   special = false, stars = 0, category = "provisions",  folder = nil,            catalog = nil },
-    { id = "special_tonic_crafted",          count = 10, maxCount = 10,  special = true,  stars = 0, category = "tonics",      folder = nil,            catalog = "CONSUMABLE_SPECIAL_TONIC_CRAFTED", },
-    { id = "bird_feather_flight",            count = 7,  maxCount = 10,  special = false, stars = 0, category = "materials",   folder = nil,            catalog = "PROVISION_BIRD_FEATHER_FLIGHT", },
-    { id = "necklace_gold",                  count = 8,  maxCount = nil, special = false, stars = 0, category = "valuables",   folder = nil,            catalog = "PROVISION_NECKLACE_GOLD", },
-    { id = "horse_reviver",                  count = 1,  maxCount = nil, special = false, stars = 0, category = "tonics",      folder = nil,            catalog = "CONSUMABLE_HORSE_REVIVER", },
-    { id = "prime_beef",                     count = 1,  maxCount = nil, special = false, stars = 0, category = "ingredients", folder = nil,            catalog = "PROVISION_PRIME_BEEF", },
-    { id = "herbivore_bait",                 count = 1,  maxCount = nil, special = false, stars = 0, category = "kit",         folder = nil,            catalog = "CONSUMABLE_HERBIVORE_BAIT", },
-    { id = "card_ace_swords",                count = 1,  maxCount = nil, special = false, stars = 0, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_ACE_SWORDS", },
-    { id = "card_eight_swords",              count = 1,  maxCount = nil, special = false, stars = 0, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_EIGHT_SWORDS", },
-    { id = "card_five_swords",               count = 1,  maxCount = nil, special = false, stars = 0, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_FIVE_SWORDS", },
-    { id = "card_four_swords",               count = 1,  maxCount = nil, special = false, stars = 0, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_FOUR_SWORDS", },
-    { id = "card_king_swords",               count = 1,  maxCount = nil, special = false, stars = 0, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_KING_SWORDS", },
-    { id = "card_knight_swords",             count = 1,  maxCount = nil, special = false, stars = 0, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_KNIGHT_SWORDS", },
-    { id = "card_nine_swords",               count = 1,  maxCount = nil, special = false, stars = 0, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_NINE_SWORDS", },
-    { id = "card_page_swords",               count = 1,  maxCount = nil, special = false, stars = 0, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_PAGE_SWORDS", },
-    { id = "card_queen_swords",              count = 1,  maxCount = nil, special = false, stars = 0, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_QUEEN_SWORDS", },
-    { id = "card_seven_swords",              count = 1,  maxCount = nil, special = false, stars = 0, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_SEVEN_SWORDS", },
-    { id = "card_six_swords",                count = 1,  maxCount = nil, special = false, stars = 0, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_SIX_SWORDS", },
-    { id = "card_ten_swords",                count = 1,  maxCount = nil, special = false, stars = 0, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_TEN_SWORDS", },
-    { id = "card_three_swords",              count = 1,  maxCount = nil, special = false, stars = 0, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_THREE_SWORDS", },
-    { id = "card_two_swords",                count = 1,  maxCount = nil, special = false, stars = 0, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_TWO_SWORDS", },
-    { id = "salmon_can",                     count = 1,  maxCount = nil, special = false, stars = 0, category = "provisions",  folder = nil,            catalog = "CONSUMABLE_SALMON_CAN", },
-    { id = "carcass_parrot_high_quality",    count = 1,  maxCount = nil, special = false, stars = 2, category = "materials",   folder = nil,            catalog = "PROVISION_ANIMAL_CARCASS_PARROT_HIGH_QUALITY", },
-    { id = "armadillo_skin",                 count = 1,  maxCount = nil, special = false, stars = 0, category = "materials",   folder = nil,            catalog = "PROVISION_ARMADILLO_SKIN", },
-    { id = "carcass_wolf_high_quality",      count = 1,  maxCount = nil, special = false, stars = 2, category = "materials",   folder = nil,            catalog = "PROVISION_ANIMAL_CARCASS_WOLF_HIGH_QUALITY", },
-    { id = "buckle_silver",                  count = 1,  maxCount = nil, special = false, stars = 0, category = "valuables",   folder = nil,            catalog = "PROVISION_BUCKLE_SILVER", },
-    { id = "fish_smallmouth_bass",           count = 1,  maxCount = nil, special = false, stars = 0, category = "materials",   folder = nil,            catalog = "PROVISION_FISH_SMALLMOUTH_BASS", },
-    { id = "carcass_deer_poor",              count = 1,  maxCount = nil, special = false, stars = 1, category = "materials",   folder = nil,            catalog = "PROVISION_ANIMAL_CARCASS_DEER_POOR", },
-    { id = "carcass_crow_perfect",           count = 1,  maxCount = nil, special = false, stars = 3, category = "materials",   folder = nil,            catalog = "PROVISION_ANIMAL_CARCASS_CROW_PERFECT", },
-    { id = "skinned_carcass_pig_perfect",    count = 1,  maxCount = nil, special = false, stars = 0, category = "materials",   folder = nil,            catalog = "PROVISION_SKINNED_CARCASS_PIG_PERFECT", },
-    { id = "carcass_songbird_poor",          count = 1,  maxCount = nil, special = false, stars = 1, category = "materials",   folder = nil,            catalog = "PROVISION_ANIMAL_CARCASS_SONGBIRD_POOR", },
-    { id = "carcass_cormorant_high_quality", count = 1,  maxCount = nil, special = false, stars = 2, category = "materials",   folder = nil,            catalog = "PROVISION_ANIMAL_CARCASS_CORMORANT_HIGH_QUALITY", },
-    { id = "wolf_fur_poor",                  count = 1,  maxCount = nil, special = false, stars = 0, category = "materials",   folder = nil,            catalog = "PROVISION_WOLF_FUR_POOR", },
-    { id = "gila_skin",                      count = 1,  maxCount = nil, special = false, stars = 0, category = "materials",   folder = nil,            catalog = "PROVISION_GILA_SKIN", },
-    { id = "herb_milkweed",                  count = 1,  maxCount = nil, special = false, stars = 0, category = "ingredients", folder = nil,            catalog = "CONSUMABLE_HERB_MILKWEED", },
-    { id = "herb_burdock_root",              count = 1,  maxCount = nil, special = false, stars = 0, category = "ingredients", folder = nil,            catalog = "CONSUMABLE_HERB_BURDOCK_ROOT", },
-    { id = "bread_chunk",                    count = 1,  maxCount = nil, special = false, stars = 0, category = "provisions",  folder = nil,            catalog = "CONSUMABLE_BREAD_CHUNK", },
-    { id = "exotic_bird_wild_mint_cooked",   count = 1,  maxCount = nil, special = false, stars = 0, category = "provisions",  folder = "exotic_bird",  catalog = "CONSUMABLE_EXOTIC_BIRD_WILD_MINT_COOKED", },
-    { id = "gamey_bird_cooked",              count = 1,  maxCount = nil, special = false, stars = 0, category = "provisions",  folder = "gamey_bird",   catalog = "CONSUMABLE_GAMEY_BIRD_COOKED", },
-    { id = "cocaine_chewing_gum",            count = 1,  maxCount = nil, special = false, stars = 0, category = "tonics",      folder = nil,            catalog = "CONSUMABLE_COCAINE_CHEWING_GUM", },
-    { id = "herb_prairie_poppy",             count = 1,  maxCount = nil, special = false, stars = 0, category = "ingredients", folder = nil,            catalog = "CONSUMABLE_HERB_PRAIRIE_POPPY", },
-    { id = "medicine",                       count = 1,  maxCount = nil, special = false, stars = 0, category = "tonics",      folder = nil,            catalog = "CONSUMABLE_MEDICINE", },
-    { id = "moonshine",                      count = 1,  maxCount = nil, special = false, stars = 0, category = "tonics",      folder = nil,            catalog = "CONSUMABLE_MOONSHINE", },
-    { id = "peach",                          count = 1,  maxCount = nil, special = false, stars = 0, category = "provisions",  folder = nil,            catalog = "CONSUMABLE_PEACH", },
-    { id = "cigar",                          count = 1,  maxCount = nil, special = false, stars = 0, category = "provisions",  folder = nil,            catalog = "CONSUMABLE_CIGAR", },
-    { id = "snake_oil_used",                 count = 1,  maxCount = nil, special = false, stars = 0, category = "tonics",      folder = nil,            catalog = "CONSUMABLE_SNAKE_OIL_USED", },
-    { id = "tenn_whiskey",                   count = 1,  maxCount = nil, special = false, stars = 0, category = "tonics",      folder = "bottles",      catalog = "CONSUMABLE_TENN_WHISKEY", },
-    { id = "irish_whiskey",                  count = 1,  maxCount = nil, special = false, stars = 0, category = "tonics",      folder = "bottles",      catalog = "CONSUMABLE_IRISH_WHISKEY", },
-    { id = "scotch_whiskey",                 count = 1,  maxCount = nil, special = false, stars = 0, category = "tonics",      folder = "bottles",      catalog = "CONSUMABLE_SCOTCH_WHISKEY", },
-    { id = "cyprus_brandy",                  count = 1,  maxCount = nil, special = false, stars = 0, category = "tonics",      folder = "bottles",      catalog = "CONSUMABLE_CYPRUS_BRANDY", },
+    { id = "big_game_meat_cooked",           count = 5,  maxCount = nil, category = "provisions",  folder = "big_game",     catalog = "CONSUMABLE_BIG_GAME_MEAT_COOKED", },
+    { id = "fully_custom_item",              count = 1,  maxCount = 1,   category = "provisions",  folder = nil,            catalog = nil, name = joaat("POSTER_PL_ARTHUR_NAME"), description = 0xC51209D8, special = true, stars = 3, txd = joaat("toasts_mp_generic"), texture = joaat("toast_mp_standalone_sp"), effects = { joaat("EFFECT_HEALTH_CORE_MINUS_2") } },
+    { id = "special_tonic_crafted",          count = 10, maxCount = 10,  category = "tonics",      folder = nil,            catalog = "CONSUMABLE_SPECIAL_TONIC_CRAFTED", },
+    { id = "bird_feather_flight",            count = 7,  maxCount = 10,  category = "materials",   folder = nil,            catalog = "PROVISION_BIRD_FEATHER_FLIGHT", },
+    { id = "necklace_gold",                  count = 8,  maxCount = nil, category = "valuables",   folder = nil,            catalog = "PROVISION_NECKLACE_GOLD", },
+    { id = "horse_reviver",                  count = 1,  maxCount = nil, category = "tonics",      folder = nil,            catalog = "CONSUMABLE_HORSE_REVIVER", },
+    { id = "prime_beef",                     count = 1,  maxCount = nil, category = "ingredients", folder = nil,            catalog = "PROVISION_PRIME_BEEF", },
+    { id = "herbivore_bait",                 count = 1,  maxCount = nil, category = "kit",         folder = nil,            catalog = "CONSUMABLE_HERBIVORE_BAIT", },
+    { id = "salmon_can",                     count = 1,  maxCount = nil, category = "provisions",  folder = nil,            catalog = "CONSUMABLE_SALMON_CAN", },
+    { id = "rabbit_pelt_pristine",           count = 1,  maxCount = nil, category = "provisions",  folder = nil,            catalog = "PROVISION_RABBIT_PELT_PRISTINE", },
+    { id = "armadillo_skin",                 count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_ARMADILLO_SKIN", },
+    { id = "legendary_beaver_pelt_1",        count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_ROLE_NATURALIST_PELT_BEAVER_LEGENDARY_01", },
+    { id = "carcass_wolf_high_quality",      count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_ANIMAL_CARCASS_WOLF_HIGH_QUALITY", },
+    { id = "buckle_silver",                  count = 1,  maxCount = nil, category = "valuables",   folder = nil,            catalog = "PROVISION_BUCKLE_SILVER", },
+    { id = "fish_smallmouth_bass",           count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_FISH_SMALLMOUTH_BASS", },
+    { id = "carcass_deer_poor",              count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_ANIMAL_CARCASS_DEER_POOR", },
+    { id = "tenn_whiskey",                   count = 1,  maxCount = nil, category = "tonics",      folder = "bottles",      catalog = "CONSUMABLE_TENN_WHISKEY", },
+    { id = "irish_whiskey",                  count = 1,  maxCount = nil, category = "tonics",      folder = "bottles",      catalog = "CONSUMABLE_IRISH_WHISKEY", },
+    { id = "scotch_whiskey",                 count = 1,  maxCount = nil, category = "tonics",      folder = "bottles",      catalog = "CONSUMABLE_SCOTCH_WHISKEY", },
+    { id = "cyprus_brandy",                  count = 1,  maxCount = nil, category = "tonics",      folder = "bottles",      catalog = "CONSUMABLE_CYPRUS_BRANDY", },
+    { id = "carcass_crow_perfect",           count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_ANIMAL_CARCASS_CROW_PERFECT", },
+    { id = "skinned_carcass_pig_perfect",    count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_SKINNED_CARCASS_PIG_PERFECT", },
+    { id = "carcass_songbird_poor",          count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_ANIMAL_CARCASS_SONGBIRD_POOR", },
+    { id = "carcass_cormorant_high_quality", count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_ANIMAL_CARCASS_CORMORANT_HIGH_QUALITY", },
+    { id = "wolf_fur_poor",                  count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_WOLF_FUR_POOR", },
+    { id = "gila_skin",                      count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_GILA_SKIN", },
+    { id = "herb_milkweed",                  count = 1,  maxCount = nil, category = "ingredients", folder = nil,            catalog = "CONSUMABLE_HERB_MILKWEED", },
+    { id = "herb_burdock_root",              count = 1,  maxCount = nil, category = "ingredients", folder = nil,            catalog = "CONSUMABLE_HERB_BURDOCK_ROOT", },
+    { id = "bread_chunk",                    count = 1,  maxCount = nil, category = "provisions",  folder = nil,            catalog = "CONSUMABLE_BREAD_CHUNK", },
+    { id = "exotic_bird_wild_mint_cooked",   count = 1,  maxCount = nil, category = "provisions",  folder = "exotic_bird",  catalog = "CONSUMABLE_EXOTIC_BIRD_WILD_MINT_COOKED", },
+    { id = "gamey_bird_cooked",              count = 1,  maxCount = nil, category = "provisions",  folder = "gamey_bird",   catalog = "CONSUMABLE_GAMEY_BIRD_COOKED", },
+    { id = "cocaine_chewing_gum",            count = 1,  maxCount = nil, category = "tonics",      folder = nil,            catalog = "CONSUMABLE_COCAINE_CHEWING_GUM", },
+    { id = "herb_prairie_poppy",             count = 1,  maxCount = nil, category = "ingredients", folder = nil,            catalog = "CONSUMABLE_HERB_PRAIRIE_POPPY", },
+    { id = "medicine",                       count = 1,  maxCount = nil, category = "tonics",      folder = nil,            catalog = "CONSUMABLE_MEDICINE", },
+    { id = "moonshine",                      count = 1,  maxCount = nil, category = "tonics",      folder = nil,            catalog = "CONSUMABLE_MOONSHINE", },
+    { id = "peach",                          count = 1,  maxCount = nil, category = "provisions",  folder = nil,            catalog = "CONSUMABLE_PEACH", },
+    { id = "cigar",                          count = 1,  maxCount = nil, category = "provisions",  folder = nil,            catalog = "CONSUMABLE_CIGAR", },
+    { id = "snake_oil_used",                 count = 1,  maxCount = nil, category = "tonics",      folder = nil,            catalog = "CONSUMABLE_SNAKE_OIL_USED", },
+    { id = "card_ace_swords",                count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_ACE_SWORDS", },
+    { id = "card_eight_swords",              count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_EIGHT_SWORDS", },
+    { id = "card_five_swords",               count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_FIVE_SWORDS", },
+    { id = "card_four_swords",               count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_FOUR_SWORDS", },
+    { id = "card_king_swords",               count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_KING_SWORDS", },
+    { id = "card_knight_swords",             count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_KNIGHT_SWORDS", },
+    { id = "card_nine_swords",               count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_NINE_SWORDS", },
+    { id = "card_page_swords",               count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_PAGE_SWORDS", },
+    { id = "card_queen_swords",              count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_QUEEN_SWORDS", },
+    { id = "card_seven_swords",              count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_SEVEN_SWORDS", },
+    { id = "card_six_swords",                count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_SIX_SWORDS", },
+    { id = "card_ten_swords",                count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_TEN_SWORDS", },
+    { id = "card_three_swords",              count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_THREE_SWORDS", },
+    { id = "card_two_swords",                count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_TWO_SWORDS", },
 }
 
 -- Categories
@@ -747,9 +748,11 @@ function UpdateSatchelSelectedData(itemId, folderId)
         id = item.id
         count = item.count
         maxCount = item.maxCount
-        name = joaat(id)
-        description = joaat(id)
-        effectIds = {}
+
+        -- The following could be set through catalog
+        name = item.name or joaat(id)
+        description = item.description or joaat(id)
+        effectIds = item.effects or {}
 
         if (item.catalog) then
             local itemDatabase = GetItemFromDatabase(item.catalog)
@@ -1149,6 +1152,8 @@ function GetItemFromDatabase(item)
         txd = nil,
         texture = nil,
         effectIds = nil,
+        special = nil,
+        stars = nil,
     }
 
     if (ItemdatabaseIsKeyValid(hash, 0) == 0) then
@@ -1166,6 +1171,33 @@ function GetItemFromDatabase(item)
     local effectIds = ItemdatabaseGetEffectIds(hash)
     if (effectIds) then
         result.effectIds = effectIds
+    end
+
+    local isOverpowered = ItemdatabaseDoesItemHaveTag(hash, joaat("CI_TAG_ITEM_OVERPOWERED"), joaat("TAG_ITEM_PROPERTY"))
+    local isLegendary = ItemdatabaseDoesItemHaveTag(hash, joaat("CI_TAG_ITEM_QUALITY_LEGENDARY"), joaat("TAG_ITEM_PROPERTY"))
+
+    if (isOverpowered == 1 or isLegendary == 1) then
+        result.special = true
+    else
+        result.special = false
+    end
+
+    local isQualityLegendary = InventoryIsInventoryItemFlagEnabled(hash, 1 << 2)
+    local isQualityPerfect = InventoryIsInventoryItemFlagEnabled(hash, 1 << 30)
+    local isQualityHigh = InventoryIsInventoryItemFlagEnabled(hash, 1 << 29)
+    local isQualityPoor = InventoryIsInventoryItemFlagEnabled(hash, 1 << 28)
+
+    if (isQualityLegendary == 1) then
+        result.special = true
+        result.stars = 3
+    elseif (isQualityPerfect == 1) then
+        result.stars = 3
+    elseif (isQualityHigh == 1) then
+        result.stars = 2
+    elseif (isQualityPoor == 1) then
+        result.stars = 1
+    else
+        result.stars = 0
     end
 
     Satchel.cacheItemDatabase[hash] = result
@@ -1240,13 +1272,13 @@ function AddMenuItem(index, item)
     local hash = joaat(id)
     local count = item.count or 1
     local maxCount = item.maxCount or nil
-    local special = item.special or false
-    local stars = item.stars or 0
 
     -- The following could be set through catalog
-    local name = joaat(id)
-    local txd = joaat("inventory_items")
-    local texture = joaat("_placeholder")
+    local name = item.name or joaat(id)
+    local txd = item.txd or joaat("inventory_items")
+    local texture = item.texture or joaat("_placeholder")
+    local special = item.special or false
+    local stars = item.stars or 0
 
     if (item.catalog) then
         local itemDatabase = GetItemFromDatabase(item.catalog)
@@ -1254,6 +1286,8 @@ function AddMenuItem(index, item)
         name = itemDatabase.name
         txd = itemDatabase.txd
         texture = itemDatabase.texture
+        special = itemDatabase.special
+        stars = itemDatabase.stars
     end
 
     EnsureTxdIsLoaded(txd)
@@ -1263,7 +1297,7 @@ function AddMenuItem(index, item)
     DatabindingAddDataHash(data, "item", hash)
     
     DatabindingAddDataBool(data, "focusable", true)
-    DatabindingAddDataHash(data, "color", joaat("COLOR_WHITE")) -- Colorizes the ENTIRE item (incl count and bg)
+    DatabindingAddDataHash(data, "color", joaat("COLOR_PURE_WHITE")) -- Colorizes the ENTIRE item (incl count and bg)
 
     DatabindingAddDataHash(data, "ItemTXD", txd)
     DatabindingAddDataHash(data, "ItemTexture", texture)
@@ -1312,7 +1346,7 @@ function AddMenuFolder(index, folder)
     DatabindingAddDataHash(data, "item", hash)
     
     DatabindingAddDataBool(data, "focusable", true)
-    DatabindingAddDataHash(data, "color", joaat("COLOR_WHITE")) -- Colorizes the ENTIRE item (incl count and bg)
+    DatabindingAddDataHash(data, "color", joaat("COLOR_PURE_WHITE")) -- Colorizes the ENTIRE item (incl count and bg)
 
     DatabindingAddDataHash(data, "ItemTXD", txd)
     DatabindingAddDataHash(data, "ItemTexture", texture)
@@ -1347,7 +1381,7 @@ function AddListItem(index, item)
     local isEquipped = false
 
     -- The following could be set through catalog
-    local name = joaat(id)
+    local name = item.name or joaat(id)
 
     if (item.catalog) then
         local itemDatabase = GetItemFromDatabase(item.catalog)
@@ -1362,7 +1396,7 @@ function AddListItem(index, item)
     DatabindingAddDataBool(data, "focusable", true)
     DatabindingAddDataHash(data, "label", name)
     DatabindingAddDataString(data, "label_as_string", GetStringFromHashKey(name))
-    DatabindingAddDataHash(data, "color", joaat("COLOR_WHITE")) -- Colorizes the ENTIRE item (incl count and bg)
+    DatabindingAddDataHash(data, "color", joaat("COLOR_PURE_WHITE")) -- Colorizes the ENTIRE item (incl count and bg)
 
     DatabindingAddDataInt(data, "count", count) -- Adds a quantity number to the item
 

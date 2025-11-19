@@ -35,7 +35,30 @@ local item = {
     -- Optional. When set to a string, we'll use catalog_sp and catalog_mp to fill UI data for you
     catalog = "CONSUMABLE_BIG_GAME_MEAT_COOKED",
 
-    -- TODO: Properties for custom items
+    -- Optional. Sets the display label for the item
+    -- Todo: Remove joaat requirement (as string is possible)
+    name = joaat("POSTER_PL_ARTHUR_NAME"),
+
+    -- Optional. Sets the description label for the item
+    -- Todo: Remove joaat requirement (as string is possible)
+    description = 0xC51209D8,
+
+    -- Optional. When true, marks the item as special giving it a yellow hue
+    special = true,
+
+    -- Optional. When set to 1 through 3, will display quality stars on the item
+    stars = 3,
+
+    -- Optional. The texture directory for the icon of this item
+    txd = joaat("toasts_mp_generic"),
+
+    -- Optional. The texture to use for the icon of this item
+    texture = joaat("toast_mp_standalone_sp"),
+
+    -- Optional. A list of effect IDs to show as icons in the description of the item
+    -- Todo: Simplify by using { type = value }
+    effects = { joaat("EFFECT_HEALTH_CORE_MINUS_2") },
+
     -- TODO: Properties for prompts shown
 }
 ```

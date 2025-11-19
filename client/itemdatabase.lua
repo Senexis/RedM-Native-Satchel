@@ -61,7 +61,7 @@ end
 function IsStringNullOrEmpty(pStr)
     local ret = 0
     if pcall(function ()
-        Citizen.InvokeNative(0x2CF12F9ACF18F048, pStr, Citizen.ResultAsInteger()) 
+        Citizen.InvokeNative(0x2CF12F9ACF18F048, pStr, Citizen.ResultAsInteger())
     end) then
         ret = 0
     else
