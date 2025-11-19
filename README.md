@@ -1,8 +1,12 @@
 # Native Satchel
-A work-in-progress implementation of the truly native satch UI.
 
-## Items
+> [!IMPORTANT]
+> This documentation, much like the resource, is currently in an alpha state and is not final.
+
+## Types
 TODO: Write better documentation
+
+### Items
 
 ```lua
 local item = {
@@ -22,16 +26,59 @@ local item = {
     -- Optional. The amount of quality stars to show on the item, can be 0, 1, 2 or 3 stars
     stars = 0,
 
-    -- The category the item belongs to, also see "Satchel.categories"
+    -- The category the item belongs to, see the category type
     category = "provisions",
 
-    -- Optional. Groups the item in a folder, also see "Satchel.folders"
+    -- Optional. Groups the item in a folder, see the folder type
     folder = "big_game",
 
     -- Optional. When set to a string, we'll use catalog_sp and catalog_mp to fill UI data for you
     catalog = "CONSUMABLE_BIG_GAME_MEAT_COOKED",
 
     -- TODO: Properties for custom items
+    -- TODO: Properties for prompts shown
+}
+```
+
+### Categories
+
+```lua
+local category = { 
+    -- Any string identifier you want to internally use
+    id = "recent",
+
+    -- Whether the category lists all items (up to 48) in order of being added, does not include folders
+    all = true,
+
+    -- The hash of the texture to use, due to UI limitations it has to be in "satchel_textures"
+    texture = joaat("satchel_nav_all"),
+
+    -- The hash of the UI label to use for the category, in this example "Recent"
+    label = 0x504364F1,
+}
+```
+
+### Folders
+
+```lua
+local folder = {
+    -- Any string identifier you want to internally use
+    id = "arrowheads",
+
+    -- Which category the folder belongs to, see the category type
+    category = "valuables",
+
+    -- The hash of the texture dictionary to use
+    txd = joaat("inventory_items_mp"),
+
+    -- The hash of the texture to use
+    texture = joaat("provision_arrowhead_set"),
+
+    -- The hash of the UI label to use for the category
+    label = joaat("CI_TAG_FOLDER_COLLECTOR_ARROWHEADS"),
+
+    -- The hash of the UI description to use for the category
+    description = joaat("CI_TAG_FOLDER_COLLECTOR_ARROWHEADS_DESC"),
 }
 ```
 
@@ -47,14 +94,14 @@ TriggerEvent("native_satchel:open_satchel")
 -- Forces the satchel to close
 TriggerEvent("native_satchel:close_satchel")
 
--- Synchronizes the satchel to the given item table
+-- Synchronizes the satchel to the given item table, see the item type above
 TriggerEvent("native_satchel:synchronize", items)
 ```
 
 ### Item Triggers
 
 ```lua
--- Adds a new item to the satchel, see "Items" above
+-- Adds a new item to the satchel, see the item type above
 TriggerEvent("native_satchel:add_item", item)
 
 -- Increments an item from the satchel by count by ID
