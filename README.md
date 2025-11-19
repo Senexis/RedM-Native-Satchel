@@ -10,7 +10,6 @@ local item = {
     id = "big_game_meat_cooked",
 
     -- The amount of items for that specific item
-    -- Todo: Do we keep this or count in add_item?
     count = 5,
 
     -- Optional. The maximum amount of items for that specific item
@@ -31,6 +30,8 @@ local item = {
 
     -- Optional. When set to a string, we'll use catalog_sp and catalog_mp to fill UI data for you
     catalog = "CONSUMABLE_BIG_GAME_MEAT_COOKED",
+
+    -- TODO: Properties for custom items
 }
 ```
 
@@ -53,15 +54,17 @@ TriggerEvent("native_satchel:synchronize", items)
 ### Item Triggers
 
 ```lua
--- Adds the item to the satchel
--- Todo: Do we keep count or item property?
-TriggerEvent("native_satchel:add_item", item, count)
+-- Adds a new item to the satchel, see "Items" above
+TriggerEvent("native_satchel:add_item", item)
 
--- Removes an item from the satchel by ID
-TriggerEvent("native_satchel:remove_item", itemId, count)
+-- Increments an item from the satchel by count by ID
+TriggerEvent("native_satchel:increment_item", itemId, count)
+
+-- Decrements an item from the satchel by count by ID
+TriggerEvent("native_satchel:decrement_item", itemId, count)
 
 -- Removes all of an item from the satchel by ID
-TriggerEvent("native_satchel:remove_item_all", itemId)
+TriggerEvent("native_satchel:remove_item", itemId)
 ```
 
 ## Events
