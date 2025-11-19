@@ -1,54 +1,72 @@
 # Native Satchel
 A work-in-progress implementation of the truly native satch UI.
 
-## Events
+## Triggers
 TODO: Write better documentation
 
 ```lua
--- General events
+TriggerEvent("native_satchel:add_item", TODO)
 
-AddEventHandler("native_satchel:open", function()
-    print("[NativeSatchel] native_satchel:open")
+TriggerEvent("native_satchel:remove_item", TODO)
+
+TriggerEvent("native_satchel:reload", TODO)
+
+TriggerEvent("native_satchel:open_satchel", TODO)
+
+TriggerEvent("native_satchel:close_satchel", TODO)
+```
+## Events
+TODO: Write better documentation
+
+### General events
+
+```lua
+AddEventHandler("native_satchel:satchel_opened", function()
+    print("[NativeSatchel] native_satchel:satchel_opened")
 end)
 
-AddEventHandler("native_satchel:close", function()
-    print("[NativeSatchel] native_satchel:close")
+AddEventHandler("native_satchel:satchel_closed", function()
+    print("[NativeSatchel] native_satchel:satchel_closed")
+end)
+```
+
+### Item events
+
+```lua
+AddEventHandler("native_satchel:item_used", function(itemId)
+    print("[NativeSatchel] native_satchel:item_used with ID", itemId)
 end)
 
--- Item events
-
-AddEventHandler("native_satchel:use_item", function(itemId)
-    print("[NativeSatchel] native_satchel:use_item with ID", itemId)
+AddEventHandler("native_satchel:item_broken", function(itemId)
+    print("[NativeSatchel] native_satchel:item_broken with ID", itemId)
 end)
 
-AddEventHandler("native_satchel:break_item", function(itemId)
-    print("[NativeSatchel] native_satchel:break_item with ID", itemId)
+AddEventHandler("native_satchel:item_discarded", function(itemId)
+    print("[NativeSatchel] native_satchel:item_discarded with ID", itemId)
 end)
 
-AddEventHandler("native_satchel:drop_item", function(itemId)
-    print("[NativeSatchel] native_satchel:drop_item with ID", itemId)
+AddEventHandler("native_satchel:item_discarded_all", function(itemId)
+    print("[NativeSatchel] native_satchel:item_discarded_all with ID", itemId)
 end)
 
-AddEventHandler("native_satchel:discard_all", function(itemId)
-    print("[NativeSatchel] native_satchel:discard_all with ID", itemId)
+AddEventHandler("native_satchel:item_sent_all", function(itemId)
+    print("[NativeSatchel] native_satchel:item_sent_all with ID", itemId)
 end)
 
-AddEventHandler("native_satchel:send_all", function(itemId)
-    print("[NativeSatchel] native_satchel:send_all with ID", itemId)
+AddEventHandler("native_satchel:item_focused", function(itemId)
+    print("[NativeSatchel] native_satchel:item_focused with ID", itemId)
+end)
+```
+
+### Folder events
+
+```lua
+AddEventHandler("native_satchel:folder_opened", function(folderId)
+    print("[NativeSatchel] native_satchel:folder_opened with ID", folderId)
 end)
 
-AddEventHandler("native_satchel:focus_item", function(itemId)
-    print("[NativeSatchel] native_satchel:focus_item with ID", itemId)
-end)
-
--- Folder events
-
-AddEventHandler("native_satchel:open_folder", function(folderId)
-    print("[NativeSatchel] native_satchel:open_folder with ID", folderId)
-end)
-
-AddEventHandler("native_satchel:focus_folder", function(folderId)
-    print("[NativeSatchel] native_satchel:focus_folder with ID", folderId)
+AddEventHandler("native_satchel:folder_focused", function(folderId)
+    print("[NativeSatchel] native_satchel:folder_focused with ID", folderId)
 end)
 ```
 

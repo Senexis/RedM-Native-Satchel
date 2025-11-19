@@ -1073,11 +1073,11 @@ function EventItemFocused(index, parameter, datastore)
         PreloadSatchelListItems(folderIndex)
 
         if (folderId) then
-            TriggerEvent(Satchel.eventHandlerKey .. ":focus_folder", folderId)
+            TriggerEvent(Satchel.eventHandlerKey .. ":folder_focused", folderId)
         end
     elseif (parameter == joaat("USABLE_ITEM")) then
         if (itemId) then
-            TriggerEvent(Satchel.eventHandlerKey .. ":focus_item", itemId)
+            TriggerEvent(Satchel.eventHandlerKey .. ":item_focused", itemId)
         end
     else
         print("[NativeSatchel] EventItemFocused: Unknown focus parameter: " .. parameter)
@@ -1109,27 +1109,27 @@ function EventItemSelected(index, parameter, datastore)
         NavigateSatchelListItems(folderIndex)
 
         if (folderId) then
-            TriggerEvent(Satchel.eventHandlerKey .. ":open_folder", folderId)
+            TriggerEvent(Satchel.eventHandlerKey .. ":folder_opened", folderId)
         end
     elseif (parameter == joaat("USABLE_ITEM")) then
         if (itemId) then
-            TriggerEvent(Satchel.eventHandlerKey .. ":use_item", itemId)
+            TriggerEvent(Satchel.eventHandlerKey .. ":item_used", itemId)
         end
     elseif (parameter == joaat("BREAKABLE_ITEM")) then
         if (itemId) then
-            TriggerEvent(Satchel.eventHandlerKey .. ":break_item", itemId)
+            TriggerEvent(Satchel.eventHandlerKey .. ":item_broken", itemId)
         end
     elseif (parameter == joaat("DROP_ITEM")) then
         if (itemId) then
-            TriggerEvent(Satchel.eventHandlerKey .. ":drop_item", itemId)
+            TriggerEvent(Satchel.eventHandlerKey .. ":item_discarded", itemId)
         end
     elseif (parameter == joaat("DISCARD_ALL")) then
         if (itemId) then
-            TriggerEvent(Satchel.eventHandlerKey .. ":discard_all", itemId)
+            TriggerEvent(Satchel.eventHandlerKey .. ":item_discarded_all", itemId)
         end
     elseif (parameter == joaat("SEND_ALL")) then
         if (itemId) then
-            TriggerEvent(Satchel.eventHandlerKey .. ":send_all", itemId)
+            TriggerEvent(Satchel.eventHandlerKey .. ":item_sent_all", itemId)
         end
     else
         print("[NativeSatchel] EventItemSelected: Unknown select parameter: " .. parameter)
@@ -1423,7 +1423,7 @@ function OpenSatchel()
         LaunchUiappByHashWithEntry("satchel", "INGAME")
         InitializeSatchel()
 
-        TriggerEvent(Satchel.eventHandlerKey .. ":open")
+        TriggerEvent(Satchel.eventHandlerKey .. ":satchel_opened")
 
         while IsUiappRunningByHash(uiAppChannel) == 1 do
             Citizen.Wait(0)
@@ -1435,7 +1435,7 @@ function OpenSatchel()
 end
 
 function CloseSatchel()
-    TriggerEvent(Satchel.eventHandlerKey .. ":close")
+    TriggerEvent(Satchel.eventHandlerKey .. ":satchel_closed")
 end
 
 Citizen.CreateThread(function()
