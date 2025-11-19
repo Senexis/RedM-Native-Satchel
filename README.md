@@ -57,8 +57,5 @@ Thank you for considering contributing to Native Satchel! Please note that this 
 
 Before contributing, please take a moment to read the [Contribution Guide](https://github.com/Senexis/RedM-Native-Satchel/blob/main/CONTRIBUTING.md) to understand the development process and how to contribute.
 
-## Security
-If you discover any security related issues, please email the maintainer directly using the information provided in the [Security Policy](https://github.com/Senexis/RedM-Native-Satchel/blob/main/SECURITY.md).
-
 ## License
 Native Satchel is open-sourced software licensed under the [GNU GPL v3](https://github.com/Senexis/RedM-Native-Satchel/blob/main/LICENSE.md).
