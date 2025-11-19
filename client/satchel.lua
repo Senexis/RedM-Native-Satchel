@@ -6,12 +6,6 @@ Satchel = {}
 -- Items
 -- This determines which items are visible in the UI by category
 
--- ID: Any string identifier you want to internally use
--- Count: The amount of items for that specific item
--- Category: Which category the item belongs to, see Satchel.categories
--- Folder: Optional. Groups the item in a folder, see Satchel.folders
--- Catalog: Optional. When set to a string, we'll use catalog_sp and catalog_mp to pre-fill data for you
-
 Satchel.items = {
     { id = "big_game_meat_cooked",           count = 5,  maxCount = nil, category = "provisions",  folder = "big_game",     catalog = "CONSUMABLE_BIG_GAME_MEAT_COOKED", },
     { id = "fully_custom_item",              count = 1,  maxCount = 1,   category = "provisions",  folder = nil,            catalog = nil, name = joaat("POSTER_PL_ARTHUR_NAME"), description = 0xC51209D8, special = true, stars = 3, txd = joaat("toasts_mp_generic"), texture = joaat("toast_mp_standalone_sp"), effects = { joaat("EFFECT_HEALTH_CORE_MINUS_2") } },
@@ -70,11 +64,6 @@ Satchel.items = {
 -- Categories
 -- This determines what categories are visible in the UI
 
--- ID: Any string identifier you want to internally use
--- All: Whether the category lists all items (up to 48) in order of being added, does not include folders
--- Texture: The hash of the texture to use, due to UI limitations it has to be in "satchel_textures"
--- Label: The hash of the UI label to use for the category
-
 Satchel.categories = {
     { id = "recent",      recent = true,  texture = joaat("satchel_nav_all"),         label = 0x504364F1 },
     { id = "provisions",  recent = false, texture = joaat("satchel_nav_provisions"),  label = 0x3B1DCCD8 },
@@ -88,13 +77,6 @@ Satchel.categories = {
 
 -- Folders
 -- This determines what folders are available in the UI
-
--- ID: Any string identifier you want to internally use
--- Category: Which category the folder belongs to, see Satchel.categories
--- TXD: The hash of the texture dictionary to use
--- Texture: The hash of the texture to use
--- Label: The hash of the UI label to use for the category
--- Description: The hash of the UI description to use for the category
 
 Satchel.folders = {
     -- Collector
