@@ -75,14 +75,14 @@ Satchel.items = {
 -- Label: The hash of the UI label to use for the category
 
 Satchel.categories = {
-    { id = "recent",      all = true,  texture = joaat("satchel_nav_all"),         label = 0x504364F1 },
-    { id = "provisions",  all = false, texture = joaat("satchel_nav_provisions"),  label = 0x3B1DCCD8 },
-    { id = "tonics",      all = false, texture = joaat("satchel_nav_remedies"),    label = 0x855B3FAE },
-    { id = "ingredients", all = false, texture = joaat("satchel_nav_ingredients"), label = 0x3268E974 },
-    { id = "materials",   all = false, texture = joaat("satchel_nav_materials"),   label = 0xEB0408D2 },
-    { id = "kit",         all = false, texture = joaat("satchel_nav_kit"),         label = 0x7A0D8994 },
-    { id = "valuables",   all = false, texture = joaat("satchel_nav_valuables"),   label = 0xFA827B50 },
-    { id = "documents",   all = false, texture = joaat("satchel_nav_documents"),   label = 0xFDD0A576 },
+    { id = "recent",      recent = true,  texture = joaat("satchel_nav_all"),         label = 0x504364F1 },
+    { id = "provisions",  recent = false, texture = joaat("satchel_nav_provisions"),  label = 0x3B1DCCD8 },
+    { id = "tonics",      recent = false, texture = joaat("satchel_nav_remedies"),    label = 0x855B3FAE },
+    { id = "ingredients", recent = false, texture = joaat("satchel_nav_ingredients"), label = 0x3268E974 },
+    { id = "materials",   recent = false, texture = joaat("satchel_nav_materials"),   label = 0xEB0408D2 },
+    { id = "kit",         recent = false, texture = joaat("satchel_nav_kit"),         label = 0x7A0D8994 },
+    { id = "valuables",   recent = false, texture = joaat("satchel_nav_valuables"),   label = 0xFA827B50 },
+    { id = "documents",   recent = false, texture = joaat("satchel_nav_documents"),   label = 0xFDD0A576 },
 }
 
 -- Folders
@@ -652,13 +652,13 @@ function NavigateSatchelMenuItems()
     local folderItems = {}
 
     for _, item in ipairs(Satchel.items) do
-        if (not category.all and item.folder) then
+        if (not category.recent and item.folder) then
             if (folderItems[item.folder] == nil) then
                 folderItems[item.folder] = {}
             end
 
             table.insert(folderItems[item.folder], item)
-        elseif ((category.all and filteredIndex < 48) or (item.category == category.id)) then
+        elseif ((category.recent and filteredIndex < 48) or (item.category == category.id)) then
             local added = AddMenuItem(filteredIndex, item)
             
             if (added and added ~= 0) then

@@ -47,10 +47,11 @@ local category = {
     -- Any string identifier you want to internally use
     id = "recent",
 
-    -- Whether the category lists all items (up to 48) in order of being added, does not include folders
-    all = true,
+    -- Whether the category lists the 48 most recently added items, does not include folders
+    recent = true,
 
-    -- The hash of the texture to use, due to UI limitations it has to be in "satchel_textures"
+    -- The hash of the texture to use
+    -- Due to UI limitations it has to be in the "satchel_textures" dictionary
     texture = joaat("satchel_nav_all"),
 
     -- The hash of the UI label to use for the category, in this example "Recent"
