@@ -20,12 +20,6 @@ local item = {
     -- This affects the footer text depending on the count and maxCount
     maxCount = nil,
 
-    -- Optional. Whether to mark the item as special, which gives the texture a yellow hue
-    special = false,
-
-    -- Optional. The amount of quality stars to show on the item, can be 0, 1, 2 or 3 stars
-    stars = 0,
-
     -- The category the item belongs to, see the category type
     category = "provisions",
 
@@ -43,10 +37,10 @@ local item = {
     -- Todo: Remove joaat requirement (as string is possible)
     description = 0xC51209D8,
 
-    -- Optional. When true, marks the item as special giving it a yellow hue
+    -- Optional. Whether to mark the item as special, which gives the texture a yellow hue
     special = true,
 
-    -- Optional. When set to 1 through 3, will display quality stars on the item
+    -- Optional. The amount of quality stars to show on the item, can be 0, 1, 2 or 3 stars
     stars = 3,
 
     -- Optional. The texture directory for the icon of this item
