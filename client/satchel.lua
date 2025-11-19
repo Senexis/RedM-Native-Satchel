@@ -3,6 +3,19 @@ local uiEventChannel = joaat("satchel_menu")
 
 Satchel = {}
 
+---------------------------------------------------------------------------------
+--                                                                             --
+--                                CONFIGURATION                                --
+--                                                                             --
+---------------------------------------------------------------------------------
+
+-- Change this in case you have another resource using the "native_satch" prefix for events
+Satchel.eventHandlerKey = "native_satchel"
+
+-- When the maxCount is exceeded, make the item count red
+-- This doesn't affect the tip text, which will always be marked red
+Satchel.enableRedCountOnMax = false
+
 -- Items
 -- This determines which items are visible in the UI by category
 
@@ -140,27 +153,19 @@ Satchel.folders = {
     { id = "exotic_bird",    category = "provisions", txd = joaat("satchel_textures"), texture = joaat("provision_meat_exotic_bird"),    label = joaat("CI_TAG_FOLDER_EXOTIC_BIRD"),    description = joaat("CI_TAG_FOLDER_EXOTIC_BIRD_DESC") },
 }
 
--- Configuration
-
--- Change this in case you have another resource using the "native_satch" prefix for events
-Satchel.eventHandlerKey = "native_satchel"
-
--- When the maxCount is exceeded, make the item count red
--- This doesn't affect the tip text, which will always be marked red
-Satchel.enableRedCountOnMax = false
-
--- Item database cache
--- This is used to be able to reuse data lookups for inventory items
--- You shouldn't need to add items to this, but you could do so for frequent items
-
-Satchel.cacheItemDatabase = {}
-
--- Internal properties, don't modify
+---------------------------------------------------------------------------------
+--                                                                             --
+--                             END OF CONFIGURATION                            --
+--                                                                             --
+-- If you change anything beyond this point, it's on you to make sure it works --
+--                                                                             --
+---------------------------------------------------------------------------------
 
 Satchel._cacheCategoryItems = {}
 Satchel._cacheMenuItems = {}
 Satchel._cacheListItems = {}
 Satchel._cachePersistence = {}
+Satchel._cacheItemDatabase = {}
 
 function InitializePersistence()
     local datastore = DatabindingGetDataContainerFromPath("NativeSatchel")
@@ -1124,8 +1129,8 @@ end
 function GetItemFromDatabase(item)
     local hash = joaat(item)
 
-    if (Satchel.cacheItemDatabase[hash]) then
-        return Satchel.cacheItemDatabase[hash]
+    if (Satchel._cacheItemDatabase[hash]) then
+        return Satchel._cacheItemDatabase[hash]
     end
 
     local result = {
@@ -1182,7 +1187,7 @@ function GetItemFromDatabase(item)
         result.stars = 0
     end
 
-    Satchel.cacheItemDatabase[hash] = result
+    Satchel._cacheItemDatabase[hash] = result
 
     return result
 end
