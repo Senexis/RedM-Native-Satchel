@@ -851,21 +851,21 @@ function UpdateSatchelPrompts(config)
     local holdSelectLabel, holdSelectEnabled, holdSelectVisible = nil, nil, nil
 
     if (config.breakable) then
-        selectEnabled = false
-        selectVisible = false
-
         holdSelectLabel = joaat("SATCHEL_PROMPT_BREAKDOWN")
         holdSelectEnabled = Satchel.allowBreakdown or false
         holdSelectVisible = Satchel.allowBreakdown or false
     elseif (config.cookable) then
-        selectEnabled = false
-        selectVisible = false
-
         holdSelectLabel = joaat("SATCHEL_PROMPT_COOK")
         holdSelectEnabled = Satchel.allowCooking or false
         holdSelectVisible = Satchel.allowCooking or false
     else
         holdSelectLabel = joaat("SATCHEL_PROMPT_BREAKDOWN")
+        holdSelectEnabled = false
+        holdSelectVisible = false
+    end
+
+    -- The UI cannot show both prompts at once
+    if (selectEnabled and holdSelectEnabled) then
         holdSelectEnabled = false
         holdSelectVisible = false
     end
