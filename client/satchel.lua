@@ -12,16 +12,77 @@ Satchel = {}
 -- Change this in case you have another resource using the "native_satch" prefix for events
 Satchel.eventHandlerKey = "native_satchel"
 
--- When the maxCount is exceeded, make the item count red
+-- Enable/disable prompts for various consume actions
+Satchel.allowDrinking = true
+Satchel.allowEating = true
+Satchel.allowReading = true
+Satchel.allowUsing = true
+
+-- Enable/disable prompts for various held actions
+Satchel.allowBreakdown = true
+Satchel.allowCooking = true
+
+-- Enable/disable prompts for discarding items
+Satchel.allowDiscarding = true
+
+-- When an item reaches its max count, show the count in red color
 -- This doesn't affect the tip text, which will always be marked red
 Satchel.enableRedCountOnMax = false
 
+-- Automatically categorize items based on their tags in the item database
+-- This requires the base game's categories to be present in Satchel.categories
+-- All of them are included by default in this file
+Satchel.enableAutoCategorization = true
+
+-- Automatically assign folders to items based on their tags in the item database
+-- This requires the base game's folders to be present in Satchel.folders
+-- All of them are included by default in this file
+Satchel.enableAutoFolderAssignment = true
+
+-- Whether to include items stored in folders in the "Recent" category
+-- By default, items that are inside folders will be shown in the "Recent" category
+-- Use this if you don't want to have to set textures for every item in a folder
+Satchel.enableFolderItemsInRecent = true
+
 -- Items
 -- This determines which items are visible in the UI by category
-
+-- You can see this as the base inventory for any player
+-- It can then be modified by using the Satchel API to add/remove items
 Satchel.items = {
+    {
+        -- Required fields
+        id = "my_custom_item",
+        count = 1,
+
+        -- Required if missing item.catalog or Satchel.enableAutoCategorization is disabled
+        -- Optional if item.catalog is set and Satchel.enableAutoCategorization is enabled
+        category = "provisions",
+
+        -- Optional fields
+        maxCount = 1,
+        catalog = nil,
+        folder = nil,
+
+        -- Custom item fields
+        label = "My Custom Item",
+        description = "This is my custom item.",
+        special = true,
+        stars = 3,
+        txd = "toasts_mp_generic",
+        texture = "toast_mp_standalone_sp",
+        effects = { "EFFECT_HEALTH_CORE_GOLD_1D" },
+
+        -- Prompt flags
+        discardable = false,
+        breakable = false,
+        cookable = false,
+        consumable = false,
+        drinkable = false,
+        edible = false,
+        readable = false,
+    },
+
     { id = "big_game_meat_cooked",           count = 5,  maxCount = nil, category = "provisions",  folder = "big_game",     catalog = "CONSUMABLE_BIG_GAME_MEAT_COOKED", },
-    { id = "fully_custom_item",              count = 1,  maxCount = 1,   category = "provisions",  folder = nil,            catalog = nil, name = joaat("POSTER_PL_ARTHUR_NAME"), description = 0xC51209D8, special = true, stars = 3, txd = joaat("toasts_mp_generic"), texture = joaat("toast_mp_standalone_sp"), effects = { joaat("EFFECT_HEALTH_CORE_MINUS_2") } },
     { id = "special_tonic_crafted",          count = 10, maxCount = 10,  category = "tonics",      folder = nil,            catalog = "CONSUMABLE_SPECIAL_TONIC_CRAFTED", },
     { id = "bird_feather_flight",            count = 7,  maxCount = 10,  category = "materials",   folder = nil,            catalog = "PROVISION_BIRD_FEATHER_FLIGHT", },
     { id = "necklace_gold",                  count = 8,  maxCount = nil, category = "valuables",   folder = nil,            catalog = "PROVISION_NECKLACE_GOLD", },
@@ -36,10 +97,10 @@ Satchel.items = {
     { id = "buckle_silver",                  count = 1,  maxCount = nil, category = "valuables",   folder = nil,            catalog = "PROVISION_BUCKLE_SILVER", },
     { id = "fish_smallmouth_bass",           count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_FISH_SMALLMOUTH_BASS", },
     { id = "carcass_deer_poor",              count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_ANIMAL_CARCASS_DEER_POOR", },
-    { id = "tenn_whiskey",                   count = 1,  maxCount = nil, category = "tonics",      folder = "bottles",      catalog = "CONSUMABLE_TENN_WHISKEY", },
-    { id = "irish_whiskey",                  count = 1,  maxCount = nil, category = "tonics",      folder = "bottles",      catalog = "CONSUMABLE_IRISH_WHISKEY", },
-    { id = "scotch_whiskey",                 count = 1,  maxCount = nil, category = "tonics",      folder = "bottles",      catalog = "CONSUMABLE_SCOTCH_WHISKEY", },
-    { id = "cyprus_brandy",                  count = 1,  maxCount = nil, category = "tonics",      folder = "bottles",      catalog = "CONSUMABLE_CYPRUS_BRANDY", },
+    { id = "tenn_whiskey",                   count = 1,  maxCount = nil, category = "tonics",      folder = "collector_bottles", catalog = "CONSUMABLE_TENN_WHISKEY", },
+    { id = "irish_whiskey",                  count = 1,  maxCount = nil, category = "tonics",      folder = "collector_bottles", catalog = "CONSUMABLE_IRISH_WHISKEY", },
+    { id = "scotch_whiskey",                 count = 1,  maxCount = nil, category = "tonics",      folder = "collector_bottles", catalog = "CONSUMABLE_SCOTCH_WHISKEY", },
+    { id = "cyprus_brandy",                  count = 1,  maxCount = nil, category = "tonics",      folder = "collector_bottles", catalog = "CONSUMABLE_CYPRUS_BRANDY", },
     { id = "carcass_crow_perfect",           count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_ANIMAL_CARCASS_CROW_PERFECT", },
     { id = "skinned_carcass_pig_perfect",    count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_SKINNED_CARCASS_PIG_PERFECT", },
     { id = "carcass_songbird_poor",          count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_ANIMAL_CARCASS_SONGBIRD_POOR", },
@@ -58,99 +119,142 @@ Satchel.items = {
     { id = "peach",                          count = 1,  maxCount = nil, category = "provisions",  folder = nil,            catalog = "CONSUMABLE_PEACH", },
     { id = "cigar",                          count = 1,  maxCount = nil, category = "provisions",  folder = nil,            catalog = "CONSUMABLE_CIGAR", },
     { id = "snake_oil_used",                 count = 1,  maxCount = nil, category = "tonics",      folder = nil,            catalog = "CONSUMABLE_SNAKE_OIL_USED", },
-    { id = "card_ace_swords",                count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_ACE_SWORDS", },
-    { id = "card_eight_swords",              count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_EIGHT_SWORDS", },
-    { id = "card_five_swords",               count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_FIVE_SWORDS", },
-    { id = "card_four_swords",               count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_FOUR_SWORDS", },
-    { id = "card_king_swords",               count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_KING_SWORDS", },
-    { id = "card_knight_swords",             count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_KNIGHT_SWORDS", },
-    { id = "card_nine_swords",               count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_NINE_SWORDS", },
-    { id = "card_page_swords",               count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_PAGE_SWORDS", },
-    { id = "card_queen_swords",              count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_QUEEN_SWORDS", },
-    { id = "card_seven_swords",              count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_SEVEN_SWORDS", },
-    { id = "card_six_swords",                count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_SIX_SWORDS", },
-    { id = "card_ten_swords",                count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_TEN_SWORDS", },
-    { id = "card_three_swords",              count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_THREE_SWORDS", },
-    { id = "card_two_swords",                count = 1,  maxCount = nil, category = "documents",   folder = "cards_swords", catalog = "DOCUMENT_CARD_TWO_SWORDS", },
+    { id = "card_ace_swords",                count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_ACE_SWORDS", },
+    { id = "card_eight_swords",              count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_EIGHT_SWORDS", },
+    { id = "card_five_swords",               count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_FIVE_SWORDS", },
+    { id = "card_four_swords",               count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_FOUR_SWORDS", },
+    { id = "card_king_swords",               count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_KING_SWORDS", },
+    { id = "card_knight_swords",             count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_KNIGHT_SWORDS", },
+    { id = "card_nine_swords",               count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_NINE_SWORDS", },
+    { id = "card_page_swords",               count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_PAGE_SWORDS", },
+    { id = "card_queen_swords",              count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_QUEEN_SWORDS", },
+    { id = "card_seven_swords",              count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_SEVEN_SWORDS", },
+    { id = "card_six_swords",                count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_SIX_SWORDS", },
+    { id = "card_ten_swords",                count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_TEN_SWORDS", },
+    { id = "card_three_swords",              count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_THREE_SWORDS", },
+    { id = "card_two_swords",                count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_TWO_SWORDS", },
 }
 
 -- Categories
 -- This determines what categories are visible in the UI
 
 Satchel.categories = {
-    { id = "recent",      recent = true,  texture = joaat("satchel_nav_all"),         label = 0x504364F1 },
-    { id = "provisions",  recent = false, texture = joaat("satchel_nav_provisions"),  label = 0x3B1DCCD8 },
-    { id = "tonics",      recent = false, texture = joaat("satchel_nav_remedies"),    label = 0x855B3FAE },
-    { id = "ingredients", recent = false, texture = joaat("satchel_nav_ingredients"), label = 0x3268E974 },
-    { id = "materials",   recent = false, texture = joaat("satchel_nav_materials"),   label = 0xEB0408D2 },
-    { id = "kit",         recent = false, texture = joaat("satchel_nav_kit"),         label = 0x7A0D8994 },
-    { id = "valuables",   recent = false, texture = joaat("satchel_nav_valuables"),   label = 0xFA827B50 },
-    { id = "documents",   recent = false, texture = joaat("satchel_nav_documents"),   label = 0xFDD0A576 },
+    { id = "recent",      recent = true,  texture = "satchel_nav_all",         title = 0x504364F1,     label = GetStringFromHashKey(0x504364F1),     description = GetStringFromHashKey(0x4E6F9F15),          tags = {} },
+    { id = "provisions",  recent = false, texture = "satchel_nav_provisions",  title = 0x3B1DCCD8,     label = GetStringFromHashKey(0x3B1DCCD8),     description = GetStringFromHashKey(0x058002A1),          tags = { "CI_TAG_CATEGORY_PROVISION" } },
+    { id = "tonics",      recent = false, texture = "satchel_nav_remedies",    title = 0x855B3FAE,     label = GetStringFromHashKey(0x855B3FAE),     description = GetStringFromHashKey(0x176ABFC5),          tags = { "CI_TAG_CATEGORY_REMEDY" } },
+    { id = "ingredients", recent = false, texture = "satchel_nav_ingredients", title = 0x3268E974,     label = GetStringFromHashKey(0x3268E974),     description = GetStringFromHashKey(0x5A0CC2DE),          tags = { "CI_TAG_CATEGORY_INGREDIENT" } },
+    { id = "materials",   recent = false, texture = "satchel_nav_materials",   title = 0xEB0408D2,     label = GetStringFromHashKey(0xEB0408D2),     description = GetStringFromHashKey(0x9AF912F2),          tags = { "CI_TAG_CATEGORY_MATERIAL", "CI_TAG_CATEGORY_HORSE_CARGO" } },
+    { id = "kit",         recent = false, texture = "satchel_nav_kit",         title = 0x7A0D8994,     label = GetStringFromHashKey(0x7A0D8994),     description = GetStringFromHashKey(0xA1DF90FC),          tags = { "CI_TAG_CATEGORY_KIT" } },
+    { id = "valuables",   recent = false, texture = "satchel_nav_valuables",   title = 0xFA827B50,     label = GetStringFromHashKey(0xFA827B50),     description = GetStringFromHashKey(0x3A9E6C4A),          tags = { "CI_TAG_CATEGORY_VALUABLE" } },
+    { id = "documents",   recent = false, texture = "satchel_nav_documents",   title = 0xFDD0A576,     label = GetStringFromHashKey(0xFDD0A576),     description = GetStringFromHashKey(0xE7055490),          tags = { "CI_TAG_CATEGORY_DOCUMENT" } },
+    -- { id = "horse",       recent = false, texture = "satchel_nav_horse",       title = 0x0FA40D69,     label = GetStringFromHashKey(0x0FA40D69),     description = GetStringFromHashKey(0xB8507365),          tags = { "CI_TAG_CATEGORY_HORSE_CARGO" } },
+    -- { id = "wagon",       recent = false, texture = "satchel_nav_horse",       title = "HWAGON_TITLE", label = GetStringFromHashKey("HWAGON_TITLE"), description = GetStringFromHashKey("HWAGON_TITLE_DESC"), tags = { "CI_TAG_CATEGORY_HORSE_CARGO" } },
+    -- { id = "donations",   recent = false, texture = "satchel_nav_donate",      title = 0x61FAAEA1,     label = GetStringFromHashKey(0x61FAAEA1),     description = GetStringFromHashKey(0x0552C91D),          tags = {} },
+    -- { id = "send",        recent = false, texture = "satchel_nav_send",        title = 0xBFC37FEE,     label = GetStringFromHashKey(0xBFC37FEE),     description = GetStringFromHashKey(0x3BB66DA9),          tags = {} },
+    -- { id = "sell",        recent = false, texture = "satchel_nav_sell",        title = 0xF6614C1F,     label = GetStringFromHashKey(0xF6614C1F),     description = GetStringFromHashKey(0x11352E60),          tags = {} },
 }
 
 -- Folders
 -- This determines what folders are available in the UI
 
 Satchel.folders = {
-    -- Collector
-    { id = "arrowheads",       category = "valuables",  txd = joaat("inventory_items_mp"), texture = joaat("provision_arrowhead_set"),          label = joaat("CI_TAG_FOLDER_COLLECTOR_ARROWHEADS"),       description = joaat("CI_TAG_FOLDER_COLLECTOR_ARROWHEADS_DESC") },
-    { id = "bottles",          category = "tonics",     txd = joaat("inventory_items_mp"), texture = joaat("consumable_whiskey_set"),           label = joaat("CI_TAG_FOLDER_COLLECTOR_BOTTLES"),          description = joaat("CI_TAG_FOLDER_COLLECTOR_BOTTLES_DESC") },
-    { id = "bracelets",        category = "valuables",  txd = joaat("inventory_items_mp"), texture = joaat("provision_jewelry_bracelet_set"),   label = joaat("CI_TAG_FOLDER_COLLECTOR_BRACELETS"),        description = joaat("CI_TAG_FOLDER_COLLECTOR_BRACELETS_DESC") },
-    { id = "cards_cups",       category = "documents",  txd = joaat("inventory_items_mp"), texture = joaat("document_card_cups_set"),           label = joaat("CI_TAG_FOLDER_COLLECTOR_CARD_CUPS"),        description = joaat("CI_TAG_FOLDER_COLLECTOR_CARD_CUPS_DESC") },
-    { id = "cards_pentacles",  category = "documents",  txd = joaat("inventory_items_mp"), texture = joaat("document_card_pentacles_set"),      label = joaat("CI_TAG_FOLDER_COLLECTOR_CARD_PENTACLES"),   description = joaat("CI_TAG_FOLDER_COLLECTOR_CARD_PENTACLES_DESC") },
-    { id = "cards_swords",     category = "documents",  txd = joaat("inventory_items_mp"), texture = joaat("document_card_swords_set"),         label = joaat("CI_TAG_FOLDER_COLLECTOR_CARD_SWORDS"),      description = joaat("CI_TAG_FOLDER_COLLECTOR_CARD_SWORDS_DESC") },
-    { id = "cards_wands",      category = "documents",  txd = joaat("inventory_items_mp"), texture = joaat("document_card_wands_set"),          label = joaat("CI_TAG_FOLDER_COLLECTOR_CARD_WANDS"),       description = joaat("CI_TAG_FOLDER_COLLECTOR_CARD_WANDS_DESC") },
-    { id = "coins",            category = "valuables",  txd = joaat("inventory_items_mp"), texture = joaat("provision_coin_set"),               label = joaat("CI_TAG_FOLDER_COLLECTOR_COINS"),            description = joaat("CI_TAG_FOLDER_COLLECTOR_COINS_DESC") },
-    { id = "earrings",         category = "valuables",  txd = joaat("inventory_items_mp"), texture = joaat("provision_jewelry_earring_set"),    label = joaat("CI_TAG_FOLDER_COLLECTOR_EARRINGS"),         description = joaat("CI_TAG_FOLDER_COLLECTOR_EARRINGS_DESC") },
-    { id = "eggs",             category = "valuables",  txd = joaat("inventory_items_mp"), texture = joaat("provision_egg_set"),                label = joaat("CI_TAG_FOLDER_COLLECTOR_EGGS"),             description = joaat("CI_TAG_FOLDER_COLLECTOR_EGGS_DESC") },
-    { id = "fossils_common",   category = "valuables",  txd = joaat("inventory_items_mp"), texture = joaat("provision_fossil_set_01_common"),   label = joaat("CI_TAG_FOLDER_COLLECTOR_FOSSILS_COMMON"),   description = joaat("CI_TAG_FOLDER_COLLECTOR_FOSSILS_COMMON_DESC") },
-    { id = "fossils_rare",     category = "valuables",  txd = joaat("inventory_items_mp"), texture = joaat("provision_fossil_set_03_rare"),     label = joaat("CI_TAG_FOLDER_COLLECTOR_FOSSILS_RARE"),     description = joaat("CI_TAG_FOLDER_COLLECTOR_FOSSILS_RARE_DESC") },
-    { id = "fossils_uncommon", category = "valuables",  txd = joaat("inventory_items_mp"), texture = joaat("provision_fossil_set_02_uncommon"), label = joaat("CI_TAG_FOLDER_COLLECTOR_FOSSILS_UNCOMMON"), description = joaat("CI_TAG_FOLDER_COLLECTOR_FOSSILS_UNCOMMON_DESC") },
-    { id = "heirlooms",        category = "valuables",  txd = joaat("inventory_items_mp"), texture = joaat("provision_hrlm_set"),               label = joaat("CI_TAG_FOLDER_COLLECTOR_HEIRLOOMS"),        description = joaat("CI_TAG_FOLDER_COLLECTOR_HEIRLOOMS_DESC") },
-    { id = "necklaces",        category = "valuables",  txd = joaat("inventory_items_mp"), texture = joaat("provision_jewelry_necklace_set"),   label = joaat("CI_TAG_FOLDER_COLLECTOR_NECKLACES"),        description = joaat("CI_TAG_FOLDER_COLLECTOR_NECKLACES_DESC") },
-    { id = "rings",            category = "valuables",  txd = joaat("inventory_items_mp"), texture = joaat("provision_jewelry_ring_set"),       label = joaat("CI_TAG_FOLDER_COLLECTOR_RINGS"),            description = joaat("CI_TAG_FOLDER_COLLECTOR_RINGS_DESC") },
-    { id = "wildflowers",      category = "provisions", txd = joaat("inventory_items_mp"), texture = joaat("provision_wldflwr_set"),            label = joaat("CI_TAG_FOLDER_COLLECTOR_WILDFLOWERS"),      description = joaat("CI_TAG_FOLDER_COLLECTOR_WILDFLOWERS_DESC") },
+    -- General folders
+    { id = "books",                               category = "documents",    title = joaat("CI_TAG_FOLDER_BOOKS"),                               label = GetStringFromHashKey("CI_TAG_FOLDER_BOOKS"),                               description = GetStringFromHashKey("CI_TAG_FOLDER_BOOKS_DESC"),                               txd = "inventory_items",    texture = "folder_books",                                  tags = { "CI_TAG_FOLDER_BOOKS" } },
+    { id = "bounty_posters",                      category = "documents",    title = joaat("CI_TAG_FOLDER_BOUNTY_POSTERS"),                      label = GetStringFromHashKey("CI_TAG_FOLDER_BOUNTY_POSTERS"),                      description = GetStringFromHashKey("CI_TAG_FOLDER_BOUNTY_POSTERS_DESC"),                      txd = "inventory_items",    texture = "folder_bounty_posters",                         tags = { "CI_TAG_FOLDER_BOUNTY_POSTERS" } },
+    { id = "business_cards",                      category = "documents",    title = joaat("CI_TAG_FOLDER_BUSINESS_CARDS"),                      label = GetStringFromHashKey("CI_TAG_FOLDER_BUSINESS_CARDS"),                      description = GetStringFromHashKey("CI_TAG_FOLDER_BUSINESS_CARDS_DESC"),                      txd = "inventory_items",    texture = "folder_business_cards",                         tags = { "CI_TAG_FOLDER_BUSINESS_CARDS" } },
+    { id = "collector_maps",                      category = "documents",    title = joaat("CI_TAG_FOLDER_COLLECTOR_MAPS"),                      label = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_MAPS"),                      description = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_MAPS_DESC"),                      txd = "inventory_items",    texture = "folder_maps",                                   tags = { "CI_TAG_FOLDER_COLLECTOR_MAPS" } },
+    { id = "dinosaur_notes",                      category = "documents",    title = joaat("CI_TAG_FOLDER_DINOSAUR_NOTES"),                      label = GetStringFromHashKey("CI_TAG_FOLDER_DINOSAUR_NOTES"),                      description = GetStringFromHashKey("CI_TAG_FOLDER_DINOSAUR_NOTES_DESC"),                      txd = "inventory_items",    texture = "folder_dinosaur_notes",                         tags = { "CI_TAG_FOLDER_DINOSAUR_NOTES" } },
+    { id = "drawings",                            category = "documents",    title = joaat("CI_TAG_FOLDER_DRAWINGS"),                            label = GetStringFromHashKey("CI_TAG_FOLDER_DRAWINGS"),                            description = GetStringFromHashKey("CI_TAG_FOLDER_DRAWINGS_DESC"),                            txd = "inventory_items",    texture = "folder_drawings",                               tags = { "CI_TAG_FOLDER_DRAWINGS" } },
+    { id = "handbills",                           category = "documents",    title = joaat("CI_TAG_FOLDER_HANDBILLS"),                           label = GetStringFromHashKey("CI_TAG_FOLDER_HANDBILLS"),                           description = GetStringFromHashKey("CI_TAG_FOLDER_HANDBILLS_DESC"),                           txd = "inventory_items",    texture = "folder_handbills",                              tags = { "CI_TAG_FOLDER_HANDBILLS" } },
+    { id = "invitations",                         category = "documents",    title = joaat("CI_TAG_FOLDER_INVITATIONS"),                         label = GetStringFromHashKey("CI_TAG_FOLDER_INVITATIONS"),                         description = GetStringFromHashKey("CI_TAG_FOLDER_INVITATIONS_DESC"),                         txd = "inventory_items",    texture = "folder_invitations",                            tags = { "CI_TAG_FOLDER_INVITATIONS" } },
+    { id = "kit_keepsakes",                       category = "documents",    title = joaat("CI_TAG_FOLDER_KIT_KEEPSAKES"),                       label = GetStringFromHashKey("CI_TAG_FOLDER_KIT_KEEPSAKES"),                       description = GetStringFromHashKey("CI_TAG_FOLDER_KIT_KEEPSAKES_DESC"),                       txd = "inventory_items",    texture = "folder_kit_keepsakes",                          tags = { "CI_TAG_FOLDER_KIT_KEEPSAKES" } },
+    { id = "kit_keychain",                        category = "documents",    title = joaat("CI_TAG_FOLDER_KIT_KEYCHAIN"),                        label = GetStringFromHashKey("CI_TAG_FOLDER_KIT_KEYCHAIN"),                        description = GetStringFromHashKey("CI_TAG_FOLDER_KIT_KEYCHAIN_DESC"),                        txd = "inventory_items",    texture = "folder_kit_keychain",                           tags = { "CI_TAG_FOLDER_KIT_KEYCHAIN" } },
+    { id = "kit_watches",                         category = "documents",    title = joaat("CI_TAG_FOLDER_KIT_WATCHES"),                         label = GetStringFromHashKey("CI_TAG_FOLDER_KIT_WATCHES"),                         description = GetStringFromHashKey("CI_TAG_FOLDER_KIT_WATCHES_DESC"),                         txd = "inventory_items",    texture = "provision_folder_watches",                      tags = { "CI_TAG_FOLDER_KIT_WATCHES" } },
+    { id = "letters",                             category = "documents",    title = joaat("CI_TAG_FOLDER_LETTERS"),                             label = GetStringFromHashKey("CI_TAG_FOLDER_LETTERS"),                             description = GetStringFromHashKey("CI_TAG_FOLDER_LETTERS_DESC"),                             txd = "inventory_items",    texture = "folder_letters",                                tags = { "CI_TAG_FOLDER_LETTERS" } },
+    { id = "maps",                                category = "documents",    title = joaat("CI_TAG_FOLDER_MAPS"),                                label = GetStringFromHashKey("CI_TAG_FOLDER_MAPS"),                                description = GetStringFromHashKey("CI_TAG_FOLDER_MAPS_DESC"),                                txd = "inventory_items",    texture = "folder_maps",                                   tags = { "CI_TAG_FOLDER_MAPS" } },
+    { id = "masks",                               category = "documents",    title = joaat("CI_TAG_FOLDER_MASKS"),                               label = GetStringFromHashKey("CI_TAG_FOLDER_MASKS"),                               description = GetStringFromHashKey("CI_TAG_FOLDER_MASKS_DESC"),                               txd = "inventory_items",    texture = "kit_bandana",                                   tags = { "CI_TAG_FOLDER_MASKS" } },
+    { id = "newspaper_scraps",                    category = "documents",    title = joaat("CI_TAG_FOLDER_NEWSPAPER_SCRAPS"),                    label = GetStringFromHashKey("CI_TAG_FOLDER_NEWSPAPER_SCRAPS"),                    description = GetStringFromHashKey("CI_TAG_FOLDER_NEWSPAPER_SCRAPS_DESC"),                    txd = "inventory_items",    texture = "folder_newspaper_scraps",                       tags = { "CI_TAG_FOLDER_NEWSPAPER_SCRAPS" } },
+    { id = "newspapers",                          category = "documents",    title = joaat("CI_TAG_FOLDER_NEWSPAPERS"),                          label = GetStringFromHashKey("CI_TAG_FOLDER_NEWSPAPERS"),                          description = GetStringFromHashKey("CI_TAG_FOLDER_NEWSPAPERS_DESC"),                          txd = "inventory_items",    texture = "folder_newspapers",                             tags = { "CI_TAG_FOLDER_NEWSPAPERS" } },
+    { id = "notes",                               category = "documents",    title = joaat("CI_TAG_FOLDER_NOTES"),                               label = GetStringFromHashKey("CI_TAG_FOLDER_NOTES"),                               description = GetStringFromHashKey("CI_TAG_FOLDER_NOTES_DESC"),                               txd = "inventory_items",    texture = "folder_notes",                                  tags = { "CI_TAG_FOLDER_NOTES" } },
+    { id = "photographs",                         category = "documents",    title = joaat("CI_TAG_FOLDER_PHOTOGRAPHS"),                         label = GetStringFromHashKey("CI_TAG_FOLDER_PHOTOGRAPHS"),                         description = GetStringFromHashKey("CI_TAG_FOLDER_PHOTOGRAPHS_DESC"),                         txd = "inventory_items",    texture = "folder_photographs",                            tags = { "CI_TAG_FOLDER_PHOTOGRAPHS" } },
+    { id = "rock_carving_notes",                  category = "documents",    title = joaat("CI_TAG_FOLDER_ROCK_CARVING_NOTES"),                  label = GetStringFromHashKey("CI_TAG_FOLDER_ROCK_CARVING_NOTES"),                  description = GetStringFromHashKey("CI_TAG_FOLDER_ROCK_CARVING_NOTES_DESC"),                  txd = "inventory_items",    texture = "folder_maps",                                   tags = { "CI_TAG_FOLDER_ROCK_CARVING_NOTES" } },
+    { id = "taxidermist_orders",                  category = "documents",    title = joaat("CI_TAG_FOLDER_TAXIDERMIST_ORDERS"),                  label = GetStringFromHashKey("CI_TAG_FOLDER_TAXIDERMIST_ORDERS"),                  description = GetStringFromHashKey("CI_TAG_FOLDER_TAXIDERMIST_ORDERS_DESC"),                  txd = "inventory_items",    texture = "folder_taxidermist_orders",                     tags = { "CI_TAG_FOLDER_TAXIDERMIST_ORDERS" } },
+    { id = "telegrams",                           category = "documents",    title = joaat("CI_TAG_MISSION_DROP_ENABLED"),                       label = GetStringFromHashKey("CI_TAG_MISSION_DROP_ENABLED"),                       description = GetStringFromHashKey("CI_TAG_MISSION_DROP_ENABLED_DESC"),                       txd = "inventory_items_mp", texture = "folder_letters_cloud",                          tags = { "CI_TAG_MISSION_DROP_ENABLED" } },
+    { id = "treasure_maps",                       category = "documents",    title = joaat("CI_TAG_FOLDER_TREASURE_MAPS"),                       label = GetStringFromHashKey("CI_TAG_FOLDER_TREASURE_MAPS"),                       description = GetStringFromHashKey("CI_TAG_FOLDER_TREASURE_MAPS_DESC"),                       txd = "inventory_items",    texture = "folder_treasure_maps",                          tags = { "CI_TAG_FOLDER_TREASURE_MAPS" } },
+    { id = "watch",                               category = "documents",    title = joaat("CI_TAG_FOLDER_WATCH"),                               label = GetStringFromHashKey("CI_TAG_FOLDER_WATCH"),                               description = GetStringFromHashKey("CI_TAG_FOLDER_WATCH_DESC"),                               txd = "inventory_items",    texture = "kit_player_pocketwatch",                        tags = { "CI_TAG_FOLDER_WATCH" } },
 
-    -- Documents
-    { id = "taxidermist_orders", category = "documents", txd = joaat("inventory_items"),    texture = joaat("folder_taxidermist_orders"),            label = joaat("CI_TAG_FOLDER_TAXIDERMIST_ORDERS"), description = joaat("CI_TAG_FOLDER_TAXIDERMIST_ORDERS_DESC") },
-    { id = "letters",            category = "documents", txd = joaat("inventory_items"),    texture = joaat("folder_letters"),                       label = joaat("CI_TAG_FOLDER_LETTERS"),            description = joaat("CI_TAG_FOLDER_LETTERS_DESC") },
-    { id = "treasure_maps",      category = "documents", txd = joaat("inventory_items"),    texture = joaat("folder_treasure_maps"),                 label = joaat("CI_TAG_FOLDER_TREASURE_MAPS"),      description = joaat("CI_TAG_FOLDER_TREASURE_MAPS_DESC") },
-    { id = "photographs",        category = "documents", txd = joaat("inventory_items"),    texture = joaat("folder_photographs"),                   label = joaat("CI_TAG_FOLDER_PHOTOGRAPHS"),        description = joaat("CI_TAG_FOLDER_PHOTOGRAPHS_DESC") },
-    { id = "collector_maps",     category = "documents", txd = joaat("inventory_items_mp"), texture = joaat("folder_collector_maps"),                label = joaat("CI_TAG_FOLDER_COLLECTOR_MAPS"),     description = joaat("CI_TAG_FOLDER_COLLECTOR_MAPS_DESC") },
-    { id = "recipe_pamphlets",   category = "documents", txd = joaat("inventory_items"),    texture = joaat("folder_recipe_pamphlets"),              label = joaat("CI_TAG_FOLDER_RECIPE_PAMPHLETS"),   description = joaat("CI_TAG_FOLDER_RECIPE_PAMPHLETS_DESC") },
-    { id = "newspaper_scraps",   category = "documents", txd = joaat("inventory_items"),    texture = joaat("folder_newspaper_scraps"),              label = joaat("CI_TAG_FOLDER_NEWSPAPER_SCRAPS"),   description = joaat("CI_TAG_FOLDER_NEWSPAPER_SCRAPS_DESC") },
-    { id = "business_cards",     category = "documents", txd = joaat("inventory_items"),    texture = joaat("folder_business_cards"),                label = joaat("CI_TAG_FOLDER_BUSINESS_CARDS"),     description = joaat("CI_TAG_FOLDER_BUSINESS_CARDS_DESC") },
-    { id = "newspapers",         category = "documents", txd = joaat("inventory_items"),    texture = joaat("folder_newspapers"),                    label = joaat("CI_TAG_FOLDER_NEWSPAPERS"),         description = joaat("CI_TAG_FOLDER_NEWSPAPERS_DESC") },
-    { id = "dinosaur_notes",     category = "documents", txd = joaat("inventory_items"),    texture = joaat("folder_dinosaur_notes"),                label = joaat("CI_TAG_FOLDER_DINOSAUR_NOTES"),     description = joaat("CI_TAG_FOLDER_DINOSAUR_NOTES_DESC") },
-    { id = "rock_carving_notes", category = "documents", txd = joaat("inventory_items"),    texture = joaat("document_business_card_rock_carvings"), label = joaat("CI_TAG_FOLDER_ROCK_CARVING_NOTES"), description = joaat("CI_TAG_FOLDER_ROCK_CARVING_NOTES_DESC") },
-    { id = "books",              category = "documents", txd = joaat("inventory_items"),    texture = joaat("folder_books"),                         label = joaat("CI_TAG_FOLDER_BOOKS"),              description = joaat("CI_TAG_FOLDER_BOOKS_DESC") },
-    { id = "drawings",           category = "documents", txd = joaat("inventory_items"),    texture = joaat("folder_drawings"),                      label = joaat("CI_TAG_FOLDER_DRAWINGS"),           description = joaat("CI_TAG_FOLDER_DRAWINGS_DESC") },
-    { id = "bounty_posters",     category = "documents", txd = joaat("inventory_items"),    texture = joaat("folder_bounty_posters"),                label = joaat("CI_TAG_FOLDER_BOUNTY_POSTERS"),     description = joaat("CI_TAG_FOLDER_BOUNTY_POSTERS_DESC") },
-    { id = "maps",               category = "documents", txd = joaat("inventory_items"),    texture = joaat("folder_maps"),                          label = joaat("CI_TAG_FOLDER_MAPS"),               description = joaat("CI_TAG_FOLDER_MAPS_DESC") },
-    { id = "notes",              category = "documents", txd = joaat("inventory_items"),    texture = joaat("folder_notes"),                         label = joaat("CI_TAG_FOLDER_NOTES"),              description = joaat("CI_TAG_FOLDER_NOTES_DESC") },
-    { id = "skill_pamphlets",    category = "documents", txd = joaat("inventory_items_mp"), texture = joaat("folder_skill_pages"),                   label = joaat("CI_TAG_FOLDER_SKILL_PAMPHLETS"),    description = joaat("CI_TAG_FOLDER_SKILL_PAMPHLETS_DESC") },
-    { id = "satchel_pamphlets",  category = "documents", txd = joaat("inventory_items_mp"), texture = joaat("folder_satchel_upgrades"),              label = joaat("CI_TAG_FOLDER_SATCHEL_PAMPHLETS"),  description = joaat("CI_TAG_FOLDER_SATCHEL_PAMPHLETS_DESC") },
+    -- Cooked Meat folders
+    { id = "big_game",                            category = "provisions",   title = joaat("CI_TAG_FOLDER_BIG_GAME"),                            label = GetStringFromHashKey("CI_TAG_FOLDER_BIG_GAME"),                            description = GetStringFromHashKey("CI_TAG_FOLDER_BIG_GAME_DESC"),                            txd = "inventory_items",    texture = "consumable_meat_big_game_cooked",               tags = { "CI_TAG_FOLDER_BIG_GAME" } },
+    { id = "crustacean",                          category = "provisions",   title = joaat("CI_TAG_FOLDER_CRUSTACEAN"),                          label = GetStringFromHashKey("CI_TAG_FOLDER_CRUSTACEAN"),                          description = GetStringFromHashKey("CI_TAG_FOLDER_CRUSTACEAN_DESC"),                          txd = "inventory_items",    texture = "consumable_meat_crustacean_cooked",             tags = { "CI_TAG_FOLDER_CRUSTACEAN" } },
+    { id = "exotic_bird",                         category = "provisions",   title = joaat("CI_TAG_FOLDER_EXOTIC_BIRD"),                         label = GetStringFromHashKey("CI_TAG_FOLDER_EXOTIC_BIRD"),                         description = GetStringFromHashKey("CI_TAG_FOLDER_EXOTIC_BIRD_DESC"),                         txd = "inventory_items",    texture = "consumable_meat_exotic_bird_cooked",            tags = { "CI_TAG_FOLDER_EXOTIC_BIRD" } },
+    { id = "flakey_fish",                         category = "provisions",   title = joaat("CI_TAG_FOLDER_FLAKEY_FISH"),                         label = GetStringFromHashKey("CI_TAG_FOLDER_FLAKEY_FISH"),                         description = GetStringFromHashKey("CI_TAG_FOLDER_FLAKEY_FISH_DESC"),                         txd = "inventory_items",    texture = "consumable_meat_flakey_fish_cooked",            tags = { "CI_TAG_FOLDER_FLAKEY_FISH" } },
+    { id = "game",                                category = "provisions",   title = joaat("CI_TAG_FOLDER_GAME"),                                label = GetStringFromHashKey("CI_TAG_FOLDER_GAME"),                                description = GetStringFromHashKey("CI_TAG_FOLDER_GAME_DESC"),                                txd = "inventory_items",    texture = "consumable_meat_game_cooked",                   tags = { "CI_TAG_FOLDER_GAME" } },
+    { id = "gamey_bird",                          category = "provisions",   title = joaat("CI_TAG_FOLDER_GAMEY_BIRD"),                          label = GetStringFromHashKey("CI_TAG_FOLDER_GAMEY_BIRD"),                          description = GetStringFromHashKey("CI_TAG_FOLDER_GAMEY_BIRD_DESC"),                          txd = "inventory_items",    texture = "consumable_meat_gamey_bird_cooked",             tags = { "CI_TAG_FOLDER_GAMEY_BIRD" } },
+    { id = "gristly_mutton",                      category = "provisions",   title = joaat("CI_TAG_FOLDER_GRISTLY_MUTTON"),                      label = GetStringFromHashKey("CI_TAG_FOLDER_GRISTLY_MUTTON"),                      description = GetStringFromHashKey("CI_TAG_FOLDER_GRISTLY_MUTTON_DESC"),                      txd = "inventory_items",    texture = "consumable_meat_gristly_mutton_cooked",         tags = { "CI_TAG_FOLDER_GRISTLY_MUTTON" } },
+    { id = "gritty_fish",                         category = "provisions",   title = joaat("CI_TAG_FOLDER_GRITTY_FISH"),                         label = GetStringFromHashKey("CI_TAG_FOLDER_GRITTY_FISH"),                         description = GetStringFromHashKey("CI_TAG_FOLDER_GRITTY_FISH_DESC"),                         txd = "inventory_items",    texture = "consumable_meat_gritty_fish_cooked",            tags = { "CI_TAG_FOLDER_GRITTY_FISH" } },
+    { id = "herptile_meat",                       category = "provisions",   title = joaat("CI_TAG_FOLDER_HERPTILE_MEAT"),                       label = GetStringFromHashKey("CI_TAG_FOLDER_HERPTILE_MEAT"),                       description = GetStringFromHashKey("CI_TAG_FOLDER_HERPTILE_MEAT_DESC"),                       txd = "inventory_items",    texture = "consumable_meat_herptile_cooked",               tags = { "CI_TAG_FOLDER_HERPTILE_MEAT" } },
+    { id = "mature_venison",                      category = "provisions",   title = joaat("CI_TAG_FOLDER_MATURE_VENISON"),                      label = GetStringFromHashKey("CI_TAG_FOLDER_MATURE_VENISON"),                      description = GetStringFromHashKey("CI_TAG_FOLDER_MATURE_VENISON_DESC"),                      txd = "inventory_items",    texture = "consumable_meat_mature_venison_cooked",         tags = { "CI_TAG_FOLDER_MATURE_VENISON" } },
+    { id = "plump_bird",                          category = "provisions",   title = joaat("CI_TAG_FOLDER_PLUMP_BIRD"),                          label = GetStringFromHashKey("CI_TAG_FOLDER_PLUMP_BIRD"),                          description = GetStringFromHashKey("CI_TAG_FOLDER_PLUMP_BIRD_DESC"),                          txd = "inventory_items",    texture = "consumable_meat_plump_bird_cooked",             tags = { "CI_TAG_FOLDER_PLUMP_BIRD" } },
+    { id = "prime_beef",                          category = "provisions",   title = joaat("CI_TAG_FOLDER_PRIME_BEEF"),                          label = GetStringFromHashKey("CI_TAG_FOLDER_PRIME_BEEF"),                          description = GetStringFromHashKey("CI_TAG_FOLDER_PRIME_BEEF_DESC"),                          txd = "inventory_items",    texture = "consumable_meat_prime_beef_cooked",             tags = { "CI_TAG_FOLDER_PRIME_BEEF" } },
+    { id = "stringy_meat",                        category = "provisions",   title = joaat("CI_TAG_FOLDER_STRINGY_MEAT"),                        label = GetStringFromHashKey("CI_TAG_FOLDER_STRINGY_MEAT"),                        description = GetStringFromHashKey("CI_TAG_FOLDER_STRINGY_MEAT_DESC"),                        txd = "inventory_items",    texture = "consumable_meat_stringy_cooked",                tags = { "CI_TAG_FOLDER_STRINGY_MEAT" } },
+    { id = "succulent_fish",                      category = "provisions",   title = joaat("CI_TAG_FOLDER_SUCCULENT_FISH"),                      label = GetStringFromHashKey("CI_TAG_FOLDER_SUCCULENT_FISH"),                      description = GetStringFromHashKey("CI_TAG_FOLDER_SUCCULENT_FISH_DESC"),                      txd = "inventory_items",    texture = "consumable_meat_succulent_fish_cooked",         tags = { "CI_TAG_FOLDER_SUCCULENT_FISH" } },
+    { id = "tender_pork",                         category = "provisions",   title = joaat("CI_TAG_FOLDER_TENDER_PORK"),                         label = GetStringFromHashKey("CI_TAG_FOLDER_TENDER_PORK"),                         description = GetStringFromHashKey("CI_TAG_FOLDER_TENDER_PORK_DESC"),                         txd = "inventory_items",    texture = "consumable_meat_tender_pork_cooked",            tags = { "CI_TAG_FOLDER_TENDER_PORK" } },
 
-    -- Kit
-    { id = "keychain", category = "kit", txd = joaat("inventory_items"), texture = joaat("folder_kit_keychain"),      label = joaat("CI_TAG_FOLDER_KIT_KEYCHAIN"), description = joaat("CI_TAG_FOLDER_KIT_KEYCHAIN_DESC") },
-    { id = "watches",  category = "kit", txd = joaat("inventory_items"), texture = joaat("provision_folder_watches"), label = joaat("CI_TAG_FOLDER_KIT_WATCHES"),  description = joaat("CI_TAG_FOLDER_KIT_WATCHES_DESC") },
+    -- Pamphlet folders
+    { id = "animal_pamphlets",                    category = "documents",    title = joaat("CI_TAG_FOLDER_ANIMAL_PAMPHLETS"),                    label = GetStringFromHashKey("CI_TAG_FOLDER_ANIMAL_PAMPHLETS"),                    description = GetStringFromHashKey("CI_TAG_FOLDER_ANIMAL_PAMPHLETS_DESC"),                    txd = "inventory_items_mp", texture = "folder_animal_pamphlet",                        tags = { "CI_TAG_FOLDER_ANIMAL_PAMPHLETS" } },
+    { id = "moonshine_recipes",                   category = "documents",    title = joaat("CI_TAG_FOLDER_MOONSHINE_RECIPES"),                   label = GetStringFromHashKey("CI_TAG_FOLDER_MOONSHINE_RECIPES"),                   description = GetStringFromHashKey("CI_TAG_FOLDER_MOONSHINE_RECIPES_DESC"),                   txd = "inventory_items_mp", texture = "folder_moonshine_recipes",                      tags = { "CI_TAG_FOLDER_MOONSHINE_RECIPES" } },
+    { id = "recipe_pamphlets",                    category = "documents",    title = joaat("CI_TAG_FOLDER_RECIPE_PAMPHLETS"),                    label = GetStringFromHashKey("CI_TAG_FOLDER_RECIPE_PAMPHLETS"),                    description = GetStringFromHashKey("CI_TAG_FOLDER_RECIPE_PAMPHLETS_DESC"),                    txd = "inventory_items",    texture = "folder_recipe_pamphlets",                       tags = { "CI_TAG_FOLDER_RECIPE_PAMPHLETS" } },
+    { id = "satchel_pamphlets",                   category = "documents",    title = joaat("CI_TAG_FOLDER_SATCHEL_PAMPHLETS"),                   label = GetStringFromHashKey("CI_TAG_FOLDER_SATCHEL_PAMPHLETS"),                   description = GetStringFromHashKey("CI_TAG_FOLDER_SATCHEL_PAMPHLETS_DESC"),                   txd = "inventory_items_mp", texture = "folder_satchel_upgrades",                       tags = { "CI_TAG_FOLDER_SATCHEL_PAMPHLETS" } },
+    { id = "skill_pamphlets",                     category = "documents",    title = joaat("CI_TAG_FOLDER_SKILL_PAMPHLETS"),                     label = GetStringFromHashKey("CI_TAG_FOLDER_SKILL_PAMPHLETS"),                     description = GetStringFromHashKey("CI_TAG_FOLDER_SKILL_PAMPHLETS_DESC"),                     txd = "inventory_items_mp", texture = "folder_skill_pages",                            tags = { "CI_TAG_FOLDER_SKILL_PAMPHLETS" } },
 
-    -- Provisions
-    { id = "gamey_bird",     category = "provisions", txd = joaat("satchel_textures"), texture = joaat("provision_meat_gamey_bird"),     label = joaat("CI_TAG_FOLDER_GAMEY_BIRD"),     description = joaat("CI_TAG_FOLDER_GAMEY_BIRD_DESC") },
-    { id = "big_game",       category = "provisions", txd = joaat("satchel_textures"), texture = joaat("provision_meat_big_game"),       label = joaat("CI_TAG_FOLDER_BIG_GAME"),       description = joaat("CI_TAG_FOLDER_BIG_GAME_DESC") },
-    { id = "gristly_mutton", category = "provisions", txd = joaat("satchel_textures"), texture = joaat("provision_meat_gristly_mutton"), label = joaat("CI_TAG_FOLDER_GRISTLY_MUTTON"), description = joaat("CI_TAG_FOLDER_GRISTLY_MUTTON_DESC") },
-    { id = "herptile_meat",  category = "provisions", txd = joaat("satchel_textures"), texture = joaat("provision_meat_herptile"),       label = joaat("CI_TAG_FOLDER_HERPTILE_MEAT"),  description = joaat("CI_TAG_FOLDER_HERPTILE_MEAT_DESC") },
-    { id = "succulent_fish", category = "provisions", txd = joaat("satchel_textures"), texture = joaat("provision_meat_succulent_fish"), label = joaat("CI_TAG_FOLDER_SUCCULENT_FISH"), description = joaat("CI_TAG_FOLDER_SUCCULENT_FISH_DESC") },
-    { id = "stringy_meat",   category = "provisions", txd = joaat("satchel_textures"), texture = joaat("provision_meat_stringy"),        label = joaat("CI_TAG_FOLDER_STRINGY_MEAT"),   description = joaat("CI_TAG_FOLDER_STRINGY_MEAT_DESC") },
-    { id = "mature_venison", category = "provisions", txd = joaat("satchel_textures"), texture = joaat("provision_meat_mature_venison"), label = joaat("CI_TAG_FOLDER_MATURE_VENISON"), description = joaat("CI_TAG_FOLDER_MATURE_VENISON_DESC") },
-    { id = "game",           category = "provisions", txd = joaat("satchel_textures"), texture = joaat("provision_meat_game"),           label = joaat("CI_TAG_FOLDER_GAME"),           description = joaat("CI_TAG_FOLDER_GAME_DESC") },
-    { id = "crustacean",     category = "provisions", txd = joaat("satchel_textures"), texture = joaat("provision_meat_crustacean"),     label = joaat("CI_TAG_FOLDER_CRUSTACEAN"),     description = joaat("CI_TAG_FOLDER_CRUSTACEAN_DESC") },
-    { id = "flakey_fish",    category = "provisions", txd = joaat("satchel_textures"), texture = joaat("provision_meat_flakey_fish"),    label = joaat("CI_TAG_FOLDER_FLAKEY_FISH"),    description = joaat("CI_TAG_FOLDER_FLAKEY_FISH_DESC") },
-    { id = "plump_bird",     category = "provisions", txd = joaat("satchel_textures"), texture = joaat("provision_meat_plump_bird"),     label = joaat("CI_TAG_FOLDER_PLUMP_BIRD"),     description = joaat("CI_TAG_FOLDER_PLUMP_BIRD_DESC") },
-    { id = "prime_beef",     category = "provisions", txd = joaat("satchel_textures"), texture = joaat("provision_meat_prime_beef"),     label = joaat("CI_TAG_FOLDER_PRIME_BEEF"),     description = joaat("CI_TAG_FOLDER_PRIME_BEEF_DESC") },
-    { id = "gritty_fish",    category = "provisions", txd = joaat("satchel_textures"), texture = joaat("provision_meat_gritty_fish"),    label = joaat("CI_TAG_FOLDER_GRITTY_FISH"),    description = joaat("CI_TAG_FOLDER_GRITTY_FISH_DESC") },
-    { id = "tender_pork",    category = "provisions", txd = joaat("satchel_textures"), texture = joaat("provision_meat_tender_pork"),    label = joaat("CI_TAG_FOLDER_TENDER_PORK"),    description = joaat("CI_TAG_FOLDER_TENDER_PORK_DESC") },
-    { id = "exotic_bird",    category = "provisions", txd = joaat("satchel_textures"), texture = joaat("provision_meat_exotic_bird"),    label = joaat("CI_TAG_FOLDER_EXOTIC_BIRD"),    description = joaat("CI_TAG_FOLDER_EXOTIC_BIRD_DESC") },
+    -- Collectible folders
+    { id = "collector_coins",                     category = "valuables",    title = joaat("CI_TAG_FOLDER_COLLECTOR_COINS"),                     label = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_COINS"),                     description = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_COINS_DESC"),                     txd = "inventory_items_mp", texture = "provision_coin_set",                            tags = { "CI_TAG_FOLDER_COLLECTOR_COINS" } },
+    { id = "collector_eggs",                      category = "ingredients",  title = joaat("CI_TAG_FOLDER_COLLECTOR_EGGS"),                      label = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_EGGS"),                      description = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_EGGS_DESC"),                      txd = "inventory_items_mp", texture = "provision_egg_set",                             tags = { "CI_TAG_FOLDER_COLLECTOR_EGGS" } },
+    { id = "collector_bottles",                   category = "tonics",       title = joaat("CI_TAG_FOLDER_COLLECTOR_BOTTLES"),                   label = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_BOTTLES"),                   description = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_BOTTLES_DESC"),                   txd = "inventory_items_mp", texture = "consumable_whiskey_set",                        tags = { "CI_TAG_FOLDER_COLLECTOR_BOTTLES" } },
+    { id = "collector_arrowheads",                category = "valuables",    title = joaat("CI_TAG_FOLDER_COLLECTOR_ARROWHEADS"),                label = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_ARROWHEADS"),                description = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_ARROWHEADS_DESC"),                txd = "inventory_items_mp", texture = "provision_arrowhead_set",                       tags = { "CI_TAG_FOLDER_COLLECTOR_ARROWHEADS" } },
+    { id = "collector_heirlooms",                 category = "valuables",    title = joaat("CI_TAG_FOLDER_COLLECTOR_HEIRLOOMS"),                 label = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_HEIRLOOMS"),                 description = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_HEIRLOOMS_DESC"),                 txd = "inventory_items_mp", texture = "provision_hrlm_set",                            tags = { "CI_TAG_FOLDER_COLLECTOR_HEIRLOOMS" } },
+    { id = "collector_wildflowers",               category = "ingredients",  title = joaat("CI_TAG_FOLDER_COLLECTOR_WILDFLOWERS"),               label = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_WILDFLOWERS"),               description = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_WILDFLOWERS_DESC"),               txd = "inventory_items_mp", texture = "provision_wldflwr_set",                         tags = { "CI_TAG_FOLDER_COLLECTOR_WILDFLOWERS" } },
+    { id = "collector_bracelets",                 category = "valuables",    title = joaat("CI_TAG_FOLDER_COLLECTOR_BRACELETS"),                 label = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_BRACELETS"),                 description = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_BRACELETS_DESC"),                 txd = "inventory_items_mp", texture = "provision_jewelry_bracelet_set",                tags = { "CI_TAG_FOLDER_COLLECTOR_BRACELETS" } },
+    { id = "collector_earrings",                  category = "valuables",    title = joaat("CI_TAG_FOLDER_COLLECTOR_EARRINGS"),                  label = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_EARRINGS"),                  description = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_EARRINGS_DESC"),                  txd = "inventory_items_mp", texture = "provision_jewelry_earring_set",                 tags = { "CI_TAG_FOLDER_COLLECTOR_EARRINGS" } },
+    { id = "collector_necklaces",                 category = "valuables",    title = joaat("CI_TAG_FOLDER_COLLECTOR_NECKLACES"),                 label = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_NECKLACES"),                 description = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_NECKLACES_DESC"),                 txd = "inventory_items_mp", texture = "provision_jewelry_necklace_set",                tags = { "CI_TAG_FOLDER_COLLECTOR_NECKLACES" } },
+    { id = "collector_rings",                     category = "valuables",    title = joaat("CI_TAG_FOLDER_COLLECTOR_RINGS"),                     label = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_RINGS"),                     description = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_RINGS_DESC"),                     txd = "inventory_items_mp", texture = "provision_jewelry_ring_set",                    tags = { "CI_TAG_FOLDER_COLLECTOR_RINGS" } },
+    { id = "collector_card_cups",                 category = "documents",    title = joaat("CI_TAG_FOLDER_COLLECTOR_CARD_CUPS"),                 label = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_CARD_CUPS"),                 description = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_CARD_CUPS_DESC"),                 txd = "inventory_items_mp", texture = "document_card_cups_set",                        tags = { "CI_TAG_FOLDER_COLLECTOR_CARD_CUPS" } },
+    { id = "collector_card_pentacles",            category = "documents",    title = joaat("CI_TAG_FOLDER_COLLECTOR_CARD_PENTACLES"),            label = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_CARD_PENTACLES"),            description = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_CARD_PENTACLES_DESC"),            txd = "inventory_items_mp", texture = "document_card_pentacles_set",                   tags = { "CI_TAG_FOLDER_COLLECTOR_CARD_PENTACLES" } },
+    { id = "collector_card_swords",               category = "documents",    title = joaat("CI_TAG_FOLDER_COLLECTOR_CARD_SWORDS"),               label = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_CARD_SWORDS"),               description = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_CARD_SWORDS_DESC"),               txd = "inventory_items_mp", texture = "document_card_swords_set",                      tags = { "CI_TAG_FOLDER_COLLECTOR_CARD_SWORDS" } },
+    { id = "collector_card_wands",                category = "documents",    title = joaat("CI_TAG_FOLDER_COLLECTOR_CARD_WANDS"),                label = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_CARD_WANDS"),                description = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_CARD_WANDS_DESC"),                txd = "inventory_items_mp", texture = "document_card_wands_set",                       tags = { "CI_TAG_FOLDER_COLLECTOR_CARD_WANDS" } },
+    { id = "collector_fossils_common",            category = "valuables",    title = joaat("CI_TAG_FOLDER_COLLECTOR_FOSSILS_COMMON"),            label = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_FOSSILS_COMMON"),            description = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_FOSSILS_COMMON_DESC"),            txd = "inventory_items_mp", texture = "provision_fossil_set_01_common",                tags = { "CI_TAG_FOLDER_COLLECTOR_FOSSILS_COMMON" } },
+    { id = "collector_fossils_rare",              category = "valuables",    title = joaat("CI_TAG_FOLDER_COLLECTOR_FOSSILS_RARE"),              label = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_FOSSILS_RARE"),              description = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_FOSSILS_RARE_DESC"),              txd = "inventory_items_mp", texture = "provision_fossil_set_03_rare",                  tags = { "CI_TAG_FOLDER_COLLECTOR_FOSSILS_RARE" } },
+    { id = "collector_fossils_uncommon",          category = "valuables",    title = joaat("CI_TAG_FOLDER_COLLECTOR_FOSSILS_UNCOMMON"),          label = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_FOSSILS_UNCOMMON"),          description = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTOR_FOSSILS_UNCOMMON_DESC"),          txd = "inventory_items_mp", texture = "provision_fossil_set_02_uncommon",              tags = { "CI_TAG_FOLDER_COLLECTOR_FOSSILS_UNCOMMON" } },
+
+    -- Feather folders
+    { id = "plumes",                              category = "materials",    title = joaat("CI_TAG_FOLDER_PLUMES"),                              label = GetStringFromHashKey("CI_TAG_FOLDER_PLUMES"),                              description = GetStringFromHashKey("CI_TAG_FOLDER_PLUMES_DESC"),                              txd = "satchel_textures",   texture = "feathers_plume",                                tags = { "CI_TAG_FOLDER_PLUMES" } },
+    { id = "collectible_feathers",                category = "materials",    title = joaat("CI_TAG_FOLDER_COLLECTIBLE_FEATHERS"),                label = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTIBLE_FEATHERS"),                description = GetStringFromHashKey("CI_TAG_FOLDER_COLLECTIBLE_FEATHERS_DESC"),                txd = "satchel_textures",   texture = "provision_bird_feather_flight",                 tags = { "CI_TAG_FOLDER_COLLECTIBLE_FEATHERS" } },
+    { id = "craft_feathers",                      category = "materials",    title = joaat("CI_TAG_FOLDER_CRAFT_FEATHERS"),                      label = GetStringFromHashKey("CI_TAG_FOLDER_CRAFT_FEATHERS"),                      description = GetStringFromHashKey("CI_TAG_FOLDER_CRAFT_FEATHERS_DESC"),                      txd = "satchel_textures",   texture = "feathers_crafting",                             tags = { "CI_TAG_FOLDER_CRAFT_FEATHERS" } },
+
+    -- Cigarette Card folders
+    { id = "cig_card_act_set",                    category = "documents",    title = joaat("CI_TAG_FOLDER_CIG_CARD_ACT_SET"),                    label = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_ACT_SET"),                    description = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_ACT_SET_DESC"),                    txd = "inventory_items",    texture = "folder_cig_card_act_set",                       tags = { "CI_TAG_FOLDER_CIG_CARD_ACT_SET" } },
+    { id = "cig_card_aml_set",                    category = "documents",    title = joaat("CI_TAG_FOLDER_CIG_CARD_AML_SET"),                    label = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_AML_SET"),                    description = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_AML_SET_DESC"),                    txd = "inventory_items",    texture = "folder_cig_card_aml_set",                       tags = { "CI_TAG_FOLDER_CIG_CARD_AML_SET" } },
+    { id = "cig_card_art_set",                    category = "documents",    title = joaat("CI_TAG_FOLDER_CIG_CARD_ART_SET"),                    label = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_ART_SET"),                    description = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_ART_SET_DESC"),                    txd = "inventory_items",    texture = "folder_cig_card_art_set",                       tags = { "CI_TAG_FOLDER_CIG_CARD_ART_SET" } },
+    { id = "cig_card_grl_set",                    category = "documents",    title = joaat("CI_TAG_FOLDER_CIG_CARD_GRL_SET"),                    label = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_GRL_SET"),                    description = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_GRL_SET_DESC"),                    txd = "inventory_items",    texture = "folder_cig_card_grl_set",                       tags = { "CI_TAG_FOLDER_CIG_CARD_GRL_SET" } },
+    { id = "cig_card_gun_set",                    category = "documents",    title = joaat("CI_TAG_FOLDER_CIG_CARD_GUN_SET"),                    label = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_GUN_SET"),                    description = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_GUN_SET_DESC"),                    txd = "inventory_items",    texture = "folder_cig_card_gun_set",                       tags = { "CI_TAG_FOLDER_CIG_CARD_GUN_SET" } },
+    { id = "cig_card_hor_set",                    category = "documents",    title = joaat("CI_TAG_FOLDER_CIG_CARD_HOR_SET"),                    label = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_HOR_SET"),                    description = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_HOR_SET_DESC"),                    txd = "inventory_items",    texture = "folder_cig_card_hor_set",                       tags = { "CI_TAG_FOLDER_CIG_CARD_HOR_SET" } },
+    { id = "cig_card_inv_set",                    category = "documents",    title = joaat("CI_TAG_FOLDER_CIG_CARD_INV_SET"),                    label = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_INV_SET"),                    description = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_INV_SET_DESC"),                    txd = "inventory_items",    texture = "folder_cig_card_inv_set",                       tags = { "CI_TAG_FOLDER_CIG_CARD_INV_SET" } },
+    { id = "cig_card_lnd_set",                    category = "documents",    title = joaat("CI_TAG_FOLDER_CIG_CARD_LND_SET"),                    label = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_LND_SET"),                    description = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_LND_SET_DESC"),                    txd = "inventory_items",    texture = "folder_cig_card_lnd_set",                       tags = { "CI_TAG_FOLDER_CIG_CARD_LND_SET" } },
+    { id = "cig_card_pam_set",                    category = "documents",    title = joaat("CI_TAG_FOLDER_CIG_CARD_PAM_SET"),                    label = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_PAM_SET"),                    description = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_PAM_SET_DESC"),                    txd = "inventory_items",    texture = "folder_cig_card_pam_set",                       tags = { "CI_TAG_FOLDER_CIG_CARD_PAM_SET" } },
+    { id = "cig_card_plt_set",                    category = "documents",    title = joaat("CI_TAG_FOLDER_CIG_CARD_PLT_SET"),                    label = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_PLT_SET"),                    description = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_PLT_SET_DESC"),                    txd = "inventory_items",    texture = "folder_cig_card_plt_set",                       tags = { "CI_TAG_FOLDER_CIG_CARD_PLT_SET" } },
+    { id = "cig_card_spt_set",                    category = "documents",    title = joaat("CI_TAG_FOLDER_CIG_CARD_SPT_SET"),                    label = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_SPT_SET"),                    description = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_SPT_SET_DESC"),                    txd = "inventory_items",    texture = "folder_cig_card_spt_set",                       tags = { "CI_TAG_FOLDER_CIG_CARD_SPT_SET" } },
+    { id = "cig_card_veh_set",                    category = "documents",    title = joaat("CI_TAG_FOLDER_CIG_CARD_VEH_SET"),                    label = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_VEH_SET"),                    description = GetStringFromHashKey("CI_TAG_FOLDER_CIG_CARD_VEH_SET_DESC"),                    txd = "inventory_items",    texture = "folder_cig_card_veh_set",                       tags = { "CI_TAG_FOLDER_CIG_CARD_VEH_SET" } },
+
+    -- Animal Sample folders
+    { id = "animal_samples_desert",               category = "valuables",    title = joaat("CI_TAG_FOLDER_ANIMAL_SAMPLES_DESERT"),               label = GetStringFromHashKey("CI_TAG_FOLDER_ANIMAL_SAMPLES_DESERT"),               description = GetStringFromHashKey("CI_TAG_FOLDER_ANIMAL_SAMPLES_DESERT_DESC"),               txd = "inventory_items_mp", texture = "provision_role_naturalist_sample_desert",       tags = { "CI_TAG_FOLDER_ANIMAL_SAMPLES_DESERT" } },
+    { id = "animal_samples_domesticated",         category = "valuables",    title = joaat("CI_TAG_FOLDER_ANIMAL_SAMPLES_DOMESTICATED"),         label = GetStringFromHashKey("CI_TAG_FOLDER_ANIMAL_SAMPLES_DOMESTICATED"),         description = GetStringFromHashKey("CI_TAG_FOLDER_ANIMAL_SAMPLES_DOMESTICATED_DESC"),         txd = "inventory_items_mp", texture = "provision_role_naturalist_sample_domesticated", tags = { "CI_TAG_FOLDER_ANIMAL_SAMPLES_DOMESTICATED" } },
+    { id = "animal_samples_forest",               category = "valuables",    title = joaat("CI_TAG_FOLDER_ANIMAL_SAMPLES_FOREST"),               label = GetStringFromHashKey("CI_TAG_FOLDER_ANIMAL_SAMPLES_FOREST"),               description = GetStringFromHashKey("CI_TAG_FOLDER_ANIMAL_SAMPLES_FOREST_DESC"),               txd = "inventory_items_mp", texture = "provision_role_naturalist_sample_forest",       tags = { "CI_TAG_FOLDER_ANIMAL_SAMPLES_FOREST" } },
+    { id = "animal_samples_legendary_albino",     category = "valuables",    title = joaat("CI_TAG_FOLDER_ANIMAL_SAMPLES_LEGENDARY_ALBINO"),     label = GetStringFromHashKey("CI_TAG_FOLDER_ANIMAL_SAMPLES_LEGENDARY_ALBINO"),     description = GetStringFromHashKey("CI_TAG_FOLDER_ANIMAL_SAMPLES_LEGENDARY_ALBINO_DESC"),     txd = "inventory_items_mp", texture = "provision_role_naturalist_sample_albino",       tags = { "CI_TAG_FOLDER_ANIMAL_SAMPLES_LEGENDARY_ALBINO" } },
+    { id = "animal_samples_legendary_melanistic", category = "valuables",    title = joaat("CI_TAG_FOLDER_ANIMAL_SAMPLES_LEGENDARY_MELANISTIC"), label = GetStringFromHashKey("CI_TAG_FOLDER_ANIMAL_SAMPLES_LEGENDARY_MELANISTIC"), description = GetStringFromHashKey("CI_TAG_FOLDER_ANIMAL_SAMPLES_LEGENDARY_MELANISTIC_DESC"), txd = "inventory_items_mp", texture = "provision_role_naturalist_sample_melanistic",   tags = { "CI_TAG_FOLDER_ANIMAL_SAMPLES_LEGENDARY_MELANISTIC" } },
+    { id = "animal_samples_legendary_patterned",  category = "valuables",    title = joaat("CI_TAG_FOLDER_ANIMAL_SAMPLES_LEGENDARY_PATTERNED"),  label = GetStringFromHashKey("CI_TAG_FOLDER_ANIMAL_SAMPLES_LEGENDARY_PATTERNED"),  description = GetStringFromHashKey("CI_TAG_FOLDER_ANIMAL_SAMPLES_LEGENDARY_PATTERNED_DESC"),  txd = "inventory_items_mp", texture = "provision_role_naturalist_sample_patterned",    tags = { "CI_TAG_FOLDER_ANIMAL_SAMPLES_LEGENDARY_PATTERNED" } },
+    { id = "animal_samples_legendary_red_blonde", category = "valuables",    title = joaat("CI_TAG_FOLDER_ANIMAL_SAMPLES_LEGENDARY_RED_BLONDE"), label = GetStringFromHashKey("CI_TAG_FOLDER_ANIMAL_SAMPLES_LEGENDARY_RED_BLONDE"), description = GetStringFromHashKey("CI_TAG_FOLDER_ANIMAL_SAMPLES_LEGENDARY_RED_BLONDE_DESC"), txd = "inventory_items_mp", texture = "provision_role_naturalist_sample_redblonde",    tags = { "CI_TAG_FOLDER_ANIMAL_SAMPLES_LEGENDARY_RED_BLONDE" } },
+    { id = "animal_samples_mountain",             category = "valuables",    title = joaat("CI_TAG_FOLDER_ANIMAL_SAMPLES_MOUNTAIN"),             label = GetStringFromHashKey("CI_TAG_FOLDER_ANIMAL_SAMPLES_MOUNTAIN"),             description = GetStringFromHashKey("CI_TAG_FOLDER_ANIMAL_SAMPLES_MOUNTAIN_DESC"),             txd = "inventory_items_mp", texture = "provision_role_naturalist_sample_mountain",     tags = { "CI_TAG_FOLDER_ANIMAL_SAMPLES_MOUNTAIN" } },
+    { id = "animal_samples_swamp",                category = "valuables",    title = joaat("CI_TAG_FOLDER_ANIMAL_SAMPLES_SWAMP"),                label = GetStringFromHashKey("CI_TAG_FOLDER_ANIMAL_SAMPLES_SWAMP"),                description = GetStringFromHashKey("CI_TAG_FOLDER_ANIMAL_SAMPLES_SWAMP_DESC"),                txd = "inventory_items_mp", texture = "provision_role_naturalist_sample_swamp",        tags = { "CI_TAG_FOLDER_ANIMAL_SAMPLES_SWAMP" } },
 }
 
 ---------------------------------------------------------------------------------
@@ -163,7 +267,6 @@ Satchel.folders = {
 
 Satchel._cacheCategoryItems = {}
 Satchel._cacheMenuItems = {}
-Satchel._cacheListItems = {}
 Satchel._cachePersistence = {}
 Satchel._cacheItemDatabase = {}
 
@@ -412,10 +515,10 @@ function InitializeSatchelSelectedData()
         -- The category the menu will open to, used when navigating back from folders
         DatabindingAddDataInt(datastore, "DefaultCategoryIndex", 0)
 
-        -- Hash for selected name
+        -- Hash for selected label
         DatabindingAddDataHash(datastore, "Name", 0)
         
-        -- String for selected name
+        -- String for selected label
         DatabindingAddDataString(datastore, "NameAsString", "")
         
         -- Hash for description
@@ -599,6 +702,8 @@ function ClearSatchelMenuItems()
 end
 
 function NavigateSatchelMenuItems()
+    ClearSatchelSelectedData()
+
     if (GetPersistedInt("CurrentItemCount") > 0) then
         ClearSatchelMenuItems()
     end
@@ -634,7 +739,7 @@ function NavigateSatchelMenuItems()
         return
     end
 
-    DatabindingWriteDataHashStringFromParent(datastoreSelected, "Category", category.label)
+    DatabindingWriteDataHashStringFromParent(datastoreSelected, "Category", category.title)
 
     local filteredIndex = 0
     local folderItems = {}
@@ -674,6 +779,96 @@ function NavigateSatchelMenuItems()
     DatabindingSetTemplatedUiItemListSize(datastore, filteredIndex)
 
     UpdateSatchelIndexDescription()
+
+    if (filteredIndex < 1) then
+        EmptyCategorySatchelSelectedData(category)
+    end
+end
+
+function UpdateSatchelPrompts(item)
+    local datastoreMain = GetPersistedInt("RefMainData")
+
+    if (datastoreMain == 0 or DatabindingIsEntryValid(datastoreMain) ~= 1) then
+        print("[NativeSatchel] UpdateSatchelPrompts: Main data wasn't ready in time!")
+        return
+    end
+
+    -- Regular use prompt
+    local selectLabel = 0
+    local selectEnabled = true
+    local selectVisible = true
+
+    if (item.drinkable) then
+        selectLabel = joaat("SATCHEL_PROMPT_DRINK")
+        selectEnabled = Satchel.allowDrinking or false
+    elseif (item.edible) then
+        selectLabel = joaat("SATCHEL_PROMPT_EAT")
+        selectEnabled = Satchel.allowEating or false
+    elseif (item.readable) then
+        selectLabel = joaat("READ")
+        selectEnabled = Satchel.allowReading or false
+    elseif (item.consumable) then
+        selectLabel = joaat("SATCHEL_PROMPT_USE")
+        selectEnabled = Satchel.allowUsing or false
+    else
+        selectEnabled = false
+    end
+
+    -- Hold use prompt
+    local holdSelectLabel = 0
+    local holdSelectEnabled = false
+    local holdSelectVisible = false
+
+    if (item.breakable) then
+        selectEnabled = false
+        selectVisible = false
+
+        holdSelectLabel = joaat("SATCHEL_PROMPT_BREAKDOWN")
+        holdSelectEnabled = Satchel.allowBreakdown or false
+        holdSelectVisible = true
+    elseif (item.cookable) then
+        selectEnabled = false
+        selectVisible = false
+
+        holdSelectLabel = joaat("SATCHEL_PROMPT_COOK")
+        holdSelectEnabled = Satchel.allowCooking or false
+        holdSelectVisible = true
+    end
+
+    -- Discard prompt
+    local dropVisible = item.discardable or false
+    local dropAllVisible = false
+
+    if (item.count and item.count > 1) then
+        dropAllVisible = true
+    end
+
+    if (not Satchel.allowDiscarding) then
+        dropVisible = false
+        dropAllVisible = false
+    end
+
+    -- Regular use prompt
+    DatabindingWriteDataHashStringFromParent(datastoreMain, "PromptSelectLabel", selectLabel)
+    DatabindingWriteDataBoolFromParent(datastoreMain, "PromptSelectEnabled", selectEnabled)
+    DatabindingWriteDataBoolFromParent(datastoreMain, "PromptSelectVisible", selectVisible)
+
+    -- Hold use prompt
+    DatabindingWriteDataHashStringFromParent(datastoreMain, "PromptHoldSelectLabel", holdSelectLabel)
+    DatabindingWriteDataBoolFromParent(datastoreMain, "PromptHoldSelectEnabled", holdSelectEnabled)
+    DatabindingWriteDataBoolFromParent(datastoreMain, "PromptHoldSelectVisible", holdSelectVisible)
+
+    -- Discard prompt
+    DatabindingWriteDataBoolFromParent(datastoreMain, "PromptDropVisibile", dropVisible)
+
+    -- Discard all prompt
+    DatabindingWriteDataStringFromParent(datastoreMain, "PromptDiscardAllLabel", GetStringFromHashKey("SATCHEL_PROMPT_DISCARD_ALL"))
+    DatabindingWriteDataBoolFromParent(datastoreMain, "PromptDiscardAllEnabled", dropAllVisible)
+    DatabindingWriteDataBoolFromParent(datastoreMain, "PromptDiscardAllVisible", dropAllVisible)
+
+    -- Send all prompt
+    DatabindingWriteDataHashStringFromParent(datastoreMain, "PromptSendLabel", joaat("SATCHEL_PROMPT_USE"))
+    DatabindingWriteDataBoolFromParent(datastoreMain, "PromptSendAllVisible", false)
 end
 
 function UpdateSatchelIndexDescription(type)
@@ -720,9 +915,18 @@ function UpdateSatchelSelectedData(itemId, folderId)
     local id = nil
     local count = nil
     local maxCount = nil
-    local name = nil
+
+    -- The following could be set through catalog
+    local label = nil
     local description = nil
     local effectIds = {}
+    local discardable = nil
+    local breakable = nil
+    local cookable = nil
+    local consumable = nil
+    local drinkable = nil
+    local edible = nil
+    local readable = nil
 
     if (itemId) then
         local item = Satchel.items[itemId]
@@ -736,18 +940,42 @@ function UpdateSatchelSelectedData(itemId, folderId)
         count = item.count
         maxCount = item.maxCount
 
-        -- The following could be set through catalog
-        name = item.name or joaat(id)
-        description = item.description or joaat(id)
-        effectIds = item.effects or {}
-
         if (item.catalog) then
-            local itemDatabase = GetItemFromDatabase(item.catalog)
+            local database = GetItemFromDatabase(item.catalog)
 
-            name = itemDatabase.name
-            description = itemDatabase.description
-            effectIds = itemDatabase.effectIds
+            label = database.label or id
+            description = database.description or ""
+            effectIds = database.effectIds or {}
+            discardable = database.discardable or false
+            breakable = database.breakable or false
+            cookable = database.cookable or false
+            consumable = database.consumable or false
+            drinkable = database.drinkable or false
+            edible = database.edible or false
+            readable = database.readable or false
+        else
+            label = item.label or id
+            description = item.description or ""
+            effectIds = item.effects or {}
+            discardable = item.discardable or false
+            breakable = item.breakable or false
+            cookable = item.cookable or false
+            consumable = item.consumable or false
+            drinkable = item.drinkable or false
+            edible = item.edible or false
+            readable = item.readable or false
         end
+
+        UpdateSatchelPrompts({
+            count = count,
+            discardable = discardable,
+            breakable = breakable,
+            cookable = cookable,
+            consumable = consumable,
+            drinkable = drinkable,
+            edible = edible,
+            readable = readable,
+        })
     else
         local folder = Satchel.folders[folderId]
 
@@ -757,20 +985,18 @@ function UpdateSatchelSelectedData(itemId, folderId)
         end
 
         id = folder.id
-        name = folder.label
-        description = folder.description
+        label = folder.label or ""
+        description = folder.description or ""
     end
 
-    if (name) then
-        local asString = GetStringFromHashKey(name)
-        DatabindingWriteDataHashStringFromParent(datastoreSelected, "Name", name)
-        DatabindingWriteStringFromParent(datastoreSelected, "NameAsString", asString)
+    if (label) then
+        DatabindingWriteDataHashStringFromParent(datastoreSelected, "Name", 0)
+        DatabindingWriteStringFromParent(datastoreSelected, "NameAsString", label)
     end
 
     if (description) then
-        local asString = GetStringFromHashKey(description)
-        DatabindingWriteDataHashStringFromParent(datastoreSelected, "Description", description)
-        DatabindingWriteStringFromParent(datastoreSelected, "DescriptionAsString", asString)
+        DatabindingWriteDataHashStringFromParent(datastoreSelected, "Description", 0)
+        DatabindingWriteStringFromParent(datastoreSelected, "DescriptionAsString", description)
     end
 
     local tipDescription = ""
@@ -799,6 +1025,23 @@ function UpdateSatchelSelectedData(itemId, folderId)
     UpdateSatchelSelectedEffects(effectIds)
 end
 
+function EmptyCategorySatchelSelectedData(category)
+    local datastoreSelected = GetPersistedInt("RefSelectedData")
+
+    if (datastoreSelected == 0 or DatabindingIsEntryValid(datastoreSelected) ~= 1) then
+        print("[NativeSatchel] EmptyCategorySatchelSelectedData: Selected data wasn't ready in time!")
+        return
+    end
+
+    local name = category.label or ""
+    local description = category.description or ""
+
+    DatabindingWriteDataHashStringFromParent(datastoreSelected, "Name", 0)
+    DatabindingWriteStringFromParent(datastoreSelected, "NameAsString", name)
+    DatabindingWriteDataHashStringFromParent(datastoreSelected, "Description", 0)
+    DatabindingWriteStringFromParent(datastoreSelected, "DescriptionAsString", description)
+end
+
 function ClearSatchelSelectedData()
     local datastoreSelected = GetPersistedInt("RefSelectedData")
 
@@ -807,11 +1050,11 @@ function ClearSatchelSelectedData()
         return
     end
 
-    DatabindingWriteDataHashStringFromParent("Name", 0)
-    DatabindingWriteStringFromParent("NameAsString", "")
-    DatabindingWriteDataHashStringFromParent("Description", 0)
-    DatabindingWriteStringFromParent("DescriptionAsString", "")
-    DatabindingWriteStringFromParent("Tip", "")
+    DatabindingWriteDataHashStringFromParent(datastoreSelected, "Name", 0)
+    DatabindingWriteStringFromParent(datastoreSelected, "NameAsString", "")
+    DatabindingWriteDataHashStringFromParent(datastoreSelected, "Description", 0)
+    DatabindingWriteStringFromParent(datastoreSelected, "DescriptionAsString", "")
+    DatabindingWriteStringFromParent(datastoreSelected, "Tip", "")
 
     ClearSatchelSelectedEffects()
 end
@@ -971,7 +1214,6 @@ function ClearSatchelListItems()
         return
     end
 
-    Satchel._cacheListItems = {}
     SetPersistedInt("CurrentListCount", 0)
     DatabindingSetTemplatedUiItemListSize(datastore, 0)
 end
@@ -1001,7 +1243,7 @@ function PreloadSatchelListItems(folderId)
 
     local folder = Satchel.folders[folderId]
 
-    DatabindingWriteDataHashStringFromParent(datastoreSelected, "Folder", folder.label)
+    DatabindingWriteDataHashStringFromParent(datastoreSelected, "Folder", folder.title)
 
     local listIndex = 0
 
@@ -1027,7 +1269,6 @@ function NavigateSatchelListItems(folderId)
     end
 
     ClearSatchelSelectedData()
-
     UpdateSatchelIndexDescription("folder")
 end
 
@@ -1134,13 +1375,24 @@ function GetItemFromDatabase(item)
     end
 
     local result = {
-        name = nil,
-        description = nil,
-        txd = nil,
-        texture = nil,
-        effectIds = nil,
-        special = nil,
-        stars = nil,
+        label = "",
+        labelHash = 0,
+        description = "",
+        descriptionHash = 0,
+        txd = "",
+        texture = "",
+        category = nil,
+        folder = nil,
+        effectIds = {},
+        stars = 0,
+        special = false,
+        discardable = true,
+        breakable = false,
+        cookable = false,
+        consumable = false,
+        drinkable = false,
+        edible = false,
+        readable = false,
     }
 
     if (ItemdatabaseIsKeyValid(hash, 0) == 0) then
@@ -1149,8 +1401,10 @@ function GetItemFromDatabase(item)
 
     local uiData = ItemdatabaseGetUiData(hash)
     if (uiData) then
-        result.name = uiData.name
-        result.description = uiData.description
+        result.label = GetStringFromHashKey(uiData.label)
+        result.labelHash = uiData.label
+        result.description = GetStringFromHashKey(uiData.description)
+        result.descriptionHash = uiData.description
         result.txd = uiData.textureDict
         result.texture = uiData.textureId
     end
@@ -1160,13 +1414,65 @@ function GetItemFromDatabase(item)
         result.effectIds = effectIds
     end
 
-    local isOverpowered = ItemdatabaseDoesItemHaveTag(hash, joaat("CI_TAG_ITEM_OVERPOWERED"), joaat("TAG_ITEM_PROPERTY"))
-    local isLegendary = ItemdatabaseDoesItemHaveTag(hash, joaat("CI_TAG_ITEM_QUALITY_LEGENDARY"), joaat("TAG_ITEM_PROPERTY"))
+    local tagIds = ItemdatabaseGetTagIds(hash)
+    for _, value in pairs(tagIds) do
+        if (value == joaat("CI_TAG_ITEM_OVERPOWERED") or value == joaat("CI_TAG_ITEM_QUALITY_LEGENDARY")) then
+            result.special = true
+        end
 
-    if (isOverpowered == 1 or isLegendary == 1) then
-        result.special = true
-    else
-        result.special = false
+        if (value == joaat("CI_TAG_ITEM_CANNOT_DISCARD")) then
+            result.discardable = false
+        end
+
+        if (value == joaat("CI_TAG_ITEM_CAN_BREAKDOWN")) then
+            result.breakable = true
+        end
+
+        if (hash ~= joaat("PROVISION_ROTTEN_MEAT") and hash ~= joaat("CONSUMABLE_CORNEDBEEF_CAN")) then
+            if (value == joaat("CI_TAG_ITEM_MEAT_ANIMAL") or value == joaat("CI_TAG_ITEM_MEAT_FISH")) then
+                result.cookable = true
+            end
+        end
+
+        if (value == joaat("CI_TAG_ITEM_CONSUMABLE")) then
+            result.consumable = true
+        end
+
+        if (value == -273840653 or value == 238865292 or value == 999632878 or value == 1130235258 or value == 1177617310) then
+            result.drinkable = true
+        end
+
+        if (value == -1915958659 or value == -809056541 or value == 89124942 or value == 1451036371 or value == 1859991422 or value == 1891031775) then
+            result.edible = true
+        end
+
+        if (value == joaat("CI_TAG_ITEM_DOCUMENT")) then
+            result.readable = true
+        end
+
+        if (Satchel.enableAutoCategorization) then
+            for _, category in pairs(Satchel.categories) do
+                for _, tag in pairs(category.tags) do
+                    if (value == joaat(tag)) then
+                        result.category = category.id
+                    end
+                end
+            end
+
+            if (Satchel.enableAutoFolderAssignment) then
+                for _, folder in pairs(Satchel.folders) do
+                    for _, tag in pairs(folder.tags) do
+                        if (value == joaat(tag)) then
+                            result.folder = folder.id
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    if (not result.category and Satchel.enableAutoCategorization) then
+        print("[NativeSatchel] GetItemFromDatabase: Could not auto-assign category for item " .. item)
     end
 
     local isQualityLegendary = InventoryIsInventoryItemFlagEnabled(hash, 1 << 2)
@@ -1234,8 +1540,8 @@ function AddCategory(index, category)
     DatabindingAddDataBool(data, "CurrentCategory", index == 0)
 
     -- Let me know if you find out where this is shown
-    DatabindingAddDataString(data, "name", GetStringFromHashKey(label))
-    DatabindingAddDataHash(data, "hLabel", label)
+    DatabindingAddDataString(data, "name", label)
+    DatabindingAddDataHash(data, "hLabel", joaat(label))
 
     DatabindingSetTemplatedUiItemHashAlias(datastoreMain, index, joaat("category_item"))
 
@@ -1261,20 +1567,26 @@ function AddMenuItem(index, item)
     local maxCount = item.maxCount or nil
 
     -- The following could be set through catalog
-    local name = item.name or joaat(id)
-    local txd = item.txd or joaat("inventory_items")
-    local texture = item.texture or joaat("_placeholder")
-    local special = item.special or false
-    local stars = item.stars or 0
+    local label = nil
+    local txd = nil
+    local texture = nil
+    local special = nil
+    local stars = nil
 
     if (item.catalog) then
-        local itemDatabase = GetItemFromDatabase(item.catalog)
+        local database = GetItemFromDatabase(item.catalog)
 
-        name = itemDatabase.name
-        txd = itemDatabase.txd
-        texture = itemDatabase.texture
-        special = itemDatabase.special
-        stars = itemDatabase.stars
+        label = database.label or id
+        txd = database.txd or "inventory_items"
+        texture = database.texture or "_placeholder"
+        special = database.special or false
+        stars = database.stars or 0
+    else
+        label = item.label or id
+        txd = item.txd or "inventory_items"
+        texture = item.texture or "_placeholder"
+        special = item.special or false
+        stars = item.stars or 0
     end
 
     EnsureTxdIsLoaded(txd)
@@ -1282,7 +1594,7 @@ function AddMenuItem(index, item)
     local data = DatabindingGetDataContainerFromChildIndex(datastoreMain, index)
 
     DatabindingAddDataHash(data, "item", hash)
-    
+
     DatabindingAddDataBool(data, "focusable", true)
     DatabindingAddDataHash(data, "color", joaat("COLOR_PURE_WHITE")) -- Colorizes the ENTIRE item (incl count and bg)
 
@@ -1321,8 +1633,6 @@ function AddMenuFolder(index, folder)
 
     local id = folder.id
     local hash = joaat(id)
-
-    local name = folder.label
     local txd = folder.txd
     local texture = folder.texture
 
@@ -1331,7 +1641,7 @@ function AddMenuFolder(index, folder)
     local data = DatabindingGetDataContainerFromChildIndex(datastoreMain, index)
 
     DatabindingAddDataHash(data, "item", hash)
-    
+
     DatabindingAddDataBool(data, "focusable", true)
     DatabindingAddDataHash(data, "color", joaat("COLOR_PURE_WHITE")) -- Colorizes the ENTIRE item (incl count and bg)
 
@@ -1368,12 +1678,14 @@ function AddListItem(index, item)
     local isEquipped = false
 
     -- The following could be set through catalog
-    local name = item.name or joaat(id)
+    local label = nil
 
     if (item.catalog) then
-        local itemDatabase = GetItemFromDatabase(item.catalog)
+        local database = GetItemFromDatabase(item.catalog)
 
-        name = itemDatabase.name
+        label = database.label or id
+    else
+        label = item.label or id
     end
 
     local data = DatabindingGetDataContainerFromChildIndex(datastoreMain, index)
@@ -1381,8 +1693,8 @@ function AddListItem(index, item)
     DatabindingAddDataHash(data, "item", hash)
     
     DatabindingAddDataBool(data, "focusable", true)
-    DatabindingAddDataHash(data, "label", name)
-    DatabindingAddDataString(data, "label_as_string", GetStringFromHashKey(name))
+    DatabindingAddDataHash(data, "label", 0)
+    DatabindingAddDataString(data, "label_as_string", label)
     DatabindingAddDataHash(data, "color", joaat("COLOR_PURE_WHITE")) -- Colorizes the ENTIRE item (incl count and bg)
 
     DatabindingAddDataInt(data, "count", count) -- Adds a quantity number to the item

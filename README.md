@@ -53,7 +53,26 @@ local item = {
     -- Todo: Simplify by using { type = value }
     effects = { joaat("EFFECT_HEALTH_CORE_MINUS_2") },
 
-    -- TODO: Properties for prompts shown
+    -- Optional. Whether the item can be discarded
+    discardable = false,
+
+    -- Optional. Whether the item can be broken down
+    breakable = false,
+
+    -- Optional. Whether the item can be cooked
+    cookable = false,
+
+    -- Optional. Whether the item can be consumed/used
+    consumable = false,
+
+    -- Optional. Whether the item can be drunk
+    drinkable = false,
+
+    -- Optional. Whether the item can be eaten
+    edible = false,
+
+    -- Optional. Whether the item can be read
+    readable = false,
 }
 ```
 

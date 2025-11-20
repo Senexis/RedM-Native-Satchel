@@ -1,6 +1,29 @@
 -- Ref: https://github.com/aaron1a12/wild/
 -- Todo: Proper attribution, rewrite slightly to make more modern sense
 
+function ItemdatabaseGetTagIds(item, filter)
+    local structData = DataView.ArrayBuffer(256)
+    local structCount = DataView.ArrayBuffer(8)
+
+    Citizen.InvokeNative(0x5A11D6EEA17165B0, item, structData:Buffer(), structCount:Buffer(), 20) -- _ITEMDATABASE_FILLOUT_TAG_DATA
+
+    local tagIds = {}
+    local count = structCount:GetInt32(0)
+
+    for i = 0, count - 1 do
+        local tagId = structData:GetInt32(16 * i + 8)
+        local tagType = structData:GetInt32(16 * i + 16)
+
+        if (not filter or filter == 0) then
+            table.insert(tagIds, tagId)
+        elseif (tagType and tagType == filter) then
+            table.insert(tagIds, tagId)
+        end
+    end
+
+    return tagIds
+end
+
 function ItemdatabaseGetEffectIds(item)
     local struct = DataView.ArrayBuffer(256)
     struct:SetInt32(8, 20)
@@ -11,7 +34,8 @@ function ItemdatabaseGetEffectIds(item)
     local count = struct:GetInt32(0)
 
     for i = 0, count - 1 do
-        table.insert(effectIds, struct:GetInt32(16 + 8 * i))
+        local effectId = struct:GetInt32(16 + 8 * i)
+        table.insert(effectIds, effectId)
     end
 
     return effectIds
@@ -25,10 +49,10 @@ function ItemdatabaseGetUiData(item)
     Citizen.InvokeNative(0xB86F7CC2DC67AC60, item, struct:Buffer()) -- _ITEMDATABASE_FILLOUT_UI_DATA
 
     local data = {
-        name = struct:GetInt32(0),
+        label = struct:GetInt32(0),
         description = struct:GetInt32(8),
-        textureId = 0,
-        textureDict = ""
+        textureId = nil,
+        textureDict = nil
     }
 
     local i = 0
@@ -60,7 +84,7 @@ end
 
 function IsStringNullOrEmpty(pStr)
     local ret = 0
-    if pcall(function ()
+    if pcall(function()
         Citizen.InvokeNative(0x2CF12F9ACF18F048, pStr, Citizen.ResultAsInteger())
     end) then
         ret = 0
@@ -68,7 +92,11 @@ function IsStringNullOrEmpty(pStr)
         ret = 1
     end
 
-    if ret == 1 then return true else return false end
+    if ret == 1 then
+        return true
+    else
+        return false
+    end
 end
 
 function ReadString(pStr)
