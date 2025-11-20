@@ -13,15 +13,21 @@ Unlike traditional web-based or custom UI implementations, Native Satchel levera
 
 ## Feature Requests
 
-If you're missing functionality or have ideas for new features that would improve Native Satchel, please don't hesitate to open an issue on the [GitHub repository](https://github.com/Senexis/RedM-Native-Satchel/issues). Feature requests from the community are always welcome, and feedback about use cases and requirements helps shape the direction of this project!
+If you're missing functionality or have ideas for new features that would improve Native Satchel, please don't hesitate to [open an issue](https://github.com/Senexis/RedM-Native-Satchel/issues). Feature requests from the community are always welcome, and feedback about use cases and requirements helps shape the direction of this project!
 
 ## License & Monetization
 
-This resource is provided free of charge and represents countless hours of development work. Like most RedM resources, it builds upon the game's existing functionality. While the RedM community is fantastic and there's certainly a space for paid resources, there's unfortunately a trend of knowledge being gatekept behind paywalls, making important development knowledge harder to access for the community. You're absolutely welcome to use Native Satchel as a base for your own projects, but please pay close attention to the license terms.
+This resource is provided free of charge and represents countless hours of development work. Like most RedM resources, it builds upon the game's existing functionality rather than being created from scratch - the underlying native functionality belongs to Rockstar Games.
 
-This is simply a request, not a threat or anything of that nature - since the code is open source and properly licensed, you are free to do with it what you want as long as it's permitted by the license. As stated in the GNU GPL v3 license, if you distribute modified versions of this work, you must share your changes under the same open source license. This ensures that improvements benefit the entire community rather than being locked behind paywalls. The goal is to foster collaboration and shared knowledge, not to enable profiteering from freely contributed work. Ultimately, everyone should strive to make the whole of RedM a better place for all players and developers.
+While the RedM community is fantastic and there's certainly a space for paid resources, there's unfortunately a trend of knowledge being gatekept behind paywalls, making important development knowledge harder to access for the community.
 
-Native Satchel is open-sourced software licensed under the [GNU GPL v3](https://github.com/Senexis/RedM-Native-Satchel/blob/main/LICENSE.md).
+**For Server Owners:** You're absolutely welcome to use Native Satchel on your servers without any restrictions beyond the license terms.
+
+**For Resource Developers:** If you want to use this as a base for your own projects or distribute modified versions, please pay close attention to the license requirements. As stated in the GNU GPL v3 license, any distributed modifications must be shared under the same open source license. This ensures that improvements benefit the entire community rather than being locked behind paywalls.
+
+The goal is to foster collaboration and shared knowledge, not to enable profiteering from freely contributed work. This is simply a request for license compliance - since the code is open source and properly licensed, you are free to do with it what the license permits. Ultimately, everyone should strive to make the whole of RedM a better place for all players and developers.
+
+Native Satchel is licensed under the [GNU GPL v3](https://github.com/Senexis/RedM-Native-Satchel/blob/main/LICENSE.md).
 
 ## Types
 
