@@ -9,9 +9,19 @@ Native Satchel is a RedM resource that provides a fully native implementation of
 
 Unlike traditional web-based or custom UI implementations, Native Satchel leverages the game's built-in interface systems to provide seamless integration with the player's existing UI experience.
 
+📖 **[Jump to Documentation](#types)**
+
 ## Feature Requests
 
 If you're missing functionality or have ideas for new features that would improve Native Satchel, please don't hesitate to open an issue on the [GitHub repository](https://github.com/Senexis/RedM-Native-Satchel/issues). Feature requests from the community are always welcome, and feedback about use cases and requirements helps shape the direction of this project!
+
+## License & Monetization
+
+This resource is provided free of charge and represents countless hours of development work. While the RedM community is fantastic, there's unfortunately a trend of price gouging for resources that should be freely available. You're absolutely welcome to use Native Satchel as a base for your own projects, but please pay close attention to the license terms.
+
+This is simply a request, not a threat or anything of that nature - since the code is open source and properly licensed, you are free to do with it what you want as long as it's permitted by the license. As stated in the GNU GPL v3 license, if you distribute modified versions of this work, you must share your changes under the same open source license. This ensures that improvements benefit the entire community rather than being locked behind paywalls. The goal is to foster collaboration and shared knowledge, not to enable profiteering from freely contributed work. Ultimately, everyone should strive to make the whole of RedM a better place for all players and developers.
+
+Native Satchel is open-sourced software licensed under the [GNU GPL v3](https://github.com/Senexis/RedM-Native-Satchel/blob/main/LICENSE.md).
 
 ## Types
 
@@ -241,7 +251,3 @@ This project builds upon the hard work and research of many talented individuals
 Thank you for considering contributing to Native Satchel! Please note that this project is released with a [Contributor Covenant Code of Conduct](https://github.com/Senexis/RedM-Native-Satchel/blob/main/CODE_OF_CONDUCT.md). By participating in any way in this project, you agree to abide by its terms.
 
 Before contributing, please take a moment to read the [Contribution Guide](https://github.com/Senexis/RedM-Native-Satchel/blob/main/CONTRIBUTING.md) to understand the development process and how to contribute.
-
-## License
-
-Native Satchel is open-sourced software licensed under the [GNU GPL v3](https://github.com/Senexis/RedM-Native-Satchel/blob/main/LICENSE.md).
