@@ -17,7 +17,7 @@ If you're missing functionality or have ideas for new features that would improv
 
 ## License & Monetization
 
-This resource is provided free of charge and represents countless hours of development work. While the RedM community is fantastic, there's unfortunately a trend of price gouging for resources that should be freely available. You're absolutely welcome to use Native Satchel as a base for your own projects, but please pay close attention to the license terms.
+This resource is provided free of charge and represents countless hours of development work. Like most RedM resources, it builds upon the game's existing functionality. While the RedM community is fantastic and there's certainly a space for paid resources, there's unfortunately a trend of knowledge being gatekept behind paywalls, making important development knowledge harder to access for the community. You're absolutely welcome to use Native Satchel as a base for your own projects, but please pay close attention to the license terms.
 
 This is simply a request, not a threat or anything of that nature - since the code is open source and properly licensed, you are free to do with it what you want as long as it's permitted by the license. As stated in the GNU GPL v3 license, if you distribute modified versions of this work, you must share your changes under the same open source license. This ensures that improvements benefit the entire community rather than being locked behind paywalls. The goal is to foster collaboration and shared knowledge, not to enable profiteering from freely contributed work. Ultimately, everyone should strive to make the whole of RedM a better place for all players and developers.
 
