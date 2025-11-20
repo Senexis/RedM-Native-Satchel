@@ -31,10 +31,6 @@ Satchel.allowDropping = true
 -- Enable/disable prompts for discarding items
 Satchel.allowDiscarding = true
 
--- Whether to ignore the item's discardable flag and always allow discarding
--- Useful in a shop, for example, if you want to allow selling any item
-Satchel.alwaysAllowDiscarding = false
-
 -- "Discard" by default means removing all items, but it can be anything you want
 -- Useful if you want to make a selling, giving away, etc. system
 Satchel.discardingLabel = GetStringFromHashKey("SATCHEL_PROMPT_DISCARD_ALL")
@@ -880,7 +876,7 @@ function UpdateSatchelPrompts(config)
     -- Discard prompt
     local discardVisible = false
 
-    if (Satchel.alwaysAllowDiscarding or config.discardable) then
+    if (config.discardable) then
         discardVisible = Satchel.allowDiscarding or false
     end
 
