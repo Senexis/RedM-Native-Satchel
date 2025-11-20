@@ -26,6 +26,9 @@ local item = {
     -- Optional. Groups the item in a folder, see the folder type
     folder = "big_game",
 
+    -- Optional. Whether the item can be discarded
+    discardable = false,
+
     -- Optional. When set to a string, we'll use catalog_sp and catalog_mp to fill UI data for you
     catalog = "CONSUMABLE_BIG_GAME_MEAT_COOKED",
 
@@ -53,8 +56,8 @@ local item = {
     -- Todo: Simplify by using { type = value }
     effects = { joaat("EFFECT_HEALTH_CORE_MINUS_2") },
 
-    -- Optional. Whether the item can be discarded
-    discardable = false,
+    -- Optional. Whether the item can be dropped
+    droppable = false,
 
     -- Optional. Whether the item can be broken down
     breakable = false,
@@ -164,6 +167,10 @@ end)
 AddEventHandler("native_satchel:satchel_closed", function()
     print("This event is fired when the player closes the satchel")
 end)
+
+AddEventHandler("native_satchel:category_changed", function(categoryId)
+    print("This event is fired when the player changes the category, it has ID", categoryId)
+end)
 ```
 
 ### Item Events
@@ -177,12 +184,12 @@ AddEventHandler("native_satchel:item_broken", function(itemId)
     print("This event is fired when the player breaks down an item, it has ID", itemId)
 end)
 
-AddEventHandler("native_satchel:item_discarded", function(itemId)
-    print("This event is fired when the player discards an item, it has ID", itemId)
+AddEventHandler("native_satchel:item_dropped", function(itemId)
+    print("This event is fired when the player drops an item, it has ID", itemId)
 end)
 
-AddEventHandler("native_satchel:item_discarded_all", function(itemId)
-    print("This event is fired when the player discards all of an item, it has ID", itemId)
+AddEventHandler("native_satchel:item_discarded", function(itemId)
+    print("This event is fired when the player discards an item, it has ID", itemId)
 end)
 
 AddEventHandler("native_satchel:item_sent_all", function(itemId)

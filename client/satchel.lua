@@ -1388,11 +1388,11 @@ function EventItemSelected(index, parameter, datastore)
         end
     elseif (parameter == joaat("DROP_ITEM")) then
         if (itemId) then
-            TriggerEvent(Satchel.eventHandlerKey .. ":item_discarded", itemId)
+            TriggerEvent(Satchel.eventHandlerKey .. ":item_dropped", itemId)
         end
     elseif (parameter == joaat("DISCARD_ALL")) then
         if (itemId) then
-            TriggerEvent(Satchel.eventHandlerKey .. ":item_discarded_all", itemId)
+            TriggerEvent(Satchel.eventHandlerKey .. ":item_discarded", itemId)
         end
     elseif (parameter == joaat("SEND_ALL")) then
         if (itemId) then
