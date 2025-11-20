@@ -3,8 +3,15 @@
 > [!IMPORTANT]
 > This documentation, much like the resource, is currently in an alpha state and is not final.
 
+## Overview
+
+Native Satchel is a RedM resource that provides a fully native implementation of the satchel UI for Red Dead Redemption 2 multiplayer servers. This resource allows developers to create custom inventory systems using the game's original satchel interface, complete with categories, folders, item management, and all the visual elements players expect from the authentic Red Dead experience.
+
+Unlike traditional web-based or custom UI implementations, Native Satchel leverages the game's built-in interface systems to provide seamless integration with the player's existing UI experience.
+
 ## Types
-TODO: Write better documentation
+
+The Native Satchel system is built around three main data types that define how items, categories, and folders are structured and displayed in the satchel interface. Understanding these types is essential for implementing a custom inventory system.
 
 ### Items
 
@@ -33,11 +40,11 @@ local item = {
     catalog = "CONSUMABLE_BIG_GAME_MEAT_COOKED",
 
     -- Optional. Sets the display label for the item
-    -- Todo: Remove joaat requirement (as string is possible)
+    -- TODO: Remove joaat requirement (as string is possible)
     name = joaat("POSTER_PL_ARTHUR_NAME"),
 
     -- Optional. Sets the description label for the item
-    -- Todo: Remove joaat requirement (as string is possible)
+    -- TODO: Remove joaat requirement (as string is possible)
     description = 0xC51209D8,
 
     -- Optional. Whether to mark the item as special, which gives the texture a yellow hue
@@ -53,7 +60,7 @@ local item = {
     texture = joaat("toast_mp_standalone_sp"),
 
     -- Optional. A list of effect IDs to show as icons in the description of the item
-    -- Todo: Simplify by using { type = value }
+    -- TODO: Simplify by using { type = value }
     effects = { joaat("EFFECT_HEALTH_CORE_MINUS_2") },
 
     -- Optional. Whether the item can be dropped
@@ -123,7 +130,8 @@ local folder = {
 ```
 
 ## Triggers
-TODO: Write better documentation
+
+Triggers are client-side events that allow you to control the satchel's behavior and manage items programmatically. These events provide the core functionality for opening/closing the satchel, synchronizing data, and performing item operations.
 
 ### General Triggers
 
@@ -155,7 +163,8 @@ TriggerEvent("native_satchel:remove_item", itemId)
 ```
 
 ## Events
-TODO: Write better documentation
+
+Events are fired automatically by the Native Satchel system when specific actions occur. You can listen to these events to implement custom logic, such as saving inventory changes, logging player actions, or triggering server-side operations when players interact with items.
 
 ### General Events
 
@@ -205,7 +214,7 @@ end)
 
 ```lua
 AddEventHandler("native_satchel:folder_opened", function(folderId)
-    print("This event is fired when the player opens folder, it has ID", folderId)
+    print("This event is fired when the player opens a folder, it has ID", folderId)
 end)
 
 AddEventHandler("native_satchel:folder_focused", function(folderId)
@@ -214,7 +223,8 @@ end)
 ```
 
 ## Attribution
-TODO: Write proper attribution
+
+This project builds upon the hard work and research of many talented individuals in the RedM community. We gratefully acknowledge their contributions that made this native satchel implementation possible:
 
 - [aaron1a12's Satchel Research](https://github.com/aaron1a12/wild/blob/main/wild-satchel/client/cl_satchel_native_research.lua)
 - [alloc8or's Native DB](https://alloc8or.re/rdr3/nativedb/)
@@ -223,9 +233,11 @@ TODO: Write proper attribution
 - [MagnarRDC's Support](https://x.com/magnarrdc)
 
 ## Contributing
+
 Thank you for considering contributing to Native Satchel! Please note that this project is released with a [Contributor Covenant Code of Conduct](https://github.com/Senexis/RedM-Native-Satchel/blob/main/CODE_OF_CONDUCT.md). By participating in any way in this project, you agree to abide by its terms.
 
 Before contributing, please take a moment to read the [Contribution Guide](https://github.com/Senexis/RedM-Native-Satchel/blob/main/CONTRIBUTING.md) to understand the development process and how to contribute.
 
 ## License
+
 Native Satchel is open-sourced software licensed under the [GNU GPL v3](https://github.com/Senexis/RedM-Native-Satchel/blob/main/LICENSE.md).
