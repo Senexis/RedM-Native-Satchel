@@ -12,6 +12,9 @@ Satchel = {}
 -- Change this in case you have another resource using the "native_satch" prefix for events
 Satchel.eventHandlerKey = "native_satchel"
 
+-- Enable/disable prompts for opening folders
+Satchel.allowOpeningFolders = true
+
 -- Enable/disable prompts for various consume actions
 Satchel.allowDrinking = true
 Satchel.allowEating = true
@@ -22,8 +25,19 @@ Satchel.allowUsing = true
 Satchel.allowBreakdown = true
 Satchel.allowCooking = true
 
+-- Enable/disable prompts for dropping items
+Satchel.allowDropping = true
+
 -- Enable/disable prompts for discarding items
 Satchel.allowDiscarding = true
+
+-- Whether to ignore the item's discardable flag and always allow discarding
+-- Useful in a shop, for example, if you want to allow selling any item
+Satchel.alwaysAllowDiscarding = false
+
+-- "Discard" by default means removing all items, but it can be anything you want
+-- Useful if you want to make a selling, giving away, etc. system
+Satchel.discardingLabel = GetStringFromHashKey("SATCHEL_PROMPT_DISCARD_ALL")
 
 -- The game assumes some items cannot be discarded based on their tags
 -- Set this to true to ignore those tags and allow discarding any item
@@ -77,6 +91,7 @@ Satchel.items = {
         effects = { "EFFECT_HEALTH_CORE_GOLD_1D" },
 
         -- Prompt flags
+        droppable = false,
         discardable = false,
         breakable = false,
         cookable = false,
@@ -482,7 +497,7 @@ function InitializeSatchelMainData()
         DatabindingAddDataBool(datastore, "PromptDropVisibile", false)
 
         -- Discard all prompt
-        DatabindingAddDataString(datastore, "PromptDiscardAllLabel", GetStringFromHashKey("SATCHEL_PROMPT_DISCARD_ALL"))
+        DatabindingAddDataString(datastore, "PromptDiscardAllLabel", Satchel.discardingLabel)
         DatabindingAddDataBool(datastore, "PromptDiscardAllEnabled", false)
         DatabindingAddDataBool(datastore, "PromptDiscardAllVisible", false)
 
@@ -793,7 +808,7 @@ function NavigateSatchelMenuItems()
     TriggerEvent(Satchel.eventHandlerKey .. ":category_changed", category.id)
 end
 
-function UpdateSatchelPrompts(item)
+function UpdateSatchelPrompts(config)
     local datastoreMain = GetPersistedInt("RefMainData")
 
     if (datastoreMain == 0 or DatabindingIsEntryValid(datastoreMain) ~= 1) then
@@ -803,59 +818,70 @@ function UpdateSatchelPrompts(item)
 
     -- Regular use prompt
     -- Note: For UI events to work, both this AND the hold labels must be set
-    local selectLabel = joaat("SATCHEL_PROMPT_USE")
-    local selectEnabled = true
-    local selectVisible = true
+    local selectLabel, selectEnabled, selectVisible = nil, nil, nil
 
-    if (item.drinkable) then
+    if (config.folder) then
+        selectLabel = joaat("SATCHEL_PROMPT_USE")
+        selectEnabled = Satchel.allowOpeningFolders or false
+        selectVisible = Satchel.allowOpeningFolders or false
+    elseif (config.drinkable) then
         selectLabel = joaat("SATCHEL_PROMPT_DRINK")
         selectEnabled = Satchel.allowDrinking or false
-    elseif (item.edible) then
+        selectVisible = Satchel.allowDrinking or false
+    elseif (config.edible) then
         selectLabel = joaat("SATCHEL_PROMPT_EAT")
         selectEnabled = Satchel.allowEating or false
-    elseif (item.readable) then
+        selectVisible = Satchel.allowEating or false
+    elseif (config.readable) then
         selectLabel = joaat("READ")
         selectEnabled = Satchel.allowReading or false
-    elseif (item.usable) then
+        selectVisible = Satchel.allowReading or false
+    elseif (config.usable) then
         selectLabel = joaat("SATCHEL_PROMPT_USE")
         selectEnabled = Satchel.allowUsing or false
+        selectVisible = Satchel.allowUsing or false
     else
+        selectLabel = joaat("SATCHEL_PROMPT_USE")
         selectEnabled = false
+        selectVisible = false
     end
 
     -- Hold use prompt
     -- Note: For UI events to work, both this AND the select labels must be set
-    local holdSelectLabel = joaat("SATCHEL_PROMPT_BREAKDOWN")
-    local holdSelectEnabled = false
-    local holdSelectVisible = false
+    local holdSelectLabel, holdSelectEnabled, holdSelectVisible = nil, nil, nil
 
-    if (item.breakable) then
+    if (config.breakable) then
         selectEnabled = false
         selectVisible = false
 
         holdSelectLabel = joaat("SATCHEL_PROMPT_BREAKDOWN")
         holdSelectEnabled = Satchel.allowBreakdown or false
-        holdSelectVisible = true
-    elseif (item.cookable) then
+        holdSelectVisible = Satchel.allowBreakdown or false
+    elseif (config.cookable) then
         selectEnabled = false
         selectVisible = false
 
         holdSelectLabel = joaat("SATCHEL_PROMPT_COOK")
         holdSelectEnabled = Satchel.allowCooking or false
-        holdSelectVisible = true
+        holdSelectVisible = Satchel.allowCooking or false
+    else
+        holdSelectLabel = joaat("SATCHEL_PROMPT_BREAKDOWN")
+        holdSelectEnabled = false
+        holdSelectVisible = false
+    end
+
+    -- Drop prompt
+    local dropVisible = false
+
+    if (config.droppable) then
+        dropVisible = Satchel.allowDropping or false
     end
 
     -- Discard prompt
-    local dropVisible = item.discardable or false
-    local dropAllVisible = false
+    local discardVisible = false
 
-    if (item.count and item.count > 1) then
-        dropAllVisible = true
-    end
-
-    if (not Satchel.allowDiscarding) then
-        dropVisible = false
-        dropAllVisible = false
+    if (Satchel.alwaysAllowDiscarding or config.discardable) then
+        discardVisible = Satchel.allowDiscarding or false
     end
 
     -- Regular use prompt
@@ -872,9 +898,9 @@ function UpdateSatchelPrompts(item)
     DatabindingWriteDataBoolFromParent(datastoreMain, "PromptDropVisibile", dropVisible)
 
     -- Discard all prompt
-    DatabindingWriteDataStringFromParent(datastoreMain, "PromptDiscardAllLabel", GetStringFromHashKey("SATCHEL_PROMPT_DISCARD_ALL"))
-    DatabindingWriteDataBoolFromParent(datastoreMain, "PromptDiscardAllEnabled", dropAllVisible)
-    DatabindingWriteDataBoolFromParent(datastoreMain, "PromptDiscardAllVisible", dropAllVisible)
+    DatabindingWriteDataStringFromParent(datastoreMain, "PromptDiscardAllLabel", Satchel.discardingLabel)
+    DatabindingWriteDataBoolFromParent(datastoreMain, "PromptDiscardAllEnabled", discardVisible)
+    DatabindingWriteDataBoolFromParent(datastoreMain, "PromptDiscardAllVisible", discardVisible)
 
     -- Send all prompt
     DatabindingWriteDataHashStringFromParent(datastoreMain, "PromptSendLabel", joaat("SATCHEL_PROMPT_USE"))
@@ -930,6 +956,7 @@ function UpdateSatchelSelectedData(itemId, folderId)
     local label = nil
     local description = nil
     local effectIds = {}
+    local droppable = nil
     local discardable = nil
     local breakable = nil
     local cookable = nil
@@ -949,6 +976,7 @@ function UpdateSatchelSelectedData(itemId, folderId)
         id = item.id
         count = item.count
         maxCount = item.maxCount
+        discardable = item.discardable or false
 
         if (item.catalog) then
             local database = GetItemFromDatabase(item.catalog)
@@ -956,7 +984,7 @@ function UpdateSatchelSelectedData(itemId, folderId)
             label = database.label or id
             description = database.description or ""
             effectIds = database.effectIds or {}
-            discardable = database.discardable or false
+            droppable = database.droppable or false
             breakable = database.breakable or false
             cookable = database.cookable or false
             usable = database.usable or false
@@ -967,7 +995,7 @@ function UpdateSatchelSelectedData(itemId, folderId)
             label = item.label or id
             description = item.description or ""
             effectIds = item.effects or {}
-            discardable = item.discardable or false
+            droppable = item.droppable or false
             breakable = item.breakable or false
             cookable = item.cookable or false
             usable = item.usable or false
@@ -978,6 +1006,7 @@ function UpdateSatchelSelectedData(itemId, folderId)
 
         UpdateSatchelPrompts({
             count = count,
+            droppable = droppable,
             discardable = discardable,
             breakable = breakable,
             cookable = cookable,
@@ -998,7 +1027,7 @@ function UpdateSatchelSelectedData(itemId, folderId)
         label = folder.label or ""
         description = folder.description or ""
 
-        UpdateSatchelPrompts({ usable = true })
+        UpdateSatchelPrompts({ folder = true })
     end
 
     if (label) then
@@ -1393,7 +1422,7 @@ function GetItemFromDatabase(item)
         effectIds = {},
         stars = 0,
         special = false,
-        discardable = true,
+        droppable = true,
         breakable = false,
         cookable = false,
         usable = false,
@@ -1428,7 +1457,7 @@ function GetItemFromDatabase(item)
         end
 
         if (not Satchel.ignoreCannotDiscardTag and value == joaat("CI_TAG_ITEM_CANNOT_DISCARD")) then
-            result.discardable = false
+            result.droppable = false
         end
 
         if (value == joaat("CI_TAG_ITEM_CAN_BREAKDOWN")) then
