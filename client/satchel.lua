@@ -25,6 +25,10 @@ Satchel.allowCooking = true
 -- Enable/disable prompts for discarding items
 Satchel.allowDiscarding = true
 
+-- The game assumes some items cannot be discarded based on their tags
+-- Set this to true to ignore those tags and allow discarding any item
+Satchel.ignoreCannotDiscardTag = false
+
 -- When an item reaches its max count, show the count in red color
 -- This doesn't affect the tip text, which will always be marked red
 Satchel.enableRedCountOnMax = false
@@ -1420,7 +1424,7 @@ function GetItemFromDatabase(item)
             result.special = true
         end
 
-        if (value == joaat("CI_TAG_ITEM_CANNOT_DISCARD")) then
+        if (not Satchel.ignoreCannotDiscardTag and value == joaat("CI_TAG_ITEM_CANNOT_DISCARD")) then
             result.discardable = false
         end
 
