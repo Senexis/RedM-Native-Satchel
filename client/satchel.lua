@@ -279,7 +279,7 @@ function InitializePersistence()
 
     if (datastore == 0 or DatabindingIsEntryValid(datastore) ~= 1) then
         datastore = DatabindingAddDataContainerFromPath("", "NativeSatchel")
-        
+
         -- For ints, the default will be 0, but we like explicit
 
         DatabindingAddDataInt(datastore, "CurrentCategoryIndex", 0)
@@ -304,7 +304,7 @@ function GetPersistedInt(key)
     end
 
     local datastore = DatabindingGetDataContainerFromPath("NativeSatchel")
-    
+
     if (datastore == 0 or DatabindingIsEntryValid(datastore) ~= 1) then
         InitializePersistence()
     end
@@ -315,7 +315,7 @@ end
 
 function SetPersistedInt(key, value)
     local datastore = DatabindingGetDataContainerFromPath("NativeSatchel")
-    
+
     if (datastore == 0 or DatabindingIsEntryValid(datastore) ~= 1) then
         InitializePersistence()
     end
@@ -509,31 +509,31 @@ function InitializeSatchelSelectedData()
 
         -- Hash for category label
         DatabindingAddDataHash(datastore, "Category", 0)
-        
+
         -- The current selected category
         DatabindingAddDataInt(datastore, "CategoryIndex", 0)
-        
+
         -- Amount of categories
         DatabindingAddDataInt(datastore, "CategoryCount", 0)
-        
+
         -- The category the menu will open to, used when navigating back from folders
         DatabindingAddDataInt(datastore, "DefaultCategoryIndex", 0)
 
         -- Hash for selected label
         DatabindingAddDataHash(datastore, "Name", 0)
-        
+
         -- String for selected label
         DatabindingAddDataString(datastore, "NameAsString", "")
-        
+
         -- Hash for description
         DatabindingAddDataHash(datastore, "Description", 0)
-        
+
         -- String for description
         DatabindingAddDataString(datastore, "DescriptionAsString", "")
-        
+
         -- Hash for price label (left)
         DatabindingAddDataString(datastore, "PriceLabel", "")
-        
+
         -- String for price amount (right)
         DatabindingAddDataString(datastore, "Price", "")
 
@@ -619,7 +619,7 @@ function ClearSatchelCategories()
         return
     end
 
-    Satchel._cacheCategoryItems = {}    
+    Satchel._cacheCategoryItems = {}
     SetPersistedInt("CurrentCategoryCount", 0)
     DatabindingSetTemplatedUiItemListSize(datastore, 0)
 end
@@ -646,7 +646,7 @@ function ReloadSatchelCategories()
 
     for _, category in ipairs(Satchel.categories) do
         local added = AddCategory(categoryIndex, category)
-        
+
         if (added and added ~= 0) then
             table.insert(Satchel._cacheCategoryItems, added)
             categoryIndex = categoryIndex + 1
@@ -755,9 +755,11 @@ function NavigateSatchelMenuItems()
             end
 
             table.insert(folderItems[item.folder], item)
+        elseif (not Satchel.enableFolderItemsInRecent and category.recent and item.folder) then
+            -- Skip items in folders for recent category
         elseif ((category.recent and filteredIndex < 48) or (item.category == category.id)) then
             local added = AddMenuItem(filteredIndex, item)
-            
+
             if (added and added ~= 0) then
                 table.insert(Satchel._cacheMenuItems, added)
                 filteredIndex = filteredIndex + 1
@@ -771,7 +773,7 @@ function NavigateSatchelMenuItems()
 
         if (folder and (folder.category == category.id)) then
             local added = AddMenuFolder(filteredIndex, folder)
-            
+
             if (added and added ~= 0) then
                 table.insert(Satchel._cacheMenuItems, added)
                 filteredIndex = filteredIndex + 1
@@ -884,7 +886,7 @@ function UpdateSatchelIndexDescription(type)
     end
 
     local total = 0
-    
+
     if (type == "item") then
         total = GetPersistedInt("CurrentItemCount")
     else
@@ -1254,7 +1256,7 @@ function PreloadSatchelListItems(folderId)
     for _, item in ipairs(Satchel.items) do
         if (item.folder and item.folder == folder.id) then
             local added = AddListItem(listIndex, item)
-            
+
             if (added and added ~= 0) then
                 table.insert(Satchel._cacheMenuItems, added)
                 listIndex = listIndex + 1
@@ -1604,12 +1606,12 @@ function AddMenuItem(index, item)
 
     DatabindingAddDataHash(data, "ItemTXD", txd)
     DatabindingAddDataHash(data, "ItemTexture", texture)
-    
+
     DatabindingAddDataInt(data, "count", count) -- Adds a quantity number to the item
-    
+
     -- Makes the count red
     if (maxCount and count >= maxCount) then
-        DatabindingAddDataBool(data, "maxCount", Satchel.enableRedCountOnMax or false) 
+        DatabindingAddDataBool(data, "maxCount", Satchel.enableRedCountOnMax or false)
     else
         DatabindingAddDataBool(data, "maxCount", false)
     end
@@ -1695,7 +1697,7 @@ function AddListItem(index, item)
     local data = DatabindingGetDataContainerFromChildIndex(datastoreMain, index)
 
     DatabindingAddDataHash(data, "item", hash)
-    
+
     DatabindingAddDataBool(data, "focusable", true)
     DatabindingAddDataHash(data, "label", 0)
     DatabindingAddDataString(data, "label_as_string", label)
@@ -1756,7 +1758,7 @@ end
 function OpenSatchel()
     Citizen.CreateThread(function()
         SetPersistedInt("CurrentCategoryIndex", 0)
-        
+
         LaunchUiappByHashWithEntry("satchel", "INGAME")
         InitializeSatchel()
 
@@ -1776,7 +1778,7 @@ function CloseSatchel()
 end
 
 Citizen.CreateThread(function()
-    while true do   
+    while true do
         Citizen.Wait(0)
 
         if IsControlJustPressed(0, "INPUT_OPEN_SATCHEL_MENU") and IsUiappRunningByHash(uiAppChannel) ~= 1 then
@@ -1788,9 +1790,9 @@ Citizen.CreateThread(function()
                 PromptSetControlAction(prompt, GetHashKey("INPUT_OPEN_SATCHEL_MENU"))
                 PromptSetText(prompt, CreateVarString(10, "LITERAL_STRING", "Satchel"))
                 UiPromptSetHoldMode(prompt, 750)
-                UiPromptSetAttribute(prompt, 2, true) 
-                UiPromptSetAttribute(prompt, 4, true) 
-                UiPromptSetAttribute(prompt, 9, true) 
+                UiPromptSetAttribute(prompt, 2, true)
+                UiPromptSetAttribute(prompt, 4, true)
+                UiPromptSetAttribute(prompt, 9, true)
                 UiPromptSetAttribute(prompt, 10, true) -- kPromptAttrib_NoButtonReleaseCheck. Immediately becomes pressed
                 UiPromptSetAttribute(prompt, 17, true) -- kPromptAttrib_NoGroupCheck. Allows to appear in any active group
                 PromptRegisterEnd(prompt)
@@ -1798,7 +1800,7 @@ Citizen.CreateThread(function()
                 Citizen.CreateThread(function()
                     Citizen.Wait(100)
 
-                    while UiPromptGetProgress(prompt) ~= 0.0 and UiPromptGetProgress(prompt) ~= 1.0 do   
+                    while UiPromptGetProgress(prompt) ~= 0.0 and UiPromptGetProgress(prompt) ~= 1.0 do
                         Citizen.Wait(0)
                     end
 
