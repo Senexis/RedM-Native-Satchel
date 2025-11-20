@@ -8,6 +8,7 @@ Satchel = {}
 --                                CONFIGURATION                                --
 --                                                                             --
 ---------------------------------------------------------------------------------
+-- TODO: Configuration for "Satchel" title
 
 -- Change this in case you have another resource using the "native_satch" prefix for events
 Satchel.eventHandlerKey = "native_satchel"
@@ -22,6 +23,7 @@ Satchel.allowReading = true
 Satchel.allowUsing = true
 
 -- Enable/disable prompts for various held actions
+-- TODO: Add triggers for these (when close to campfire, allow cooking)
 Satchel.allowBreakdown = true
 Satchel.allowCooking = true
 
@@ -29,6 +31,7 @@ Satchel.allowCooking = true
 Satchel.allowDropping = true
 
 -- Enable/disable prompts for discarding items
+-- TODO: Investigate why this seems to take precendence over item.discardable
 Satchel.allowDiscarding = true
 
 -- "Discard" by default means removing all items, but it can be anything you want
@@ -84,6 +87,10 @@ Satchel.inventory = {
         stars = 3,
         txd = "toasts_mp_generic",
         texture = "toast_mp_standalone_sp",
+
+        -- TODO: Use something like { healthCore = 5, staminaCore = 3, deadEyeCore = 0 }
+        -- TODO: Rename this to effectIds = {} instead when above is implemented as effects = {}
+        -- TODO: Complete the missing effect IDs (not used in catalog, but useful here)
         effects = { "EFFECT_HEALTH_CORE_GOLD_1D" },
 
         -- Prompt flags
@@ -111,6 +118,7 @@ Satchel.inventory = {
     { id = "carcass_wolf_high_quality",      count = 1,  maxCount = nil, catalog = "PROVISION_ANIMAL_CARCASS_WOLF_HIGH_QUALITY", },
     { id = "buckle_silver",                  count = 1,  maxCount = nil, catalog = "PROVISION_BUCKLE_SILVER", },
     { id = "fish_smallmouth_bass",           count = 1,  maxCount = nil, catalog = "PROVISION_FISH_SMALLMOUTH_BASS", },
+    -- TODO: Sometimes the texture of this poor deer (get it?) doesn't load and instead uses "_placeholder"
     { id = "carcass_deer_poor",              count = 1,  maxCount = nil, catalog = "PROVISION_ANIMAL_CARCASS_DEER_POOR", },
     { id = "tenn_whiskey",                   count = 1,  maxCount = nil, catalog = "CONSUMABLE_TENN_WHISKEY", },
     { id = "irish_whiskey",                  count = 1,  maxCount = nil, catalog = "CONSUMABLE_IRISH_WHISKEY", },
@@ -152,6 +160,9 @@ Satchel.inventory = {
 
 -- Categories
 -- This determines what categories are visible in the UI
+-- TODO: Triggers for enabling/disabling categories like horse/wagon?
+-- TODO: Investigate why sometimes on first load we still have the invisible categories bug
+-- TODO: Rename label/description to make it clearer those are for empty states
 
 Satchel.categories = {
     { id = "recent",      recent = true,  texture = "satchel_nav_all",         title = 0x504364F1,     label = GetStringFromHashKey(0x504364F1),     description = GetStringFromHashKey(0x4E6F9F15),          tags = {} },
@@ -171,6 +182,8 @@ Satchel.categories = {
 
 -- Folders
 -- This determines what folders are available in the UI
+-- TODO: Implement toggle for "minimum #items to show folders" to hide folders with 1 item?
+-- TODO: Properly order folders by time added instead of always last
 
 Satchel.folders = {
     -- General folders
@@ -1383,6 +1396,7 @@ function EventItemFocused(index, parameter, datastore)
     SetPersistedInt("CurrentItemIndex", index)
     UpdateSatchelIndexDescription("item")
 
+    -- TODO: Investigate why sometimes on first load these are empty for folders
     if (parameter == joaat("FOLDER_ITEM") or parameter == joaat("USABLE_ITEM")) then
         UpdateSatchelSelectedData(itemIndex, folderIndex)
     end
@@ -1992,6 +2006,12 @@ AddEventHandler("onResourceStop", function(resourceName)
         CloseSatchel()
     end
 end)
+
+---------------------------------------------------------------------------------
+--                                                                             --
+--                                   UNSTABLE                                  --
+--                                                                             --
+---------------------------------------------------------------------------------
 
 -- Helper function to find an item in the inventory by ID
 function FindItemById(itemId)
