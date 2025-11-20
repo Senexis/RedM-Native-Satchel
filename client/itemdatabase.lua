@@ -1,7 +1,11 @@
--- Ref: https://github.com/aaron1a12/wild/
--- Todo: Proper attribution, rewrite slightly to make more modern sense
+-- Item database utility functions for accessing game data
+-- Based on research by aaron1a12: https://github.com/aaron1a12/wild/
 
-function ItemdatabaseGetTagIds(item, filter)
+---Gets tag IDs for an item with optional filtering by tag type
+---@param item number The item hash
+---@param filter number|nil Optional tag type filter (0 or nil for all tags)
+---@return table tagIds Array of tag IDs
+function GetItemTagIds(item, filter)
     local structData = DataView.ArrayBuffer(256)
     local structCount = DataView.ArrayBuffer(8)
 
@@ -14,9 +18,7 @@ function ItemdatabaseGetTagIds(item, filter)
         local tagId = structData:GetInt32(16 * i + 8)
         local tagType = structData:GetInt32(16 * i + 16)
 
-        if (not filter or filter == 0) then
-            table.insert(tagIds, tagId)
-        elseif (tagType and tagType == filter) then
+        if not filter or filter == 0 or tagType == filter then
             table.insert(tagIds, tagId)
         end
     end
@@ -24,7 +26,10 @@ function ItemdatabaseGetTagIds(item, filter)
     return tagIds
 end
 
-function ItemdatabaseGetEffectIds(item)
+---Gets effect IDs for an item
+---@param item number The item hash
+---@return table effectIds Array of effect IDs
+function GetItemEffectIds(item)
     local struct = DataView.ArrayBuffer(256)
     struct:SetInt32(8, 20)
 
@@ -41,7 +46,10 @@ function ItemdatabaseGetEffectIds(item)
     return effectIds
 end
 
-function ItemdatabaseGetUiData(item)
+---Gets UI data for an item including label, description, and texture information
+---@param item number The item hash
+---@return table data UI data with label, description, textureId, and textureDict fields
+function GetItemUiData(item)
     local struct = DataView.ArrayBuffer(2048)
     struct:SetInt32(8 * 2, 5)
     struct:SetInt32(8 * 18, 8)
@@ -55,8 +63,7 @@ function ItemdatabaseGetUiData(item)
         textureDict = nil
     }
 
-    local i = 0
-    while i < 5 do
+    for i = 0, 4 do
         local offset = 24 + (i * 8 * 3)
 
         if struct:GetUint8(offset) == 0 then
@@ -65,41 +72,37 @@ function ItemdatabaseGetUiData(item)
 
         if not IsStringNullOrEmpty(struct:GetInt64(offset)) then
             local texture = ReadString(struct:GetInt64(offset))
-            local dict = ReadString(struct:GetInt64(offset + 8))
-            local type = struct:GetInt32(offset + 16)
+            local textureDict = ReadString(struct:GetInt64(offset + 8))
+            local textureType = struct:GetInt32(offset + 16)
 
-            if type == joaat("inventory") then
+            if textureType == joaat("inventory") then
                 data.textureId = texture
-                data.textureDict = dict
+                data.textureDict = textureDict
+                break
             end
         else
             break
         end
-
-        i = i + 1
     end
 
     return data
 end
 
-function IsStringNullOrEmpty(pStr)
-    local ret = 0
-    if pcall(function()
-        Citizen.InvokeNative(0x2CF12F9ACF18F048, pStr, Citizen.ResultAsInteger())
-    end) then
-        ret = 0
-    else
-        ret = 1
-    end
+---Checks if a string pointer is null or empty
+---@param stringPtr number Pointer to string
+---@return boolean isNullOrEmpty True if string is null or empty
+function IsStringNullOrEmpty(stringPtr)
+    local success = pcall(function()
+        Citizen.InvokeNative(0x2CF12F9ACF18F048, stringPtr, Citizen.ResultAsInteger()) -- IS_STRING_NULL_OR_EMPTY
+    end)
 
-    if ret == 1 then
-        return true
-    else
-        return false
-    end
+    return not success
 end
 
-function ReadString(pStr)
-    Citizen.InvokeNative(0xDFFC15AA63D04AAB, pStr) -- _SET_LAUNCH_PARAM_STRING
+---Reads a string from a pointer
+---@param stringPtr number Pointer to string
+---@return string content The string content
+function ReadString(stringPtr)
+    Citizen.InvokeNative(0xDFFC15AA63D04AAB, stringPtr) -- _SET_LAUNCH_PARAM_STRING
     return N_0xc59ab6a04333c502()
 end

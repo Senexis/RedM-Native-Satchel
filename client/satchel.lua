@@ -62,7 +62,7 @@ Satchel.enableFolderItemsInRecent = true
 -- This determines which items are visible in the UI by category
 -- You can see this as the base inventory for any player
 -- It can then be modified by using the Satchel API to add/remove items
-Satchel.items = {
+Satchel.inventory = {
     {
         -- Required fields
         id = "my_custom_item",
@@ -97,57 +97,57 @@ Satchel.items = {
         readable = false,
     },
 
-    { id = "big_game_meat_cooked",           count = 5,  maxCount = nil, category = "provisions",  folder = "big_game",     catalog = "CONSUMABLE_BIG_GAME_MEAT_COOKED", },
-    { id = "special_tonic_crafted",          count = 10, maxCount = 10,  category = "tonics",      folder = nil,            catalog = "CONSUMABLE_SPECIAL_TONIC_CRAFTED", },
-    { id = "bird_feather_flight",            count = 7,  maxCount = 10,  category = "materials",   folder = nil,            catalog = "PROVISION_BIRD_FEATHER_FLIGHT", },
-    { id = "necklace_gold",                  count = 8,  maxCount = nil, category = "valuables",   folder = nil,            catalog = "PROVISION_NECKLACE_GOLD", },
-    { id = "horse_reviver",                  count = 1,  maxCount = nil, category = "tonics",      folder = nil,            catalog = "CONSUMABLE_HORSE_REVIVER", },
-    { id = "prime_beef",                     count = 1,  maxCount = nil, category = "ingredients", folder = nil,            catalog = "PROVISION_PRIME_BEEF", },
-    { id = "herbivore_bait",                 count = 1,  maxCount = nil, category = "kit",         folder = nil,            catalog = "CONSUMABLE_HERBIVORE_BAIT", },
-    { id = "salmon_can",                     count = 1,  maxCount = nil, category = "provisions",  folder = nil,            catalog = "CONSUMABLE_SALMON_CAN", },
-    { id = "rabbit_pelt_pristine",           count = 1,  maxCount = nil, category = "provisions",  folder = nil,            catalog = "PROVISION_RABBIT_PELT_PRISTINE", },
-    { id = "armadillo_skin",                 count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_ARMADILLO_SKIN", },
-    { id = "legendary_beaver_pelt_1",        count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_ROLE_NATURALIST_PELT_BEAVER_LEGENDARY_01", },
-    { id = "carcass_wolf_high_quality",      count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_ANIMAL_CARCASS_WOLF_HIGH_QUALITY", },
-    { id = "buckle_silver",                  count = 1,  maxCount = nil, category = "valuables",   folder = nil,            catalog = "PROVISION_BUCKLE_SILVER", },
-    { id = "fish_smallmouth_bass",           count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_FISH_SMALLMOUTH_BASS", },
-    { id = "carcass_deer_poor",              count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_ANIMAL_CARCASS_DEER_POOR", },
-    { id = "tenn_whiskey",                   count = 1,  maxCount = nil, category = "tonics",      folder = "collector_bottles", catalog = "CONSUMABLE_TENN_WHISKEY", },
-    { id = "irish_whiskey",                  count = 1,  maxCount = nil, category = "tonics",      folder = "collector_bottles", catalog = "CONSUMABLE_IRISH_WHISKEY", },
-    { id = "scotch_whiskey",                 count = 1,  maxCount = nil, category = "tonics",      folder = "collector_bottles", catalog = "CONSUMABLE_SCOTCH_WHISKEY", },
-    { id = "cyprus_brandy",                  count = 1,  maxCount = nil, category = "tonics",      folder = "collector_bottles", catalog = "CONSUMABLE_CYPRUS_BRANDY", },
-    { id = "carcass_crow_perfect",           count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_ANIMAL_CARCASS_CROW_PERFECT", },
-    { id = "skinned_carcass_pig_perfect",    count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_SKINNED_CARCASS_PIG_PERFECT", },
-    { id = "carcass_songbird_poor",          count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_ANIMAL_CARCASS_SONGBIRD_POOR", },
-    { id = "carcass_cormorant_high_quality", count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_ANIMAL_CARCASS_CORMORANT_HIGH_QUALITY", },
-    { id = "wolf_fur_poor",                  count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_WOLF_FUR_POOR", },
-    { id = "gila_skin",                      count = 1,  maxCount = nil, category = "materials",   folder = nil,            catalog = "PROVISION_GILA_SKIN", },
-    { id = "herb_milkweed",                  count = 1,  maxCount = nil, category = "ingredients", folder = nil,            catalog = "CONSUMABLE_HERB_MILKWEED", },
-    { id = "herb_burdock_root",              count = 1,  maxCount = nil, category = "ingredients", folder = nil,            catalog = "CONSUMABLE_HERB_BURDOCK_ROOT", },
-    { id = "bread_chunk",                    count = 1,  maxCount = nil, category = "provisions",  folder = nil,            catalog = "CONSUMABLE_BREAD_CHUNK", },
-    { id = "exotic_bird_wild_mint_cooked",   count = 1,  maxCount = nil, category = "provisions",  folder = "exotic_bird",  catalog = "CONSUMABLE_EXOTIC_BIRD_WILD_MINT_COOKED", },
-    { id = "gamey_bird_cooked",              count = 1,  maxCount = nil, category = "provisions",  folder = "gamey_bird",   catalog = "CONSUMABLE_GAMEY_BIRD_COOKED", },
-    { id = "cocaine_chewing_gum",            count = 1,  maxCount = nil, category = "tonics",      folder = nil,            catalog = "CONSUMABLE_COCAINE_CHEWING_GUM", },
-    { id = "herb_prairie_poppy",             count = 1,  maxCount = nil, category = "ingredients", folder = nil,            catalog = "CONSUMABLE_HERB_PRAIRIE_POPPY", },
-    { id = "medicine",                       count = 1,  maxCount = nil, category = "tonics",      folder = nil,            catalog = "CONSUMABLE_MEDICINE", },
-    { id = "moonshine",                      count = 1,  maxCount = nil, category = "tonics",      folder = nil,            catalog = "CONSUMABLE_MOONSHINE", },
-    { id = "peach",                          count = 1,  maxCount = nil, category = "provisions",  folder = nil,            catalog = "CONSUMABLE_PEACH", },
-    { id = "cigar",                          count = 1,  maxCount = nil, category = "provisions",  folder = nil,            catalog = "CONSUMABLE_CIGAR", },
-    { id = "snake_oil_used",                 count = 1,  maxCount = nil, category = "tonics",      folder = nil,            catalog = "CONSUMABLE_SNAKE_OIL_USED", },
-    { id = "card_ace_swords",                count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_ACE_SWORDS", },
-    { id = "card_eight_swords",              count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_EIGHT_SWORDS", },
-    { id = "card_five_swords",               count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_FIVE_SWORDS", },
-    { id = "card_four_swords",               count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_FOUR_SWORDS", },
-    { id = "card_king_swords",               count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_KING_SWORDS", },
-    { id = "card_knight_swords",             count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_KNIGHT_SWORDS", },
-    { id = "card_nine_swords",               count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_NINE_SWORDS", },
-    { id = "card_page_swords",               count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_PAGE_SWORDS", },
-    { id = "card_queen_swords",              count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_QUEEN_SWORDS", },
-    { id = "card_seven_swords",              count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_SEVEN_SWORDS", },
-    { id = "card_six_swords",                count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_SIX_SWORDS", },
-    { id = "card_ten_swords",                count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_TEN_SWORDS", },
-    { id = "card_three_swords",              count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_THREE_SWORDS", },
-    { id = "card_two_swords",                count = 1,  maxCount = nil, category = "documents",   folder = "collector_card_swords", catalog = "DOCUMENT_CARD_TWO_SWORDS", },
+    { id = "big_game_meat_cooked",           count = 5,  maxCount = nil, catalog = "CONSUMABLE_BIG_GAME_MEAT_COOKED", },
+    { id = "special_tonic_crafted",          count = 10, maxCount = 10,  catalog = "CONSUMABLE_SPECIAL_TONIC_CRAFTED", },
+    { id = "bird_feather_flight",            count = 7,  maxCount = 10,  catalog = "PROVISION_BIRD_FEATHER_FLIGHT", },
+    { id = "necklace_gold",                  count = 8,  maxCount = nil, catalog = "PROVISION_NECKLACE_GOLD", },
+    { id = "horse_reviver",                  count = 1,  maxCount = nil, catalog = "CONSUMABLE_HORSE_REVIVER", },
+    { id = "prime_beef",                     count = 1,  maxCount = nil, catalog = "PROVISION_PRIME_BEEF", },
+    { id = "herbivore_bait",                 count = 1,  maxCount = nil, catalog = "CONSUMABLE_HERBIVORE_BAIT", },
+    { id = "salmon_can",                     count = 1,  maxCount = nil, catalog = "CONSUMABLE_SALMON_CAN", },
+    { id = "rabbit_pelt_pristine",           count = 1,  maxCount = nil, catalog = "PROVISION_RABBIT_PELT_PRISTINE", },
+    { id = "armadillo_skin",                 count = 1,  maxCount = nil, catalog = "PROVISION_ARMADILLO_SKIN", },
+    { id = "legendary_beaver_pelt_1",        count = 1,  maxCount = nil, catalog = "PROVISION_ROLE_NATURALIST_PELT_BEAVER_LEGENDARY_01", },
+    { id = "carcass_wolf_high_quality",      count = 1,  maxCount = nil, catalog = "PROVISION_ANIMAL_CARCASS_WOLF_HIGH_QUALITY", },
+    { id = "buckle_silver",                  count = 1,  maxCount = nil, catalog = "PROVISION_BUCKLE_SILVER", },
+    { id = "fish_smallmouth_bass",           count = 1,  maxCount = nil, catalog = "PROVISION_FISH_SMALLMOUTH_BASS", },
+    { id = "carcass_deer_poor",              count = 1,  maxCount = nil, catalog = "PROVISION_ANIMAL_CARCASS_DEER_POOR", },
+    { id = "tenn_whiskey",                   count = 1,  maxCount = nil, catalog = "CONSUMABLE_TENN_WHISKEY", },
+    { id = "irish_whiskey",                  count = 1,  maxCount = nil, catalog = "CONSUMABLE_IRISH_WHISKEY", },
+    { id = "scotch_whiskey",                 count = 1,  maxCount = nil, catalog = "CONSUMABLE_SCOTCH_WHISKEY", },
+    { id = "cyprus_brandy",                  count = 1,  maxCount = nil, catalog = "CONSUMABLE_CYPRUS_BRANDY", },
+    { id = "carcass_crow_perfect",           count = 1,  maxCount = nil, catalog = "PROVISION_ANIMAL_CARCASS_CROW_PERFECT", },
+    { id = "skinned_carcass_pig_perfect",    count = 1,  maxCount = nil, catalog = "PROVISION_SKINNED_CARCASS_PIG_PERFECT", },
+    { id = "carcass_songbird_poor",          count = 1,  maxCount = nil, catalog = "PROVISION_ANIMAL_CARCASS_SONGBIRD_POOR", },
+    { id = "carcass_cormorant_high_quality", count = 1,  maxCount = nil, catalog = "PROVISION_ANIMAL_CARCASS_CORMORANT_HIGH_QUALITY", },
+    { id = "wolf_fur_poor",                  count = 1,  maxCount = nil, catalog = "PROVISION_WOLF_FUR_POOR", },
+    { id = "gila_skin",                      count = 1,  maxCount = nil, catalog = "PROVISION_GILA_SKIN", },
+    { id = "herb_milkweed",                  count = 1,  maxCount = nil, catalog = "CONSUMABLE_HERB_MILKWEED", },
+    { id = "herb_burdock_root",              count = 1,  maxCount = nil, catalog = "CONSUMABLE_HERB_BURDOCK_ROOT", },
+    { id = "bread_chunk",                    count = 1,  maxCount = nil, catalog = "CONSUMABLE_BREAD_CHUNK", },
+    { id = "exotic_bird_wild_mint_cooked",   count = 1,  maxCount = nil, catalog = "CONSUMABLE_EXOTIC_BIRD_WILD_MINT_COOKED", },
+    { id = "gamey_bird_cooked",              count = 1,  maxCount = nil, catalog = "CONSUMABLE_GAMEY_BIRD_COOKED", },
+    { id = "cocaine_chewing_gum",            count = 1,  maxCount = nil, catalog = "CONSUMABLE_COCAINE_CHEWING_GUM", },
+    { id = "herb_prairie_poppy",             count = 1,  maxCount = nil, catalog = "CONSUMABLE_HERB_PRAIRIE_POPPY", },
+    { id = "medicine",                       count = 1,  maxCount = nil, catalog = "CONSUMABLE_MEDICINE", },
+    { id = "moonshine",                      count = 1,  maxCount = nil, catalog = "CONSUMABLE_MOONSHINE", },
+    { id = "peach",                          count = 1,  maxCount = nil, catalog = "CONSUMABLE_PEACH", },
+    { id = "cigar",                          count = 1,  maxCount = nil, catalog = "CONSUMABLE_CIGAR", },
+    { id = "snake_oil_used",                 count = 1,  maxCount = nil, catalog = "CONSUMABLE_SNAKE_OIL_USED", },
+    { id = "card_ace_swords",                count = 1,  maxCount = nil, catalog = "DOCUMENT_CARD_ACE_SWORDS", },
+    { id = "card_eight_swords",              count = 1,  maxCount = nil, catalog = "DOCUMENT_CARD_EIGHT_SWORDS", },
+    { id = "card_five_swords",               count = 1,  maxCount = nil, catalog = "DOCUMENT_CARD_FIVE_SWORDS", },
+    { id = "card_four_swords",               count = 1,  maxCount = nil, catalog = "DOCUMENT_CARD_FOUR_SWORDS", },
+    { id = "card_king_swords",               count = 1,  maxCount = nil, catalog = "DOCUMENT_CARD_KING_SWORDS", },
+    { id = "card_knight_swords",             count = 1,  maxCount = nil, catalog = "DOCUMENT_CARD_KNIGHT_SWORDS", },
+    { id = "card_nine_swords",               count = 1,  maxCount = nil, catalog = "DOCUMENT_CARD_NINE_SWORDS", },
+    { id = "card_page_swords",               count = 1,  maxCount = nil, catalog = "DOCUMENT_CARD_PAGE_SWORDS", },
+    { id = "card_queen_swords",              count = 1,  maxCount = nil, catalog = "DOCUMENT_CARD_QUEEN_SWORDS", },
+    { id = "card_seven_swords",              count = 1,  maxCount = nil, catalog = "DOCUMENT_CARD_SEVEN_SWORDS", },
+    { id = "card_six_swords",                count = 1,  maxCount = nil, catalog = "DOCUMENT_CARD_SIX_SWORDS", },
+    { id = "card_ten_swords",                count = 1,  maxCount = nil, catalog = "DOCUMENT_CARD_TEN_SWORDS", },
+    { id = "card_three_swords",              count = 1,  maxCount = nil, catalog = "DOCUMENT_CARD_THREE_SWORDS", },
+    { id = "card_two_swords",                count = 1,  maxCount = nil, catalog = "DOCUMENT_CARD_TWO_SWORDS", },
 }
 
 -- Categories
@@ -280,10 +280,11 @@ Satchel.folders = {
 --                                                                             --
 ---------------------------------------------------------------------------------
 
-Satchel._cacheCategoryItems = {}
-Satchel._cacheMenuItems = {}
 Satchel._cachePersistence = {}
+Satchel._cacheCategoryItems = {}
+Satchel._cacheItems = {}
 Satchel._cacheItemDatabase = {}
+Satchel._cacheMenuItems = {}
 
 function InitializePersistence()
     local datastore = DatabindingGetDataContainerFromPath("NativeSatchel")
@@ -335,6 +336,60 @@ function SetPersistedInt(key, value)
     Satchel._cachePersistence[key] = value
 end
 
+function RefreshItems()
+    -- Clear the cache
+    Satchel._cacheItems = {}
+
+    -- Loop through the inventory and process each item
+    for index, item in ipairs(Satchel.inventory) do
+        local database = item.catalog and GetItemFromDatabase(item.catalog) or {}
+
+        local cachedItem = {
+            -- Required fields
+            id = item.id,
+            count = item.count or 1,
+            maxCount = item.maxCount,
+            catalog = item.catalog,
+
+            -- Fill from item first, then database, then defaults
+            label = item.label or database.label or item.id,
+            description = item.description or database.description or "",
+            txd = item.txd or database.txd,
+            texture = item.texture or database.texture,
+            effects = item.effects or database.effectIds or {},
+            stars = item.stars or database.stars or 0,
+            special = item.special or database.special or false,
+
+            -- Prompt flags (default to database values, then sensible defaults)
+            droppable = item.droppable ~= nil and item.droppable or database.droppable ~= nil and database.droppable or true,
+            discardable = item.discardable or database.discardable or false,
+            breakable = item.breakable or database.breakable or false,
+            cookable = item.cookable or database.cookable or false,
+            usable = item.usable or database.usable or false,
+            drinkable = item.drinkable or database.drinkable or false,
+            edible = item.edible or database.edible or false,
+            readable = item.readable or database.readable or false
+        }
+
+        -- Handle category assignment with auto-categorization check
+        if item.category then
+            cachedItem.category = item.category
+        elseif Satchel.enableAutoCategorization and database.category then
+            cachedItem.category = database.category
+        end
+
+        -- Handle folder assignment with auto-folder assignment check
+        if item.folder then
+            cachedItem.folder = item.folder
+        elseif Satchel.enableAutoFolderAssignment and database.folder then
+            cachedItem.folder = database.folder
+        end
+
+        -- Add the processed item to the cache
+        table.insert(Satchel._cacheItems, cachedItem)
+    end
+end
+
 function RefreshHashMaps()
     Satchel.mapCategories = {}
     Satchel.mapCategoriesJoaat = {}
@@ -355,7 +410,7 @@ function RefreshHashMaps()
     Satchel.mapItems = {}
     Satchel.mapItemsJoaat = {}
 
-    for index, item in ipairs(Satchel.items) do
+    for index, item in ipairs(Satchel._cacheItems) do
         Satchel.mapItems[item.id] = index
         Satchel.mapItemsJoaat[joaat(item.id)] = index
     end
@@ -759,7 +814,7 @@ function NavigateSatchelMenuItems()
     local filteredIndex = 0
     local folderItems = {}
 
-    for _, item in ipairs(Satchel.items) do
+    for _, item in ipairs(Satchel._cacheItems) do
         if (not category.recent and item.folder) then
             if (folderItems[item.folder] == nil) then
                 folderItems[item.folder] = {}
@@ -962,7 +1017,7 @@ function UpdateSatchelSelectedData(itemId, folderId)
     local readable = nil
 
     if (itemId) then
-        local item = Satchel.items[itemId]
+        local item = Satchel._cacheItems[itemId]
 
         if (not item) then
             print("[NativeSatchel] UpdateSatchelSelectedData: Could not determine item for ID " .. itemId)
@@ -1284,7 +1339,7 @@ function PreloadSatchelListItems(folderId)
 
     local listIndex = 0
 
-    for _, item in ipairs(Satchel.items) do
+    for _, item in ipairs(Satchel._cacheItems) do
         if (item.folder and item.folder == folder.id) then
             local added = AddListItem(listIndex, item)
 
@@ -1316,7 +1371,7 @@ function EventItemFocused(index, parameter, datastore)
     local itemIndex = Satchel.mapItemsJoaat[selectedKey]
     local item = nil
     local itemId = nil
-    if (itemIndex) then item = Satchel.items[itemIndex] end
+    if (itemIndex) then item = Satchel._cacheItems[itemIndex] end
     if (item) then itemId = item.id end
 
     local folderIndex = Satchel.mapFoldersJoaat[selectedKey]
@@ -1359,7 +1414,7 @@ function EventItemSelected(index, parameter, datastore)
     local itemIndex = Satchel.mapItemsJoaat[selectedKey]
     local item = nil
     local itemId = nil
-    if (itemIndex) then item = Satchel.items[itemIndex] end
+    if (itemIndex) then item = Satchel._cacheItems[itemIndex] end
     if (item) then itemId = item.id end
 
     local folderIndex = Satchel.mapFoldersJoaat[selectedKey]
@@ -1431,7 +1486,7 @@ function GetItemFromDatabase(item)
         return result
     end
 
-    local uiData = ItemdatabaseGetUiData(hash)
+    local uiData = GetItemUiData(hash)
     if (uiData) then
         result.label = GetStringFromHashKey(uiData.label)
         result.labelHash = uiData.label
@@ -1441,12 +1496,12 @@ function GetItemFromDatabase(item)
         result.texture = uiData.textureId
     end
 
-    local effectIds = ItemdatabaseGetEffectIds(hash)
+    local effectIds = GetItemEffectIds(hash)
     if (effectIds) then
         result.effectIds = effectIds
     end
 
-    local tagIds = ItemdatabaseGetTagIds(hash)
+    local tagIds = GetItemTagIds(hash)
     for _, value in pairs(tagIds) do
         if (value == joaat("CI_TAG_ITEM_OVERPOWERED") or value == joaat("CI_TAG_ITEM_QUALITY_LEGENDARY")) then
             result.special = true
@@ -1747,6 +1802,7 @@ end
 
 function InitializeData()
     InitializePersistence()
+    RefreshItems()
     RefreshHashMaps()
     LoadEffectMaps()
 end
@@ -1844,9 +1900,45 @@ Citizen.CreateThread(function()
     end
 end)
 
+-- Event debouncing utility
+function CreateEventDebouncer(tickDelay, callback)
+    return {
+        pendingEvent = nil,
+        ticks = 0,
+        delay = tickDelay,
+        execute = callback,
+
+        -- Queue an event for debounced execution
+        queue = function(self, eventData)
+            self.pendingEvent = eventData
+            self.ticks = 0
+        end,
+
+        -- Process pending events (call this every tick)
+        process = function(self)
+            if self.pendingEvent then
+                self.ticks = self.ticks + 1
+                if self.ticks >= self.delay then
+                    self.execute(self.pendingEvent)
+                    self.pendingEvent = nil
+                    self.ticks = 0
+                end
+            end
+        end
+    }
+end
+
+-- Create debouncer for ITEM_FOCUSED events
+local focusEventDebouncer = CreateEventDebouncer(5, function(eventData)
+    EventItemFocused(eventData.index, eventData.parameter, eventData.datastore)
+end)
+
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(0)
+
+        -- Process debounced events
+        focusEventDebouncer:process()
 
         if EventsUiIsPending(uiEventChannel) then
             local msg = DataView.ArrayBuffer(8 * 4)
@@ -1864,7 +1956,12 @@ Citizen.CreateThread(function()
                 if (event == joaat("TAB_PAGE_INCREMENT") or event == joaat("TAB_PAGE_DECREMENT")) then
                     NavigateSatchelMenuItems()
                 elseif event == joaat("ITEM_FOCUSED") then
-                    EventItemFocused(index, parameter, datastore)
+                    -- Queue focus event for debounced execution
+                    focusEventDebouncer:queue({
+                        index = index,
+                        parameter = parameter,
+                        datastore = datastore
+                    })
                 elseif event == joaat("ITEM_SELECTED") then
                     EventItemSelected(index, parameter, datastore)
                 end
@@ -1893,5 +1990,139 @@ AddEventHandler("onResourceStop", function(resourceName)
     if IsUiappActiveByHash(uiAppChannel) then
         CloseUiappByHash(uiAppChannel)
         CloseSatchel()
+    end
+end)
+
+-- Helper function to find an item in the inventory by ID
+function FindItemById(itemId)
+    for i, item in ipairs(Satchel.inventory) do
+        if item.id == itemId then
+            return item, i
+        end
+    end
+    return nil, nil
+end
+
+-- Helper function to refresh the satchel UI after inventory changes
+function RefreshSatchelAfterChange()
+    if IsUiappActiveByHash(uiAppChannel) then
+        RefreshItems()
+        RefreshHashMaps()
+        ReloadSatchelCategories()
+        -- If we have a currently selected category, refresh its items
+        local currentCategoryIndex = GetPersistedInt("CurrentCategoryIndex")
+        if currentCategoryIndex and currentCategoryIndex >= 0 then
+            NavigateSatchelMenuItems()
+        end
+    end
+end
+
+-- Satchel Control Triggers
+AddEventHandler(Satchel.eventHandlerKey .. ":open_satchel", function()
+    OpenSatchel()
+end)
+
+AddEventHandler(Satchel.eventHandlerKey .. ":close_satchel", function()
+    if IsUiappActiveByHash(uiAppChannel) then
+        CloseUiappByHash(uiAppChannel)
+        CloseSatchel()
+    end
+end)
+
+-- Inventory Synchronization
+AddEventHandler(Satchel.eventHandlerKey .. ":synchronize", function(items)
+    if type(items) ~= "table" then
+        print("[Native Satchel] Error: synchronize expects a table of items")
+        return
+    end
+
+    Satchel.inventory = items
+    RefreshSatchelAfterChange()
+end)
+
+-- Item Management Triggers
+AddEventHandler(Satchel.eventHandlerKey .. ":add_item", function(item)
+    if type(item) ~= "table" or not item.id then
+        print("[Native Satchel] Error: add_item expects an item table with an id field")
+        return
+    end
+
+    -- Check if item already exists
+    local existingItem, index = FindItemById(item.id)
+    if existingItem then
+        -- Update existing item
+        Satchel.inventory[index] = item
+    else
+        -- Add new item
+        table.insert(Satchel.inventory, item)
+    end
+
+    RefreshSatchelAfterChange()
+end)
+
+AddEventHandler(Satchel.eventHandlerKey .. ":increment_item", function(itemId, count)
+    if type(itemId) ~= "string" then
+        print("[Native Satchel] Error: increment_item expects a string itemId")
+        return
+    end
+
+    if type(count) ~= "number" or count <= 0 then
+        print("[Native Satchel] Error: increment_item expects a positive number for count")
+        return
+    end
+
+    local item, index = FindItemById(itemId)
+    if item then
+        item.count = (item.count or 0) + count
+
+        -- Respect maxCount if it exists
+        if item.maxCount and item.count > item.maxCount then
+            item.count = item.maxCount
+        end
+
+        RefreshSatchelAfterChange()
+    else
+        print("[Native Satchel] Warning: Item '" .. itemId .. "' not found for increment")
+    end
+end)
+
+AddEventHandler(Satchel.eventHandlerKey .. ":decrement_item", function(itemId, count)
+    if type(itemId) ~= "string" then
+        print("[Native Satchel] Error: decrement_item expects a string itemId")
+        return
+    end
+
+    if type(count) ~= "number" or count <= 0 then
+        print("[Native Satchel] Error: decrement_item expects a positive number for count")
+        return
+    end
+
+    local item, index = FindItemById(itemId)
+    if item then
+        item.count = math.max(0, (item.count or 0) - count)
+
+        -- Remove item if count reaches 0
+        if item.count == 0 then
+            table.remove(Satchel.inventory, index)
+        end
+
+        RefreshSatchelAfterChange()
+    else
+        print("[Native Satchel] Warning: Item '" .. itemId .. "' not found for decrement")
+    end
+end)
+
+AddEventHandler(Satchel.eventHandlerKey .. ":remove_item", function(itemId)
+    if type(itemId) ~= "string" then
+        print("[Native Satchel] Error: remove_item expects a string itemId")
+        return
+    end
+
+    local item, index = FindItemById(itemId)
+    if item then
+        table.remove(Satchel.inventory, index)
+        RefreshSatchelAfterChange()
+    else
+        print("[Native Satchel] Warning: Item '" .. itemId .. "' not found for removal")
     end
 end)
