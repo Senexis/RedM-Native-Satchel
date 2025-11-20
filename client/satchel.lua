@@ -789,6 +789,8 @@ function NavigateSatchelMenuItems()
     if (filteredIndex < 1) then
         EmptyCategorySatchelSelectedData(category)
     end
+
+    TriggerEvent(Satchel.eventHandlerKey .. ":category_changed", category.id)
 end
 
 function UpdateSatchelPrompts(item)
@@ -800,7 +802,8 @@ function UpdateSatchelPrompts(item)
     end
 
     -- Regular use prompt
-    local selectLabel = 0
+    -- Note: For UI events to work, both this AND the hold labels must be set
+    local selectLabel = joaat("SATCHEL_PROMPT_USE")
     local selectEnabled = true
     local selectVisible = true
 
@@ -821,7 +824,8 @@ function UpdateSatchelPrompts(item)
     end
 
     -- Hold use prompt
-    local holdSelectLabel = 0
+    -- Note: For UI events to work, both this AND the select labels must be set
+    local holdSelectLabel = joaat("SATCHEL_PROMPT_BREAKDOWN")
     local holdSelectEnabled = false
     local holdSelectVisible = false
 
@@ -1269,11 +1273,6 @@ function PreloadSatchelListItems(folderId)
 end
 
 function NavigateSatchelListItems(folderId)
-    if (not folderId) then
-        print("[NativeSatchel] NavigateSatchelListItems: Could not determine folder")
-        return
-    end
-
     ClearSatchelSelectedData()
     UpdateSatchelIndexDescription("folder")
 end
@@ -1290,13 +1289,13 @@ function EventItemFocused(index, parameter, datastore)
     local itemIndex = Satchel.mapItemsJoaat[selectedKey]
     local item = nil
     local itemId = nil
-    if (itemIndex) then item = Satchel.mapItems[itemIndex] end
+    if (itemIndex) then item = Satchel.items[itemIndex] end
     if (item) then itemId = item.id end
 
     local folderIndex = Satchel.mapFoldersJoaat[selectedKey]
     local folder = nil
     local folderId = nil
-    if (folderIndex) then folder = Satchel.mapFolders[folderIndex] end
+    if (folderIndex) then folder = Satchel.folders[folderIndex] end
     if (folder) then folderId = folder.id end
 
     SetPersistedInt("CurrentItemIndex", index)
@@ -1343,7 +1342,7 @@ function EventItemSelected(index, parameter, datastore)
     if (folder) then folderId = folder.id end
 
     if (parameter == joaat("FOLDER_ITEM")) then
-        NavigateSatchelListItems(folderIndex)
+        NavigateSatchelListItems()
 
         if (folderId) then
             TriggerEvent(Satchel.eventHandlerKey .. ":folder_opened", folderId)
@@ -1837,13 +1836,10 @@ Citizen.CreateThread(function()
 
                 if (event == joaat("TAB_PAGE_INCREMENT") or event == joaat("TAB_PAGE_DECREMENT")) then
                     NavigateSatchelMenuItems()
-                    TriggerEvent("satchel:tab_changed")
                 elseif event == joaat("ITEM_FOCUSED") then
                     EventItemFocused(index, parameter, datastore)
-                    TriggerEvent("satchel:item_focused")
                 elseif event == joaat("ITEM_SELECTED") then
                     EventItemSelected(index, parameter, datastore)
-                    TriggerEvent("satchel:item_selected")
                 end
             end
 
