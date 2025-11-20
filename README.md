@@ -62,8 +62,8 @@ local item = {
     -- Optional. Whether the item can be cooked
     cookable = false,
 
-    -- Optional. Whether the item can be consumed/used
-    consumable = false,
+    -- Optional. Whether the item can be used
+    usable = false,
 
     -- Optional. Whether the item can be drunk
     drinkable = false,
@@ -79,7 +79,7 @@ local item = {
 ### Categories
 
 ```lua
-local category = { 
+local category = {
     -- Any string identifier you want to internally use
     id = "recent",
 

@@ -80,7 +80,7 @@ Satchel.items = {
         discardable = false,
         breakable = false,
         cookable = false,
-        consumable = false,
+        usable = false,
         drinkable = false,
         edible = false,
         readable = false,
@@ -816,7 +816,7 @@ function UpdateSatchelPrompts(item)
     elseif (item.readable) then
         selectLabel = joaat("READ")
         selectEnabled = Satchel.allowReading or false
-    elseif (item.consumable) then
+    elseif (item.usable) then
         selectLabel = joaat("SATCHEL_PROMPT_USE")
         selectEnabled = Satchel.allowUsing or false
     else
@@ -933,7 +933,7 @@ function UpdateSatchelSelectedData(itemId, folderId)
     local discardable = nil
     local breakable = nil
     local cookable = nil
-    local consumable = nil
+    local usable = nil
     local drinkable = nil
     local edible = nil
     local readable = nil
@@ -959,7 +959,7 @@ function UpdateSatchelSelectedData(itemId, folderId)
             discardable = database.discardable or false
             breakable = database.breakable or false
             cookable = database.cookable or false
-            consumable = database.consumable or false
+            usable = database.usable or false
             drinkable = database.drinkable or false
             edible = database.edible or false
             readable = database.readable or false
@@ -970,7 +970,7 @@ function UpdateSatchelSelectedData(itemId, folderId)
             discardable = item.discardable or false
             breakable = item.breakable or false
             cookable = item.cookable or false
-            consumable = item.consumable or false
+            usable = item.usable or false
             drinkable = item.drinkable or false
             edible = item.edible or false
             readable = item.readable or false
@@ -981,7 +981,7 @@ function UpdateSatchelSelectedData(itemId, folderId)
             discardable = discardable,
             breakable = breakable,
             cookable = cookable,
-            consumable = consumable,
+            usable = usable,
             drinkable = drinkable,
             edible = edible,
             readable = readable,
@@ -997,6 +997,8 @@ function UpdateSatchelSelectedData(itemId, folderId)
         id = folder.id
         label = folder.label or ""
         description = folder.description or ""
+
+        UpdateSatchelPrompts({ usable = true })
     end
 
     if (label) then
@@ -1394,7 +1396,7 @@ function GetItemFromDatabase(item)
         discardable = true,
         breakable = false,
         cookable = false,
-        consumable = false,
+        usable = false,
         drinkable = false,
         edible = false,
         readable = false,
@@ -1440,7 +1442,7 @@ function GetItemFromDatabase(item)
         end
 
         if (value == joaat("CI_TAG_ITEM_CONSUMABLE")) then
-            result.consumable = true
+            result.usable = true
         end
 
         if (value == -273840653 or value == 238865292 or value == 999632878 or value == 1130235258 or value == 1177617310) then
