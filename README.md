@@ -9,6 +9,10 @@ Native Satchel is a RedM resource that provides a fully native implementation of
 
 Unlike traditional web-based or custom UI implementations, Native Satchel leverages the game's built-in interface systems to provide seamless integration with the player's existing UI experience.
 
+## Feature Requests
+
+If you're missing functionality or have ideas for new features that would improve Native Satchel, please don't hesitate to open an issue on the [GitHub repository](https://github.com/Senexis/RedM-Native-Satchel/issues). Feature requests from the community are always welcome, and feedback about use cases and requirements helps shape the direction of this project!
+
 ## Types
 
 The Native Satchel system is built around three main data types that define how items, categories, and folders are structured and displayed in the satchel interface. Understanding these types is essential for implementing a custom inventory system.
@@ -224,7 +228,7 @@ end)
 
 ## Attribution
 
-This project builds upon the hard work and research of many talented individuals in the RedM community. We gratefully acknowledge their contributions that made this native satchel implementation possible:
+This project builds upon the hard work and research of many talented individuals in the RedM community. Their contributions made this native satchel implementation possible:
 
 - [aaron1a12's Satchel Research](https://github.com/aaron1a12/wild/blob/main/wild-satchel/client/cl_satchel_native_research.lua)
 - [alloc8or's Native DB](https://alloc8or.re/rdr3/nativedb/)
