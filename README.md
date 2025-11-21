@@ -275,11 +275,12 @@ end)
 
 This project builds upon the hard work and research of many talented individuals in the RedM community. Their contributions made this native satchel implementation possible:
 
-- [aaron1a12's Satchel Research](https://github.com/aaron1a12/wild/blob/main/wild-satchel/client/cl_satchel_native_research.lua)
+- [aaron1a12's Research](https://github.com/aaron1a12/wild/)
 - [alloc8or's Native DB](https://alloc8or.re/rdr3/nativedb/)
 - [femga's RDR3 Discoveries](https://github.com/femga/rdr3_discoveries/)
 - [gottfriedleibniz's Data View implementation](https://github.com/gottfriedleibniz)
 - [MagnarRDC's Support](https://x.com/magnarrdc)
+- [VORPCORE's Research](https://github.com/VORPCORE/vorp_core/)
 
 ## Contributing
 

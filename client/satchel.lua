@@ -1940,7 +1940,7 @@ end
 
 function OpenSatchel()
     if (Satchel._resourcesLoaded ~= true) then
-        print("[NativeSatchel] OpenSatchel: Resources not loaded yet!")
+        PostFeedTicker("Satchel resources are still loading, try again shortly.")
         return
     end
 
