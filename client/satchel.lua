@@ -1939,17 +1939,16 @@ function OpenSatchel()
         return
     end
 
+    SetPersistedInt("CurrentCategoryIndex", 0)
+
+    LaunchUiappByHashWithEntry("satchel", "INGAME")
+    InitializeSatchel()
+
+    TriggerEvent(Satchel.eventHandlerKey .. ":satchel_opened")
+
     Citizen.CreateThread(function()
-        SetPersistedInt("CurrentCategoryIndex", 0)
-
-        LaunchUiappByHashWithEntry("satchel", "INGAME")
-        InitializeSatchel()
-
-        TriggerEvent(Satchel.eventHandlerKey .. ":satchel_opened")
-
         while IsUiappRunningByHash(uiAppChannel) == 1 do
             Citizen.Wait(0)
-            UiPromptEnablePromptTypeThisFrame(0)
         end
 
         CloseSatchel()
@@ -1960,6 +1959,83 @@ function CloseSatchel()
     TriggerEvent(Satchel.eventHandlerKey .. ":satchel_closed")
 end
 
+-- Event debouncing utility
+function CreateEventDebouncer(tickDelay, callback)
+    return {
+        pendingEvent = nil,
+        ticks = 0,
+        delay = tickDelay,
+        execute = callback,
+
+        -- Queue an event for debounced execution
+        queue = function(self, eventData)
+            self.pendingEvent = eventData
+            self.ticks = 0
+        end,
+
+        -- Process pending events (call this every tick)
+        process = function(self)
+            if self.pendingEvent then
+                self.ticks = self.ticks + 1
+                if self.ticks >= self.delay then
+                    self.execute(self.pendingEvent)
+                    self.pendingEvent = nil
+                    self.ticks = 0
+                end
+            end
+        end
+    }
+end
+
+-- Create debouncer for ITEM_FOCUSED events
+local focusEventDebouncer = CreateEventDebouncer(5, function(eventData)
+    EventItemFocused(eventData.index, eventData.parameter, eventData.datastore)
+end)
+
+-- UI event processing thread
+Citizen.CreateThread(function()
+    while true do
+        Citizen.Wait(0)
+
+        -- Process debounced events
+        focusEventDebouncer:process()
+
+        if EventsUiIsPending(uiEventChannel) then
+            local msg = DataView.ArrayBuffer(8 * 4)
+            msg:SetInt32(0, 0)
+            msg:SetInt32(8, 0)
+            msg:SetInt32(16, 0)
+            msg:SetInt32(24, 0)
+
+            if (Citizen.InvokeNative(0x90237103F27F7937, uiEventChannel, msg:Buffer()) ~= 0) then -- EVENTS_UI_PEEK_MESSAGE
+                local event = msg:GetInt32(0)
+                local index = msg:GetInt32(8)
+                local parameter = msg:GetInt32(16)
+                local datastore = msg:GetInt32(24)
+
+                if (event == joaat("TAB_PAGE_INCREMENT") or event == joaat("TAB_PAGE_DECREMENT")) then
+                    NavigateSatchelMenuItems()
+                elseif event == joaat("ITEM_SELECTED") then
+                    EventItemSelected(index, parameter, datastore)
+                elseif event == joaat("ITEM_FOCUSED") then
+                    focusEventDebouncer:queue({
+                        index = index,
+                        parameter = parameter,
+                        datastore = datastore
+                    })
+                elseif event == joaat("ITEM_UNFOCUSED") then
+                    -- Skip these events entirely, don't want logging for these
+                else
+                    print("[NativeSatchel] Unknown UI event received: " .. event)
+                end
+            end
+
+            EventsUiPopMessage(uiEventChannel)
+        end
+    end
+end)
+
+-- Prompt handling thread
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(0)
@@ -2001,77 +2077,31 @@ Citizen.CreateThread(function()
     end
 end)
 
--- Event debouncing utility
-function CreateEventDebouncer(tickDelay, callback)
-    return {
-        pendingEvent = nil,
-        ticks = 0,
-        delay = tickDelay,
-        execute = callback,
-
-        -- Queue an event for debounced execution
-        queue = function(self, eventData)
-            self.pendingEvent = eventData
-            self.ticks = 0
-        end,
-
-        -- Process pending events (call this every tick)
-        process = function(self)
-            if self.pendingEvent then
-                self.ticks = self.ticks + 1
-                if self.ticks >= self.delay then
-                    self.execute(self.pendingEvent)
-                    self.pendingEvent = nil
-                    self.ticks = 0
-                end
-            end
-        end
-    }
-end
-
--- Create debouncer for ITEM_FOCUSED events
-local focusEventDebouncer = CreateEventDebouncer(5, function(eventData)
-    EventItemFocused(eventData.index, eventData.parameter, eventData.datastore)
-end)
-
+-- Player processing thread
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(0)
 
-        -- Process debounced events
-        focusEventDebouncer:process()
+        if (IsUiappRunningByHash(uiAppChannel) == 1) then
+            UiPromptEnablePromptTypeThisFrame(0)
 
-        if EventsUiIsPending(uiEventChannel) then
-            local msg = DataView.ArrayBuffer(8 * 4)
-            msg:SetInt32(0, 0)
-            msg:SetInt32(8, 0)
-            msg:SetInt32(16, 0)
-            msg:SetInt32(24, 0)
+            local playerId = PlayerId()
+            local playerPed = GetPlayerPed(playerId)
+            local playerIndex = GetPlayerIndex()
 
-            if (Citizen.InvokeNative(0x90237103F27F7937, uiEventChannel, msg:Buffer()) ~= 0) then -- EVENTS_UI_PEEK_MESSAGE
-                local event = msg:GetInt32(0)
-                local index = msg:GetInt32(8)
-                local parameter = msg:GetInt32(16)
-                local datastore = msg:GetInt32(24)
-
-                if (event == joaat("TAB_PAGE_INCREMENT") or event == joaat("TAB_PAGE_DECREMENT")) then
-                    NavigateSatchelMenuItems()
-                elseif event == joaat("ITEM_SELECTED") then
-                    EventItemSelected(index, parameter, datastore)
-                elseif event == joaat("ITEM_FOCUSED") then
-                    focusEventDebouncer:queue({
-                        index = index,
-                        parameter = parameter,
-                        datastore = datastore
-                    })
-                elseif event == joaat("ITEM_UNFOCUSED") then
-                    -- Skip these events entirely, don't want logging for these
-                else
-                    print("[NativeSatchel] Unknown UI event received: " .. event)
-                end
+            if (IsPedFalling(playerPed) == 1) then
+                CloseUiappByHash(uiAppChannel)
+            elseif (IsPedFallingOver(playerPed) == 1) then
+                CloseUiappByHash(uiAppChannel)
+            elseif (IsPlayerBeingArrested(playerIndex, true) == 1) then
+                CloseUiappByHash(uiAppChannel)
+            elseif (IsPedHogtied(playerPed) == 1) then
+                CloseUiappByHash(uiAppChannel)
+            elseif (IsPedDeadOrDying(playerPed, true) == 1) then
+                CloseUiappByHash(uiAppChannel)
+            elseif (IsEntityDead(playerPed) == 1) then
+                CloseUiappByHash(uiAppChannel)
             end
-
-            EventsUiPopMessage(uiEventChannel)
         end
     end
 end)
