@@ -1893,6 +1893,9 @@ function InitializeData()
 end
 
 function InitializeSatchel()
+    local categoriesReloaded = false
+    local menuItemsReloaded = false
+
     Citizen.CreateThread(function ()
         while (true) do
             Citizen.Wait(10)
@@ -1917,14 +1920,16 @@ function InitializeSatchel()
                 InitializeSatchelCollectionData()
             elseif (categoryItems == 0 or DatabindingIsEntryValid(categoryItems) ~= 1) then
                 InitializeSatchelCategories()
+            elseif (categoriesReloaded ~= true) then
+                ReloadSatchelCategories()
+                categoriesReloaded = true
+            elseif (menuItemsReloaded ~= true) then
+                NavigateSatchelMenuItems()
+                menuItemsReloaded = true
             else
                 break
             end
-
         end
-
-        ReloadSatchelCategories()
-        NavigateSatchelMenuItems()
     end)
 end
 
