@@ -61,6 +61,16 @@ Satchel.enableAutoFolderAssignment = true
 -- Use this if you don't want to have to set textures for every item in a folder
 Satchel.enableFolderItemsInRecent = true
 
+-- Maximum number of items to show in the "Recent" category
+-- This prevents the recent category from becoming too crowded
+-- Be careful when increasing this value, as it may impact performance
+Satchel.maxRecentItems = 16
+
+-- Minimum number of items required to show as a folder
+-- If a folder contains fewer items than this threshold, items will be shown individually
+-- Set to 1 to always show folders, set to 2 or higher to show individual items when below threshold
+Satchel.minItemsForFolder = 2
+
 -- Items
 -- This determines which items are visible in the UI by category
 -- You can see this as the base inventory for any player
@@ -136,6 +146,7 @@ Satchel.inventory = {
     { id = "gamey_bird_cooked",              count = 1,  maxCount = nil, catalog = "CONSUMABLE_GAMEY_BIRD_COOKED", },
     { id = "cocaine_chewing_gum",            count = 1,  maxCount = nil, catalog = "CONSUMABLE_COCAINE_CHEWING_GUM", },
     { id = "herb_prairie_poppy",             count = 1,  maxCount = nil, catalog = "CONSUMABLE_HERB_PRAIRIE_POPPY", },
+    { id = "big_game_meat_thyme_cooked",     count = 5,  maxCount = nil, catalog = "CONSUMABLE_BIG_GAME_MEAT_THYME_COOKED", },
     { id = "medicine",                       count = 1,  maxCount = nil, catalog = "CONSUMABLE_MEDICINE", },
     { id = "moonshine",                      count = 1,  maxCount = nil, catalog = "CONSUMABLE_MOONSHINE", },
     { id = "peach",                          count = 1,  maxCount = nil, catalog = "CONSUMABLE_PEACH", },
@@ -179,8 +190,6 @@ Satchel.categories = {
 
 -- Folders
 -- This determines what folders are available in the UI
--- TODO: Implement toggle for "minimum #items to show folders" to hide folders with 1 item?
--- TODO: Properly order folders by time added instead of always last
 
 Satchel.folders = {
     -- General folders
@@ -894,41 +903,72 @@ function NavigateSatchelMenuItems()
     DatabindingWriteDataHashStringFromParent(datastoreSelected, "Category", category.titleHash)
 
     local filteredIndex = 0
-    local folderItems = {}
+    local menuEntries = {}
+    local processedFolders = {}
+    local recentItemCount = 0
 
     -- Clear existing cache
     Satchel._cacheMenuItems = {}
 
+    -- Properly filter items based on category and folder logic
     for _, item in ipairs(Satchel._cacheItems) do
-        if (not category.recent and item.folder) then
-            if (folderItems[item.folder] == nil) then
-                folderItems[item.folder] = {}
+        if (category.recent and Satchel.maxRecentItems > 0 and recentItemCount >= Satchel.maxRecentItems) then
+            -- Skip this item as we've reached the recent items limit
+        elseif (not category.recent and item.folder) then
+            -- Process folder items (skip folders entirely for recent category)
+            if (not processedFolders[item.folder]) then
+                local folderIndex = Satchel.mapFolders[item.folder]
+                local folder = Satchel.folders[folderIndex]
+
+                if (folder and folder.category == category.id) then
+                    -- Count items in this folder for the current category
+                    local folderItemCount = 0
+
+                    for _, checkItem in ipairs(Satchel._cacheItems) do
+                        if (checkItem.folder == item.folder) then
+                            folderItemCount = folderItemCount + 1
+                        end
+                    end
+
+                    -- Check if folder has enough items to warrant showing as folder
+                    if (folderItemCount >= Satchel.minItemsForFolder) then
+                        table.insert(menuEntries, { type = "folder", data = folder })
+                        processedFolders[item.folder] = { individual = false, count = folderItemCount, processed = 0 }
+                    else
+                        -- Mark folder as individual processing with count
+                        processedFolders[item.folder] = { individual = true, count = folderItemCount, processed = 0 }
+                    end
+                end
             end
 
-            table.insert(folderItems[item.folder], item)
-        elseif (not Satchel.enableFolderItemsInRecent and category.recent and item.folder) then
-            -- Skip items in folders for recent category
-        elseif ((category.recent and filteredIndex < 48) or (item.category == category.id)) then
-            local added = AddMenuItem(filteredIndex, item)
-
-            if (added and added ~= 0) then
-                table.insert(Satchel._cacheMenuItems, added)
-                filteredIndex = filteredIndex + 1
+            -- If folder is set for individual processing, add this item
+            if (processedFolders[item.folder] and processedFolders[item.folder].individual) then
+                if (item.category == category.id) then
+                    table.insert(menuEntries, { type = "item", data = item })
+                end
+            end
+        elseif (category.recent or item.category == category.id) then
+            -- Add regular items to menu entries (including items from folders in recent category)
+            table.insert(menuEntries, { type = "item", data = item })
+            if (category.recent) then
+                recentItemCount = recentItemCount + 1
             end
         end
     end
 
-    for folderKey, items in pairs(folderItems) do
-        local folderIndex = Satchel.mapFolders[folderKey]
-        local folder = Satchel.folders[folderIndex]
+    -- Process all menu entries sequentially
+    for _, entry in ipairs(menuEntries) do
+        local added = nil
 
-        if (folder and (folder.category == category.id)) then
-            local added = AddMenuFolder(filteredIndex, folder)
+        if (entry.type == "item") then
+            added = AddMenuItem(filteredIndex, entry.data)
+        elseif (entry.type == "folder") then
+            added = AddMenuFolder(filteredIndex, entry.data)
+        end
 
-            if (added and added ~= 0) then
-                table.insert(Satchel._cacheMenuItems, added)
-                filteredIndex = filteredIndex + 1
-            end
+        if (added and added ~= 0) then
+            table.insert(Satchel._cacheMenuItems, added)
+            filteredIndex = filteredIndex + 1
         end
     end
 
