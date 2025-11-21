@@ -31,7 +31,6 @@ Satchel.allowCooking = true
 Satchel.allowDropping = true
 
 -- Enable/disable prompts for discarding items
--- TODO: Investigate why this seems to take precendence over item.discardable
 Satchel.allowDiscarding = true
 
 -- "Discard" by default means removing all items, but it can be anything you want
@@ -119,7 +118,6 @@ Satchel.inventory = {
     { id = "carcass_wolf_high_quality",      count = 1,  maxCount = nil, catalog = "PROVISION_ANIMAL_CARCASS_WOLF_HIGH_QUALITY", },
     { id = "buckle_silver",                  count = 1,  maxCount = nil, catalog = "PROVISION_BUCKLE_SILVER", },
     { id = "fish_smallmouth_bass",           count = 1,  maxCount = nil, catalog = "PROVISION_FISH_SMALLMOUTH_BASS", },
-    -- TODO: Sometimes the texture of this poor deer (get it?) doesn't load and instead uses "_placeholder"
     { id = "carcass_deer_poor",              count = 1,  maxCount = nil, catalog = "PROVISION_ANIMAL_CARCASS_DEER_POOR", },
     { id = "tenn_whiskey",                   count = 1,  maxCount = nil, catalog = "CONSUMABLE_TENN_WHISKEY", },
     { id = "irish_whiskey",                  count = 1,  maxCount = nil, catalog = "CONSUMABLE_IRISH_WHISKEY", },
@@ -162,7 +160,6 @@ Satchel.inventory = {
 -- Categories
 -- This determines what categories are visible in the UI
 -- TODO: Triggers for enabling/disabling categories like horse/wagon?
--- TODO: Investigate why sometimes on first load we still have the invisible categories bug
 
 Satchel.categories = {
     { id = "recent",      recent = true,  texture = "satchel_nav_all",         titleHash = 0x504364F1,     emptyLabel = nil, emptyLabelHash = 0x504364F1,     emptyDescription = nil, emptyDescriptionHash = 0x4E6F9F15,          tags = {} },
@@ -770,24 +767,7 @@ function InitializeSatchelCategories()
     SetPersistedInt("RefCategoryItems", datastore)
 end
 
-function ClearSatchelCategories()
-    local datastore = GetPersistedInt("RefCategoryItems")
-
-    if (datastore == 0 or DatabindingIsEntryValid(datastore) ~= 1) then
-        print("[NativeSatchel] ClearSatchelCategories: Category items wasn't ready in time!")
-        return
-    end
-
-    Satchel._cacheCategoryItems = {}
-    SetPersistedInt("CurrentCategoryCount", 0)
-    DatabindingSetTemplatedUiItemListSize(datastore, 0)
-end
-
 function ReloadSatchelCategories()
-    if (GetPersistedInt("CurrentCategoryCount") > 0) then
-        ClearSatchelCategories()
-    end
-
     local datastore = GetPersistedInt("RefCategoryItems")
     local datastoreSelected = GetPersistedInt("RefSelectedData")
 
@@ -802,9 +782,13 @@ function ReloadSatchelCategories()
     end
 
     local categoryIndex = 0
+    local currentIndex = GetPersistedInt("CurrentCategoryIndex")
+
+    -- Clear existing cache
+    Satchel._cacheCategoryItems = {}
 
     for _, category in ipairs(Satchel.categories) do
-        local added = AddCategory(categoryIndex, category)
+        local added = AddCategory(categoryIndex, category, currentIndex)
 
         if (added and added ~= 0) then
             table.insert(Satchel._cacheCategoryItems, added)
@@ -815,7 +799,6 @@ function ReloadSatchelCategories()
     SetPersistedInt("CurrentCategoryCount", categoryIndex)
     DatabindingSetTemplatedUiItemListSize(datastore, categoryIndex)
 
-    local currentIndex = GetPersistedInt("CurrentCategoryIndex")
     DatabindingWriteDataIntFromParent(datastoreSelected, "CategoryIndex", currentIndex)
     DatabindingWriteDataIntFromParent(datastoreSelected, "DefaultCategoryIndex", currentIndex)
     DatabindingWriteDataIntFromParent(datastoreSelected, "CategoryCount", categoryIndex)
@@ -912,6 +895,9 @@ function NavigateSatchelMenuItems()
 
     local filteredIndex = 0
     local folderItems = {}
+
+    -- Clear existing cache
+    Satchel._cacheMenuItems = {}
 
     for _, item in ipairs(Satchel._cacheItems) do
         if (not category.recent and item.folder) then
@@ -1443,6 +1429,9 @@ function PreloadSatchelListItems(folderId)
 
     local listIndex = 0
 
+    -- Clear existing cache
+    Satchel._cacheMenuItems = {}
+
     for _, item in ipairs(Satchel._cacheItems) do
         if (item.folder and item.folder == folder.id) then
             local added = AddListItem(listIndex, item)
@@ -1704,7 +1693,7 @@ function EnsureTxdIsLoaded(txd)
     end
 end
 
-function AddCategory(index, category)
+function AddCategory(index, category, currentIndex)
     local datastoreMain = GetPersistedInt("RefCategoryItems")
 
     if (datastoreMain == 0 or DatabindingIsEntryValid(datastoreMain) ~= 1) then
@@ -1723,7 +1712,7 @@ function AddCategory(index, category)
     DatabindingAddDataHash(data, "IconTexture", category.texture)
 
     -- This should be set the the current category index
-    DatabindingAddDataBool(data, "CurrentCategory", index == 0)
+    DatabindingAddDataBool(data, "CurrentCategory", index == currentIndex)
 
     DatabindingSetTemplatedUiItemHashAlias(datastoreMain, index, joaat("category_item"))
 
@@ -1906,6 +1895,8 @@ end
 function InitializeSatchel()
     Citizen.CreateThread(function ()
         while (true) do
+            Citizen.Wait(10)
+
             local menuItems = GetPersistedInt("RefMenuItems")
             local listItems = GetPersistedInt("RefListItems")
             local mainData = GetPersistedInt("RefMainData")
@@ -1930,7 +1921,6 @@ function InitializeSatchel()
                 break
             end
 
-            Citizen.Wait(10)
         end
 
         ReloadSatchelCategories()
@@ -2101,6 +2091,17 @@ AddEventHandler("onResourceStop", function(resourceName)
     end
 end)
 
+-- Satchel Control Triggers
+AddEventHandler(Satchel.eventHandlerKey .. ":open_satchel", function()
+    OpenSatchel()
+end)
+
+AddEventHandler(Satchel.eventHandlerKey .. ":close_satchel", function()
+    if IsUiappActiveByHash(uiAppChannel) then
+        CloseUiappByHash(uiAppChannel)
+    end
+end)
+
 ---------------------------------------------------------------------------------
 --                                                                             --
 --                                   UNSTABLE                                  --
@@ -2130,18 +2131,6 @@ function RefreshSatchelAfterChange()
         end
     end
 end
-
--- Satchel Control Triggers
-AddEventHandler(Satchel.eventHandlerKey .. ":open_satchel", function()
-    OpenSatchel()
-end)
-
-AddEventHandler(Satchel.eventHandlerKey .. ":close_satchel", function()
-    if IsUiappActiveByHash(uiAppChannel) then
-        CloseUiappByHash(uiAppChannel)
-        CloseSatchel()
-    end
-end)
 
 -- Inventory Synchronization
 AddEventHandler(Satchel.eventHandlerKey .. ":synchronize", function(items)
