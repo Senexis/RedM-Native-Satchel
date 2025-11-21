@@ -293,6 +293,7 @@ Satchel.folders = {
 --                                                                             --
 ---------------------------------------------------------------------------------
 
+Satchel._resourcesLoaded = false
 Satchel._cachePersistence = {}
 Satchel._cacheCategoryItems = {}
 Satchel._cacheItems = {}
@@ -301,15 +302,15 @@ Satchel._cacheMenuItems = {}
 
 function InitializeResources()
     Citizen.CreateThread(function()
-        local textBlocksToLoad = { "satch", "shop", "global" }
+        Satchel._resourcesLoaded = false
+
+        local textBlocksToLoad = { "global", "satch", "shop" }
 
         for _, block in ipairs(textBlocksToLoad) do
             if (TextBlockIsLoaded(block) == 0) then
-                print("[NativeSatchel] Requesting '" .. block .. "' text block to load...")
                 TextBlockRequest(block)
 
                 while (TextBlockIsLoaded(block) == 0) do
-                    print("[NativeSatchel] Waiting for '" .. block .. "' text block to load...")
                     Citizen.Wait(5)
                 end
             end
@@ -319,15 +320,15 @@ function InitializeResources()
 
         for _, txd in ipairs(textureDictsToLoad) do
             if (HasStreamedTextureDictLoaded(txd) == 0) then
-                print("[NativeSatchel] Requesting '" .. txd .. "' texture dict to load...")
                 RequestStreamedTextureDict(txd)
 
                 while (HasStreamedTextureDictLoaded(txd) == 0) do
-                    print("[NativeSatchel] Waiting for '" .. txd .. "' texture dict to load...")
                     Citizen.Wait(5)
                 end
             end
         end
+
+        Satchel._resourcesLoaded = true
     end)
 end
 
@@ -1938,6 +1939,11 @@ function InitializeSatchel()
 end
 
 function OpenSatchel()
+    if (Satchel._resourcesLoaded ~= true) then
+        print("[NativeSatchel] OpenSatchel: Resources not loaded yet!")
+        return
+    end
+
     Citizen.CreateThread(function()
         SetPersistedInt("CurrentCategoryIndex", 0)
 
@@ -2092,7 +2098,6 @@ AddEventHandler("onResourceStop", function(resourceName)
 
     if IsUiappActiveByHash(uiAppChannel) then
         CloseUiappByHash(uiAppChannel)
-        CloseSatchel()
     end
 end)
 
