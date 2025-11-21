@@ -37,71 +37,73 @@ The Native Satchel system is built around three main data types that define how 
 
 ```lua
 local item = {
-    -- Any string identifier you want to internally use
-    id = "big_game_meat_cooked",
+    -- Required: Any string identifier you want to internally use
+    id = "my_custom_item",
 
-    -- The amount of items for that specific item
-    count = 5,
+    -- Required: The amount of items for that specific item
+    count = 1,
 
-    -- Optional. The maximum amount of items for that specific item
-    -- This affects the footer text depending on the count and maxCount
-    maxCount = nil,
-
+    -- Required if missing item.catalog or Satchel.enableAutoCategorization is disabled
+    -- Optional if item.catalog is set and Satchel.enableAutoCategorization is enabled
     -- The category the item belongs to, see the category type
     category = "provisions",
 
-    -- Optional. Groups the item in a folder, see the folder type
-    folder = "big_game",
+    -- Optional: The maximum amount of items for that specific item
+    -- This affects the footer text depending on the count and maxCount
+    maxCount = 1,
 
-    -- Optional. Whether the item can be discarded
-    discardable = false,
+    -- Optional: When set to a string, we'll use catalog_sp and catalog_mp to fill UI data for you
+    catalog = nil,
 
-    -- Optional. When set to a string, we'll use catalog_sp and catalog_mp to fill UI data for you
-    catalog = "CONSUMABLE_BIG_GAME_MEAT_COOKED",
+    -- Optional: Groups the item in a folder, see the folder type
+    folder = nil,
 
-    -- Optional. Sets the display label for the item
-    -- TODO: Remove joaat requirement (as string is possible)
-    name = joaat("POSTER_PL_ARTHUR_NAME"),
+    -- Optional: Sets the display label for the item (free string, can be anything)
+    label = "My Custom Item",
 
-    -- Optional. Sets the description label for the item
-    -- TODO: Remove joaat requirement (as string is possible)
-    description = 0xC51209D8,
+    -- Optional: Sets the description text for the item (free string, can be anything)
+    description = "This is my custom item.",
 
-    -- Optional. Whether to mark the item as special, which gives the texture a yellow hue
+    -- Optional: Whether to mark the item as special, which gives the texture a yellow hue
     special = true,
 
-    -- Optional. The amount of quality stars to show on the item, can be 0, 1, 2 or 3 stars
+    -- Optional: The amount of quality stars to show on the item, can be 0, 1, 2 or 3 stars
     stars = 3,
 
-    -- Optional. The texture directory for the icon of this item
-    txd = joaat("toasts_mp_generic"),
+    -- Optional: The texture dictionary for the icon of this item
+    txd = "toasts_mp_generic",
 
-    -- Optional. The texture to use for the icon of this item
-    texture = joaat("toast_mp_standalone_sp"),
+    -- Optional: The texture to use for the icon of this item
+    texture = "toast_mp_standalone_sp",
 
-    -- Optional. A list of effect IDs to show as icons in the description of the item
-    -- TODO: Simplify by using { type = value }
-    effects = { joaat("EFFECT_HEALTH_CORE_MINUS_2") },
+    -- Optional: A list of effect IDs to show as icons in the description of the item
+    -- TODO: Use something like { healthCore = 5, staminaCore = 3, deadEyeCore = 0 }
+    -- TODO: Rename this to effectIds = {} instead when above is implemented as effects = {}
+    -- TODO: Complete the missing effect IDs (not used in catalog, but useful here)
+    effects = { "EFFECT_HEALTH_CORE_GOLD_1D" },
 
-    -- Optional. Whether the item can be dropped
+    -- Optional: Whether the item can be dropped
     droppable = false,
 
-    -- Optional. Whether the item can be broken down
+    -- Optional: Whether the item can be discarded
+    discardable = false,
+
+    -- Optional: Whether the item can be broken down
     breakable = false,
 
-    -- Optional. Whether the item can be cooked
+    -- Optional: Whether the item can be cooked
     cookable = false,
 
-    -- Optional. Whether the item can be used
+    -- Optional: Whether the item can be used
     usable = false,
 
-    -- Optional. Whether the item can be drunk
+    -- Optional: Whether the item can be drunk
     drinkable = false,
 
-    -- Optional. Whether the item can be eaten
+    -- Optional: Whether the item can be eaten
     edible = false,
 
-    -- Optional. Whether the item can be read
+    -- Optional: Whether the item can be read
     readable = false,
 }
 ```
@@ -110,18 +112,33 @@ local item = {
 
 ```lua
 local category = {
-    -- Any string identifier you want to internally use
+    -- Required: Any string identifier you want to internally use
     id = "recent",
 
-    -- Whether the category lists the 48 most recently added items, does not include folders
+    -- Required: Whether the category lists the 48 most recently added items, does not include folders
     recent = true,
 
-    -- The hash of the texture to use
+    -- Required: The texture name to use (string, not hash)
     -- Due to UI limitations it has to be in the "satchel_textures" dictionary
-    texture = joaat("satchel_nav_all"),
+    texture = "satchel_nav_all",
 
-    -- The hash of the UI label to use for the category, in this example "Recent"
-    label = 0x504364F1,
+    -- Required: The hash of the UI label to use for the category title (must be valid game text key)
+    titleHash = 0x504364F1,
+
+    -- Alternative to emptyLabelHash: Custom label (free string, use either this or emptyLabelHash)
+    emptyLabel = nil,
+
+    -- Alternative to emptyLabel: The hash for the empty state label when no items are present (must be valid game text key)
+    emptyLabelHash = 0x504364F1,
+
+    -- Alternative to emptyDescriptionHash: Custom description (free string, use either this or emptyDescriptionHash)
+    emptyDescription = nil,
+
+    -- Alternative to emptyDescription: The hash for the empty state description when no items are present (must be valid game text key)
+    emptyDescriptionHash = 0x4E6F9F15,
+
+    -- Required: Tags used for auto-categorization (array of tag strings)
+    tags = {},
 }
 ```
 
@@ -129,23 +146,35 @@ local category = {
 
 ```lua
 local folder = {
-    -- Any string identifier you want to internally use
-    id = "arrowheads",
+    -- Required: Any string identifier you want to internally use
+    id = "collector_arrowheads",
 
-    -- Which category the folder belongs to, see the category type
+    -- Required: Which category the folder belongs to, see the category type
     category = "valuables",
 
-    -- The hash of the texture dictionary to use
-    txd = joaat("inventory_items_mp"),
+    -- Required: The hash for the folder title (must be valid game text key)
+    titleHash = "CI_TAG_FOLDER_COLLECTOR_ARROWHEADS",
 
-    -- The hash of the texture to use
-    texture = joaat("provision_arrowhead_set"),
+    -- Alternative to labelHash: Custom label (free string, use either this or labelHash)
+    label = nil,
 
-    -- The hash of the UI label to use for the category
-    label = joaat("CI_TAG_FOLDER_COLLECTOR_ARROWHEADS"),
+    -- Alternative to label: The hash of the UI label to use for the folder (must be valid game text key)
+    labelHash = "CI_TAG_FOLDER_COLLECTOR_ARROWHEADS",
 
-    -- The hash of the UI description to use for the category
-    description = joaat("CI_TAG_FOLDER_COLLECTOR_ARROWHEADS_DESC"),
+    -- Alternative to descriptionHash: Custom description (free string, use either this or descriptionHash)
+    description = nil,
+
+    -- Alternative to description: The hash of the UI description to use for the folder (must be valid game text key)
+    descriptionHash = "CI_TAG_FOLDER_COLLECTOR_ARROWHEADS_DESC",
+
+    -- Required: The texture dictionary to use (string, not hash)
+    txd = "inventory_items_mp",
+
+    -- Required: The texture to use (string, not hash)
+    texture = "provision_arrowhead_set",
+
+    -- Required: Tags used for auto-folder assignment (array of tag strings)
+    tags = { "CI_TAG_FOLDER_COLLECTOR_ARROWHEADS" },
 }
 ```
 
@@ -209,7 +238,7 @@ AddEventHandler("native_satchel:item_used", function(itemId)
     print("This event is fired when the player uses an item, it has ID", itemId)
 end)
 
-AddEventHandler("native_satchel:item_broken", function(itemId)
+AddEventHandler("native_satchel:item_crafted", function(itemId)
     print("This event is fired when the player breaks down an item, it has ID", itemId)
 end)
 
