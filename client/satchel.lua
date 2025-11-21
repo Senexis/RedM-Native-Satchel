@@ -814,7 +814,8 @@ function NavigateSatchelMenuItems()
     UpdateSatchelCurrentCategory()
 
     -- Since the game is zero-based but LUA 1-based, increment
-    local categoryKey = currentCategoryIndex + 1
+    -- Use modulo to wrap around when exceeding available categories
+    local categoryKey = (currentCategoryIndex % #Satchel.categories) + 1
     local category = Satchel.categories[categoryKey]
 
     if (not category) then
