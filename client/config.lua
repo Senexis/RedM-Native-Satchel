@@ -39,6 +39,7 @@ Config.discardingLabelHash = "SATCHEL_PROMPT_DISCARD_ALL"
 Config.defaultCategoryIndex = 0
 
 -- Whether to enable the item preview on items that have a valid catalog entry
+-- Item previews show the before/after core states of the highlighted item
 Config.enableItemPreview = true
 
 -- The game assumes some items cannot be discarded based on their tags
