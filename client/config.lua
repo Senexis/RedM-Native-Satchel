@@ -38,6 +38,9 @@ Config.discardingLabelHash = "SATCHEL_PROMPT_DISCARD_ALL"
 -- Default category index to open to when opening the satchel
 Config.defaultCategoryIndex = 0
 
+-- Whether to enable the item preview on items that have a valid catalog entry
+Config.enableItemPreview = true
+
 -- The game assumes some items cannot be discarded based on their tags
 -- Set this to true to ignore those tags and allow discarding any item
 Config.ignoreCannotDiscardTag = false

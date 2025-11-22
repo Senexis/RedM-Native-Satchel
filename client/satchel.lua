@@ -7,14 +7,14 @@ Ephemeral = {
     cacheItems = {},
     cacheMenuItems = {},
     cachePersistence = {},
-    isShopMode = false,
-    overrideCategoryIndex = nil,
-    resourcesLoaded = false,
+    stateIsShopMode = false,
+    stateOverrideCategoryIndex = nil,
+    stateResourcesLoaded = false,
 }
 
 function InitializeResources()
     Citizen.CreateThread(function()
-        Ephemeral.resourcesLoaded = false
+        Ephemeral.stateResourcesLoaded = false
 
         local textBlocksToLoad = { "global", "satch", "shop" }
 
@@ -40,7 +40,7 @@ function InitializeResources()
             end
         end
 
-        Ephemeral.resourcesLoaded = true
+        Ephemeral.stateResourcesLoaded = true
     end)
 end
 
@@ -721,6 +721,8 @@ function UpdateSatchelSelectedData(itemId, folderId)
         return
     end
 
+    StopItemPreview()
+
     local id = nil
     local count = nil
     local maxCount = nil
@@ -776,6 +778,13 @@ function UpdateSatchelSelectedData(itemId, folderId)
             readable = readable,
         })
 
+        if (Config.enableItemPreview and item.catalog) then
+            local hash = joaat(item.catalog)
+            if (ItemdatabaseIsKeyValid(hash) ~= 0) then
+                -- 1 for player, 2 for horse
+                StartItemPreview(hash, 1)
+            end
+        end
     else
         local folder = Config.folders[folderId]
 
@@ -797,7 +806,7 @@ function UpdateSatchelSelectedData(itemId, folderId)
     DatabindingWriteDataHashStringFromParent(datastoreSelected, "Description", 0)
     DatabindingWriteStringFromParent(datastoreSelected, "DescriptionAsString", description or "")
 
-    if (Ephemeral.isShopMode or Config.enableItemValueInRegularSatchel) then
+    if (Ephemeral.stateIsShopMode or Config.enableItemValueInRegularSatchel) then
         DatabindingWriteStringFromParent(datastoreSelected, "PriceLabel", priceLabelHash or "")
         DatabindingWriteStringFromParent(datastoreSelected, "Price", priceValue or "")
     end
@@ -1600,19 +1609,19 @@ function SetShoppingMode(enabled)
 end
 
 function OpenSatchel()
-    if (Ephemeral.resourcesLoaded ~= true) then
+    if (Ephemeral.stateResourcesLoaded ~= true) then
         PostFeedTicker("Satchel resources are still loading, try again shortly.")
         return
     end
 
-    local categoryIndex = Ephemeral.overrideCategoryIndex or Config.defaultCategoryIndex or 0
-    Ephemeral.overrideCategoryIndex = nil
+    local categoryIndex = Ephemeral.stateOverrideCategoryIndex or Config.defaultCategoryIndex or 0
+    Ephemeral.stateOverrideCategoryIndex = nil
 
     SetPersistedInt("CurrentCategoryIndex", categoryIndex % #Config.categories)
 
     local mode = "ingame"
 
-    if (Ephemeral.isShopMode) then
+    if (Ephemeral.stateIsShopMode) then
         SetShoppingMode(true)
         mode = "shop"
     end
@@ -1627,7 +1636,9 @@ function OpenSatchel()
             Citizen.Wait(0)
         end
 
-        if (Ephemeral.isShopMode) then
+        StopItemPreview()
+
+        if (Ephemeral.stateIsShopMode) then
             SetShoppingMode(false)
         end
 
@@ -1638,7 +1649,7 @@ end
 function CloseSatchel()
     local mode = "ingame"
 
-    if (Ephemeral.isShopMode) then
+    if (Ephemeral.stateIsShopMode) then
         mode = "shop"
     end
 
@@ -1750,7 +1761,7 @@ Citizen.CreateThread(function()
                     end
 
                     if UiPromptGetProgress(prompt) == 1.0 then
-                        Ephemeral.isShopMode = false
+                        Ephemeral.stateIsShopMode = false
                         OpenSatchel()
                     end
 
@@ -1815,17 +1826,17 @@ end)
 
 -- Satchel Control Triggers
 AddEventHandler(Config.eventHandlerKey .. ":open_satchel", function(mode, index)
-    Ephemeral.isShopMode = mode == "shop"
-    Ephemeral.overrideCategoryIndex = index
+    Ephemeral.stateIsShopMode = mode == "shop"
+    Ephemeral.stateOverrideCategoryIndex = index
     OpenSatchel()
 end)
 
 AddEventHandler(Config.eventHandlerKey .. ":close_satchel", function(mode)
-    if (Ephemeral.isShopMode and mode == "ingame") then
+    if (Ephemeral.stateIsShopMode and mode == "ingame") then
         return
     end
 
-    if (not Ephemeral.isShopMode and mode == "shop") then
+    if (not Ephemeral.stateIsShopMode and mode == "shop") then
         return
     end
 
