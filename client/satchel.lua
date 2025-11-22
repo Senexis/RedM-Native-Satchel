@@ -96,6 +96,16 @@ function SetPersistedInt(key, value)
     Ephemeral.cachePersistence[key] = value
 end
 
+function FindItemById(itemId)
+    for i, item in ipairs(Config.inventory) do
+        if item.id == itemId then
+            return item, i
+        end
+    end
+
+    return nil, nil
+end
+
 function RefreshItems()
     -- Clear the cache
     Ephemeral.cacheItems = {}
@@ -116,8 +126,8 @@ function RefreshItems()
             description = item.description or database.description or "",
             priceLabelHash = item.priceLabelHash or database.priceLabelHash or nil,
             priceValue = item.priceValue or database.priceValue or nil,
-            txd = item.txd or database.txd,
-            texture = item.texture or database.texture,
+            txd = item.txd or database.txd or "inventory_items",
+            texture = item.texture or database.texture or "_placeholder",
             effects = item.effects or database.effects or {},
             stars = item.stars or database.stars or 0,
             special = item.special or database.special or false,
@@ -579,6 +589,15 @@ function NavigateSatchelMenuItems()
     end
 
     TriggerEvent(Config.eventHandlerKey .. ":category_changed", category.id)
+end
+
+function RefreshSatchelAfterChange()
+    RefreshItems()
+    RefreshHashMaps()
+
+    if IsUiappActiveByHash(uiAppChannel) then
+        NavigateSatchelMenuItems()
+    end
 end
 
 function UpdateSatchelPrompts(config)
@@ -1162,7 +1181,7 @@ function EventItemSelected(index, parameter, datastore)
         end
     elseif (parameter == joaat("SEND_ALL")) then
         if (itemId) then
-            TriggerEvent(Config.eventHandlerKey .. ":item_sent_all", itemId)
+            TriggerEvent(Config.eventHandlerKey .. ":item_sent", itemId)
         end
     else
         print("[NativeSatchel] EventItemSelected: Unknown select parameter: " .. parameter)
@@ -1845,40 +1864,10 @@ AddEventHandler(Config.eventHandlerKey .. ":close_satchel", function(mode)
     end
 end)
 
----------------------------------------------------------------------------------
---                                                                             --
---                                   UNSTABLE                                  --
---                                                                             --
----------------------------------------------------------------------------------
-
--- Helper function to find an item in the inventory by ID
-function FindItemById(itemId)
-    for i, item in ipairs(Config.inventory) do
-        if item.id == itemId then
-            return item, i
-        end
-    end
-    return nil, nil
-end
-
--- Helper function to refresh the satchel UI after inventory changes
-function RefreshSatchelAfterChange()
-    if IsUiappActiveByHash(uiAppChannel) then
-        RefreshItems()
-        RefreshHashMaps()
-        ReloadSatchelCategories()
-        -- If we have a currently selected category, refresh its items
-        local currentCategoryIndex = GetPersistedInt("CurrentCategoryIndex")
-        if currentCategoryIndex and currentCategoryIndex >= 0 then
-            NavigateSatchelMenuItems()
-        end
-    end
-end
-
--- Inventory Synchronization
+-- Item Management Triggers
 AddEventHandler(Config.eventHandlerKey .. ":synchronize", function(items)
     if type(items) ~= "table" then
-        print("[Native Satchel] Error: synchronize expects a table of items")
+        print("[Native Satchel] Can't synchronize without a valid table of items")
         return
     end
 
@@ -1886,21 +1875,23 @@ AddEventHandler(Config.eventHandlerKey .. ":synchronize", function(items)
     RefreshSatchelAfterChange()
 end)
 
--- Item Management Triggers
 AddEventHandler(Config.eventHandlerKey .. ":add_item", function(item)
     if type(item) ~= "table" or not item.id then
-        print("[Native Satchel] Error: add_item expects an item table with an id field")
+        print("[Native Satchel] Can't add an item without a valid item table with an ID")
         return
     end
 
     -- Check if item already exists
     local existingItem, index = FindItemById(item.id)
     if existingItem then
-        -- Update existing item
-        Config.inventory[index] = item
+        -- Overwrite existing item
+        existingItem = item
+
+        -- Since the item was modified, move it to the front
+        table.insert(Config.inventory, 1, table.remove(Config.inventory, index))
     else
         -- Add new item
-        table.insert(Config.inventory, item)
+        table.insert(Config.inventory, 1, item)
     end
 
     RefreshSatchelAfterChange()
@@ -1908,67 +1899,76 @@ end)
 
 AddEventHandler(Config.eventHandlerKey .. ":increment_item", function(itemId, count)
     if type(itemId) ~= "string" then
-        print("[Native Satchel] Error: increment_item expects a string itemId")
+        print("[Native Satchel] Can't increment an item without a valid ID")
         return
     end
 
     if type(count) ~= "number" or count <= 0 then
-        print("[Native Satchel] Error: increment_item expects a positive number for count")
+        print("[Native Satchel] Can't increment an item without a positive count")
         return
     end
 
     local item, index = FindItemById(itemId)
-    if item then
-        item.count = (item.count or 0) + count
 
-        -- Respect maxCount if it exists
-        if item.maxCount and item.count > item.maxCount then
-            item.count = item.maxCount
-        end
-
-        RefreshSatchelAfterChange()
-    else
-        print("[Native Satchel] Warning: Item '" .. itemId .. "' not found for increment")
+    if not item then
+        print("[Native Satchel] Item '" .. itemId .. "' not found in the inventory")
+        return
     end
+
+    -- Increment item count
+    item.count = (item.count or 0) + count
+
+    -- Since the item was modified, move it to the front
+    table.insert(Config.inventory, 1, table.remove(Config.inventory, index))
+
+    RefreshSatchelAfterChange()
 end)
 
 AddEventHandler(Config.eventHandlerKey .. ":decrement_item", function(itemId, count)
     if type(itemId) ~= "string" then
-        print("[Native Satchel] Error: decrement_item expects a string itemId")
+        print("[Native Satchel] Can't decrement an item without a valid ID")
         return
     end
 
     if type(count) ~= "number" or count <= 0 then
-        print("[Native Satchel] Error: decrement_item expects a positive number for count")
+        print("[Native Satchel] Can't decrement an item without a positive count")
         return
     end
 
     local item, index = FindItemById(itemId)
-    if item then
-        item.count = math.max(0, (item.count or 0) - count)
 
-        -- Remove item if count reaches 0
-        if item.count == 0 then
-            table.remove(Config.inventory, index)
-        end
-
-        RefreshSatchelAfterChange()
-    else
-        print("[Native Satchel] Warning: Item '" .. itemId .. "' not found for decrement")
+    if not item then
+        print("[Native Satchel] Item '" .. itemId .. "' not found in the inventory")
+        return
     end
+
+    item.count = math.max(0, (item.count or 0) - count)
+
+    if item.count == 0 then
+        -- Remove item if count reaches 0
+        table.remove(Config.inventory, index)
+    else
+        -- Since the item was modified, move it to the front
+        table.insert(Config.inventory, 1, table.remove(Config.inventory, index))
+    end
+
+    RefreshSatchelAfterChange()
 end)
 
 AddEventHandler(Config.eventHandlerKey .. ":remove_item", function(itemId)
     if type(itemId) ~= "string" then
-        print("[Native Satchel] Error: remove_item expects a string itemId")
+        print("[Native Satchel] Can't remove an item without a valid ID")
         return
     end
 
     local item, index = FindItemById(itemId)
-    if item then
-        table.remove(Config.inventory, index)
-        RefreshSatchelAfterChange()
-    else
-        print("[Native Satchel] Warning: Item '" .. itemId .. "' not found for removal")
+
+    if not item then
+        print("[Native Satchel] Item '" .. itemId .. "' not found in the inventory")
+        return
     end
+
+    table.remove(Config.inventory, index)
+
+    RefreshSatchelAfterChange()
 end)

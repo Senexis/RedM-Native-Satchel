@@ -43,17 +43,20 @@ local item = {
     -- Required: The amount of items for that specific item
     count = 1,
 
-    -- Required if missing item.catalog or Config.enableAutoCategorization is disabled
-    -- Optional if item.catalog is set and Config.enableAutoCategorization is enabled
-    -- The category the item belongs to, see the category type
-    category = "provisions",
-
     -- Optional: The maximum amount of items for that specific item
     -- This affects the footer text depending on the count and maxCount
     maxCount = 1,
 
-    -- Optional: When set to a string, we'll use catalog_sp and catalog_mp to fill UI data for you
+    -- Optional: When set to a string, uses catalog_sp and catalog_mp to fill UI data
     catalog = nil,
+
+    -- Optional: Whether the item is enabled/selectable in the UI (defaults to true)
+    enabled = true,
+
+    -- Required if missing item.catalog or Config.enableAutoCategorization is disabled
+    -- Optional if item.catalog is set and Config.enableAutoCategorization is enabled
+    -- The category the item belongs to, see the category type
+    category = "provisions",
 
     -- Optional: Groups the item in a folder, see the folder type
     folder = nil,
@@ -64,11 +67,11 @@ local item = {
     -- Optional: Sets the description text for the item (free string, can be anything)
     description = "This is my custom item.",
 
-    -- Optional: Whether to mark the item as special, which gives the texture a yellow hue
-    special = true,
+    -- Optional: The hash of the price label to show in shop mode
+    priceLabelHash = nil,
 
-    -- Optional: The amount of quality stars to show on the item, can be 0, 1, 2 or 3 stars
-    stars = 3,
+    -- Optional: The price value to show in shop mode
+    priceValue = nil,
 
     -- Optional: The texture dictionary for the icon of this item
     txd = "toasts_mp_generic",
@@ -77,10 +80,20 @@ local item = {
     texture = "toast_mp_standalone_sp",
 
     -- Optional: A list of effect IDs to show as icons in the description of the item
-    -- TODO: Use something like { healthCore = 5, staminaCore = 3, deadEyeCore = 0 }
-    -- TODO: Rename this to effectIds = {} instead when above is implemented as effects = {}
-    -- TODO: Complete the missing effect IDs (not used in catalog, but useful here)
-    effects = { "EFFECT_HEALTH_CORE_GOLD_1D" },
+    effects = {
+        health = { value = 11, duration = 4 },
+        stamina = { value = 11, duration = 4 },
+        deadeye = { value = 11, duration = 4 },
+    },
+
+    -- Optional: The amount of quality stars to show on the item, can be 0, 1, 2 or 3 stars
+    stars = 3,
+
+    -- Optional: Whether to mark the item as special, which gives the texture a yellow hue
+    special = true,
+
+    -- Optional: Whether the item appears equipped in list view
+    equipped = false,
 
     -- Optional: Whether the item can be dropped
     droppable = false,
@@ -222,12 +235,12 @@ Events are fired automatically by the Native Satchel system when specific action
 ### General Events
 
 ```lua
-AddEventHandler("native_satchel:satchel_opened", function()
-    print("This event is fired when the player opens the satchel")
+AddEventHandler("native_satchel:satchel_opened", function(mode)
+    print("This event is fired when the player opens the satchel with mode:", mode)
 end)
 
-AddEventHandler("native_satchel:satchel_closed", function()
-    print("This event is fired when the player closes the satchel")
+AddEventHandler("native_satchel:satchel_closed", function(mode)
+    print("This event is fired when the player closes the satchel from mode:", mode)
 end)
 
 AddEventHandler("native_satchel:category_changed", function(categoryId)
@@ -254,7 +267,7 @@ AddEventHandler("native_satchel:item_discarded", function(itemId)
     print("This event is fired when the player discards an item, it has ID", itemId)
 end)
 
-AddEventHandler("native_satchel:item_sent_all", function(itemId)
+AddEventHandler("native_satchel:item_sent", function(itemId)
     print("This event is fired when the player sends an item, it has ID", itemId)
 end)
 
