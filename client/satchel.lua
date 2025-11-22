@@ -87,6 +87,7 @@ Satchel.inventory = {
 
         -- Optional fields
         maxCount = 1,
+        enabled = false,
         catalog = nil,
         folder = nil,
 
@@ -407,11 +408,11 @@ function RefreshItems()
         local database = item.catalog and GetItemFromDatabase(item.catalog) or {}
 
         local cachedItem = {
-            -- Required fields
             id = item.id,
             count = item.count or 1,
             maxCount = item.maxCount,
             catalog = item.catalog,
+            enabled = item.enabled == nil or item.enabled == true,
 
             -- Fill from item first, then database, then defaults
             label = item.label or database.label or item.id,
@@ -1707,8 +1708,9 @@ function AddMenuItem(index, item)
 
     local id = item.id
     local hash = joaat(id)
-    local count = item.count or 1
-    local maxCount = item.maxCount or nil
+    local count = item.count
+    local maxCount = item.maxCount
+    local enabled = item.enabled
     local label = item.label or id
     local txd = item.txd or "inventory_items"
     local texture = item.texture or "_placeholder"
@@ -1721,7 +1723,7 @@ function AddMenuItem(index, item)
 
     DatabindingAddDataHash(data, "item", hash)
 
-    DatabindingAddDataBool(data, "focusable", true)
+    DatabindingAddDataBool(data, "focusable", enabled)
     DatabindingAddDataHash(data, "color", joaat("COLOR_PURE_WHITE")) -- Colorizes the ENTIRE item (incl count and bg)
 
     DatabindingAddDataHash(data, "ItemTXD", txd)
@@ -1809,6 +1811,7 @@ function AddListItem(index, item)
     local hash = joaat(id)
     local count = item.count
     local maxCount = item.maxCount
+    local enabled = item.enabled
     local label = item.label or id
     local isEquipped = item.equipped or false
 
@@ -1816,7 +1819,7 @@ function AddListItem(index, item)
 
     DatabindingAddDataHash(data, "item", hash)
 
-    DatabindingAddDataBool(data, "focusable", true)
+    DatabindingAddDataBool(data, "focusable", enabled)
     DatabindingAddDataHash(data, "label", 0)
     DatabindingAddDataString(data, "label_as_string", label)
     DatabindingAddDataHash(data, "color", joaat("COLOR_PURE_WHITE")) -- Colorizes the ENTIRE item (incl count and bg)
