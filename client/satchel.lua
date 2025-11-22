@@ -93,6 +93,8 @@ Satchel.inventory = {
         -- Custom item fields
         label = "My Custom Item",
         description = "This is my custom item.",
+        priceLabelHash = "SHOP_VALUE",
+        priceValue = "Priceless",
         special = true,
         stars = 3,
         txd = "toasts_mp_generic",
@@ -102,6 +104,9 @@ Satchel.inventory = {
         -- TODO: Rename this to effectIds = {} instead when above is implemented as effects = {}
         -- TODO: Complete the missing effect IDs (not used in catalog, but useful here)
         effects = { "EFFECT_HEALTH_CORE_GOLD_1D" },
+
+        -- List-only flags
+        equipped = false,
 
         -- Prompt flags
         droppable = false,
@@ -408,11 +413,16 @@ function RefreshItems()
             -- Fill from item first, then database, then defaults
             label = item.label or database.label or item.id,
             description = item.description or database.description or "",
+            priceLabelHash = item.priceLabelHash or database.priceLabelHash or nil,
+            priceValue = item.priceValue or database.priceValue or nil,
             txd = item.txd or database.txd,
             texture = item.texture or database.texture,
             effects = item.effects or database.effectIds or {},
             stars = item.stars or database.stars or 0,
             special = item.special or database.special or false,
+
+            -- List-only flags
+            equipped = item.equipped or database.equipped or false,
 
             -- Prompt flags (default to database values, then sensible defaults)
             droppable = item.droppable or database.droppable or false,
@@ -1127,10 +1137,10 @@ function UpdateSatchelSelectedData(itemId, folderId)
     local id = nil
     local count = nil
     local maxCount = nil
-
-    -- The following could be set through catalog
     local label = nil
     local description = nil
+    local priceLabelHash = nil
+    local priceValue = nil
     local effectIds = {}
     local droppable = nil
     local discardable = nil
@@ -1154,31 +1164,18 @@ function UpdateSatchelSelectedData(itemId, folderId)
         maxCount = item.maxCount
         discardable = item.discardable or false
 
-        if (item.catalog) then
-            local database = GetItemFromDatabase(item.catalog)
-
-            label = database.label or id
-            description = database.description or ""
-            effectIds = database.effectIds or {}
-            droppable = database.droppable or false
-            breakable = database.breakable or false
-            cookable = database.cookable or false
-            usable = database.usable or false
-            drinkable = database.drinkable or false
-            edible = database.edible or false
-            readable = database.readable or false
-        else
-            label = item.label or id
-            description = item.description or ""
-            effectIds = item.effects or {}
-            droppable = item.droppable or false
-            breakable = item.breakable or false
-            cookable = item.cookable or false
-            usable = item.usable or false
-            drinkable = item.drinkable or false
-            edible = item.edible or false
-            readable = item.readable or false
-        end
+        label = item.label or id
+        description = item.description or ""
+        priceLabelHash = item.priceLabelHash or nil
+        priceValue = item.priceValue or nil
+        effectIds = item.effects or {}
+        droppable = item.droppable or false
+        breakable = item.breakable or false
+        cookable = item.cookable or false
+        usable = item.usable or false
+        drinkable = item.drinkable or false
+        edible = item.edible or false
+        readable = item.readable or false
 
         UpdateSatchelPrompts({
             count = count,
@@ -1206,15 +1203,14 @@ function UpdateSatchelSelectedData(itemId, folderId)
         UpdateSatchelPrompts({ folder = true })
     end
 
-    if (label) then
-        DatabindingWriteDataHashStringFromParent(datastoreSelected, "Name", 0)
-        DatabindingWriteStringFromParent(datastoreSelected, "NameAsString", label)
-    end
+    DatabindingWriteDataHashStringFromParent(datastoreSelected, "Name", 0)
+    DatabindingWriteStringFromParent(datastoreSelected, "NameAsString", label or "")
 
-    if (description) then
-        DatabindingWriteDataHashStringFromParent(datastoreSelected, "Description", 0)
-        DatabindingWriteStringFromParent(datastoreSelected, "DescriptionAsString", description)
-    end
+    DatabindingWriteDataHashStringFromParent(datastoreSelected, "Description", 0)
+    DatabindingWriteStringFromParent(datastoreSelected, "DescriptionAsString", description or "")
+
+    DatabindingWriteStringFromParent(datastoreSelected, "PriceLabel", priceLabelHash or "")
+    DatabindingWriteStringFromParent(datastoreSelected, "Price", priceValue or "")
 
     local tipDescription = ""
 
@@ -1250,6 +1246,8 @@ function EmptyCategorySatchelSelectedData(category)
         return
     end
 
+    ClearSatchelSelectedData()
+
     local label = (category.emptyLabelHash and GetStringFromHashKey(category.emptyLabelHash)) or category.emptyLabel or ""
     local description = (category.emptyDescriptionHash and GetStringFromHashKey(category.emptyDescriptionHash)) or category.emptyDescription or ""
 
@@ -1271,6 +1269,8 @@ function ClearSatchelSelectedData()
     DatabindingWriteStringFromParent(datastoreSelected, "NameAsString", "")
     DatabindingWriteDataHashStringFromParent(datastoreSelected, "Description", 0)
     DatabindingWriteStringFromParent(datastoreSelected, "DescriptionAsString", "")
+    DatabindingWriteStringFromParent(datastoreSelected, "PriceLabel", "")
+    DatabindingWriteStringFromParent(datastoreSelected, "Price", "")
     DatabindingWriteStringFromParent(datastoreSelected, "Tip", "")
 
     ClearSatchelSelectedEffects()
@@ -1776,29 +1776,11 @@ function AddMenuItem(index, item)
     local hash = joaat(id)
     local count = item.count or 1
     local maxCount = item.maxCount or nil
-
-    -- The following could be set through catalog
-    local label = nil
-    local txd = nil
-    local texture = nil
-    local special = nil
-    local stars = nil
-
-    if (item.catalog) then
-        local database = GetItemFromDatabase(item.catalog)
-
-        label = database.label or id
-        txd = database.txd or "inventory_items"
-        texture = database.texture or "_placeholder"
-        special = database.special or false
-        stars = database.stars or 0
-    else
-        label = item.label or id
-        txd = item.txd or "inventory_items"
-        texture = item.texture or "_placeholder"
-        special = item.special or false
-        stars = item.stars or 0
-    end
+    local label = item.label or id
+    local txd = item.txd or "inventory_items"
+    local texture = item.texture or "_placeholder"
+    local special = item.special or false
+    local stars = item.stars or 0
 
     EnsureTxdIsLoaded(txd)
 
@@ -1886,18 +1868,8 @@ function AddListItem(index, item)
     local hash = joaat(id)
     local count = item.count
     local maxCount = item.maxCount
-    local isEquipped = false
-
-    -- The following could be set through catalog
-    local label = nil
-
-    if (item.catalog) then
-        local database = GetItemFromDatabase(item.catalog)
-
-        label = database.label or id
-    else
-        label = item.label or id
-    end
+    local label = item.label or id
+    local isEquipped = item.equipped or false
 
     local data = DatabindingGetDataContainerFromChildIndex(datastoreMain, index)
 
