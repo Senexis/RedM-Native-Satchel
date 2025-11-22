@@ -186,8 +186,9 @@ Triggers are client-side events that allow you to control the satchel's behavior
 
 ```lua
 -- Forces the satchel to open
--- Mode can be "shop" for shop mode or anything else for regular ingame mode
-TriggerEvent("native_satchel:open_satchel", mode)
+-- Mode is optional and can be "shop" for shop mode or anything else for regular ingame mode
+-- Index is optional and specifies the category index to open to (0-based), use -1 for last category
+TriggerEvent("native_satchel:open_satchel", mode, index)
 
 -- Forces the satchel to close
 -- Mode can be used to only close from a specific mode, e.g. "shop" or "ingame"

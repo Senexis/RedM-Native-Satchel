@@ -38,6 +38,9 @@ Satchel.allowDiscarding = true
 Satchel.discardingLabel = ""
 Satchel.discardingLabelHash = "SATCHEL_PROMPT_DISCARD_ALL"
 
+-- Default category index to open to when opening the satchel
+Satchel.defaultCategoryIndex = 0
+
 -- The game assumes some items cannot be discarded based on their tags
 -- Set this to true to ignore those tags and allow discarding any item
 Satchel.ignoreCannotDiscardTag = false
@@ -729,7 +732,7 @@ function UpdateSatchelCurrentCategory()
     DatabindingWriteDataIntFromParent(datastoreSelected, "DefaultCategoryIndex", currentIndex)
 
     for index, datastoreCategory in ipairs(Satchel._cacheCategoryItems) do
-        if ((index - 1) == GetPersistedInt("CurrentCategoryIndex")) then
+        if ((index - 1) == currentIndex) then
             DatabindingWriteDataBoolFromParent(datastoreCategory, "CurrentCategory", true)
         else
             DatabindingWriteDataBoolFromParent(datastoreCategory, "CurrentCategory", false)
@@ -1912,7 +1915,10 @@ function OpenSatchel()
         return
     end
 
-    SetPersistedInt("CurrentCategoryIndex", 0)
+    local categoryIndex = Satchel._overrideCategoryIndex or Satchel.defaultCategoryIndex or 0
+    Satchel._overrideCategoryIndex = nil
+
+    SetPersistedInt("CurrentCategoryIndex", categoryIndex % #Satchel.categories)
 
     local mode = "ingame"
 
@@ -2118,8 +2124,9 @@ AddEventHandler("onResourceStop", function(resourceName)
 end)
 
 -- Satchel Control Triggers
-AddEventHandler(Satchel.eventHandlerKey .. ":open_satchel", function(mode)
+AddEventHandler(Satchel.eventHandlerKey .. ":open_satchel", function(mode, index)
     Satchel._isShopMode = mode == "shop"
+    Satchel._overrideCategoryIndex = index
     OpenSatchel()
 end)
 
