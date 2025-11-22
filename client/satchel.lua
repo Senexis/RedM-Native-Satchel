@@ -594,10 +594,6 @@ function InitializeSatchelSelectedEffects()
 
         datastore = DatabindingAddDataContainer(parent, "effects")
 
-        -- Tanks: -10 to -1 | 1 to 10   | 11 for overpowered
-        -- Cores: -8 to -1  | 1 to 8    | 12 for overpowered
-        -- Duration: See effectDurations enum
-
         DatabindingAddDataInt(datastore, "health", 0)
         DatabindingAddDataHash(datastore, "healthDurationCategory", 0)
 
@@ -1180,7 +1176,7 @@ function UpdateSatchelSelectedEffects(effects)
 
     ClearSatchelSelectedEffects()
 
-    local durations = {
+    local durationHashes = {
         [0] = 0,
         [1] = 0xB65F115D,
         [2] = 0xEC9E7DDB,
@@ -1190,38 +1186,63 @@ function UpdateSatchelSelectedEffects(effects)
 
     for key, effect in pairs(effects) do
         local value = effect.value or 0
-        local duration = durations[effect.duration] or 0
+        local duration = effect.duration or 0
+
+        if (key == "health" or key == "stamina" or key == "deadeye" or key == "horseHealth" or key == "horseStamina") then
+            -- Tanks: -10 to -1 | 1 to 10   | 11 for overpowered
+            if (value ~= 11 and (value < -10 or value > 10)) then
+                print("[NativeSatchel] UpdateSatchelSelectedEffects: Invalid effect value for " .. key .. ": " .. value)
+                value = 0
+            end
+        elseif (key == "healthCore" or key == "staminaCore" or key == "deadeyeCore" or key == "horseHealthCore" or key == "horseStaminaCore") then
+            -- Cores: -8 to -1  | 1 to 8    | 12 for overpowered
+            if (value ~= 12 and (value < -8 or value > 8)) then
+                print("[NativeSatchel] UpdateSatchelSelectedEffects: Invalid effect value for " .. key .. ": " .. value)
+                value = 0
+            end
+        else
+            print("[NativeSatchel] UpdateSatchelSelectedEffects: Unknown effect key " .. key)
+            value = 0
+        end
+
+        -- Duration: 0 to 4
+        if (duration < 0 or duration > 4) then
+            print("[NativeSatchel] UpdateSatchelSelectedEffects: Invalid effect duration for " .. key .. ": " .. duration)
+            duration = 0
+        end
+
+        local durationHash = durationHashes[duration] or 0
 
         if (key == "health") then
             DatabindingWriteDataIntFromParent(datastoreEffects, "health", value)
-            DatabindingWriteDataHashStringFromParent(datastoreEffects, "healthDurationCategory", duration)
+            DatabindingWriteDataHashStringFromParent(datastoreEffects, "healthDurationCategory", durationHash)
         elseif (key == "stamina") then
             DatabindingWriteDataIntFromParent(datastoreEffects, "stamina", value)
-            DatabindingWriteDataHashStringFromParent(datastoreEffects, "staminaDurationCategory", duration)
+            DatabindingWriteDataHashStringFromParent(datastoreEffects, "staminaDurationCategory", durationHash)
         elseif (key == "deadeye") then
             DatabindingWriteDataIntFromParent(datastoreEffects, "deadeye", value)
-            DatabindingWriteDataHashStringFromParent(datastoreEffects, "deadeyeDurationCategory", duration)
+            DatabindingWriteDataHashStringFromParent(datastoreEffects, "deadeyeDurationCategory", durationHash)
         elseif (key == "healthCore") then
             DatabindingWriteDataIntFromParent(datastoreEffects, "healthCore", value)
-            DatabindingWriteDataHashStringFromParent(datastoreEffects, "healthCoreDurationCategory", duration)
+            DatabindingWriteDataHashStringFromParent(datastoreEffects, "healthCoreDurationCategory", durationHash)
         elseif (key == "staminaCore") then
             DatabindingWriteDataIntFromParent(datastoreEffects, "staminaCore", value)
-            DatabindingWriteDataHashStringFromParent(datastoreEffects, "staminaCoreDurationCategory", duration)
+            DatabindingWriteDataHashStringFromParent(datastoreEffects, "staminaCoreDurationCategory", durationHash)
         elseif (key == "deadeyeCore") then
             DatabindingWriteDataIntFromParent(datastoreEffects, "deadeyeCore", value)
-            DatabindingWriteDataHashStringFromParent(datastoreEffects, "deadeyeCoreDurationCategory", duration)
+            DatabindingWriteDataHashStringFromParent(datastoreEffects, "deadeyeCoreDurationCategory", durationHash)
         elseif (key == "horseHealth") then
             DatabindingWriteDataIntFromParent(datastoreEffects, "healthHorse", value)
-            DatabindingWriteDataHashStringFromParent(datastoreEffects, "healthHorseDurationCategory", duration)
+            DatabindingWriteDataHashStringFromParent(datastoreEffects, "healthHorseDurationCategory", durationHash)
         elseif (key == "horseStamina") then
             DatabindingWriteDataIntFromParent(datastoreEffects, "staminaHorse", value)
-            DatabindingWriteDataHashStringFromParent(datastoreEffects, "staminaHorseDurationCategory", duration)
+            DatabindingWriteDataHashStringFromParent(datastoreEffects, "staminaHorseDurationCategory", durationHash)
         elseif (key == "horseHealthCore") then
             DatabindingWriteDataIntFromParent(datastoreEffects, "healthCoreHorse", value)
-            DatabindingWriteDataHashStringFromParent(datastoreEffects, "healthCoreHorseDurationCategory", duration)
+            DatabindingWriteDataHashStringFromParent(datastoreEffects, "healthCoreHorseDurationCategory", durationHash)
         elseif (key == "horseStaminaCore") then
             DatabindingWriteDataIntFromParent(datastoreEffects, "staminaCoreHorse", value)
-            DatabindingWriteDataHashStringFromParent(datastoreEffects, "staminaCoreHorseDurationCategory", duration)
+            DatabindingWriteDataHashStringFromParent(datastoreEffects, "staminaCoreHorseDurationCategory", durationHash)
         end
     end
 end
