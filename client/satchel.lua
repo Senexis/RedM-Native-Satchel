@@ -1973,7 +1973,19 @@ function InitializeSatchel()
     end)
 end
 
-function OpenSatchel()
+function SetShoppingMode(enabled)
+    if (enabled) then
+        DisplayRadar(false);
+        EnableHudContext(joaat("HUD_CTX_IN_CATALOGUE_SHOP_MENU"));
+        DisableControlAction(0, joaat("INPUT_OPEN_SATCHEL_MENU"), true);
+    else
+        DisplayRadar(true);
+        DisableHudContext(joaat("HUD_CTX_IN_CATALOGUE_SHOP_MENU"));
+        EnableControlAction(0, joaat("INPUT_OPEN_SATCHEL_MENU"), true);
+    end
+end
+
+function OpenSatchel(entry)
     if (Satchel._resourcesLoaded ~= true) then
         PostFeedTicker("Satchel resources are still loading, try again shortly.")
         return
@@ -1981,7 +1993,11 @@ function OpenSatchel()
 
     SetPersistedInt("CurrentCategoryIndex", 0)
 
-    LaunchUiappByHashWithEntry("satchel", "INGAME")
+    if (entry == "SHOP") then
+        SetShoppingMode(true)
+    end
+
+    LaunchUiappByHashWithEntry(joaat("satchel"), joaat(entry or "INGAME"))
     InitializeSatchel()
 
     TriggerEvent(Satchel.eventHandlerKey .. ":satchel_opened")
@@ -1989,6 +2005,10 @@ function OpenSatchel()
     Citizen.CreateThread(function()
         while IsUiappRunningByHash(uiAppChannel) == 1 do
             Citizen.Wait(0)
+        end
+
+        if (entry == "SHOP") then
+            SetShoppingMode(false)
         end
 
         CloseSatchel()
@@ -2104,7 +2124,7 @@ Citizen.CreateThread(function()
                     end
 
                     if UiPromptGetProgress(prompt) == 1.0 then
-                        OpenSatchel()
+                        OpenSatchel("INGAME")
                     end
 
                     PromptDelete(prompt)
@@ -2167,8 +2187,12 @@ AddEventHandler("onResourceStop", function(resourceName)
 end)
 
 -- Satchel Control Triggers
-AddEventHandler(Satchel.eventHandlerKey .. ":open_satchel", function()
-    OpenSatchel()
+AddEventHandler(Satchel.eventHandlerKey .. ":open_satchel", function(type)
+    if (type == "shop") then
+        OpenSatchel("SHOP")
+    else
+        OpenSatchel("INGAME")
+    end
 end)
 
 AddEventHandler(Satchel.eventHandlerKey .. ":close_satchel", function()

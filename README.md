@@ -186,7 +186,8 @@ Triggers are client-side events that allow you to control the satchel's behavior
 
 ```lua
 -- Forces the satchel to open
-TriggerEvent("native_satchel:open_satchel")
+-- Type can be "shop" for shop mode or "ingame" for in-game mode
+TriggerEvent("native_satchel:open_satchel", type)
 
 -- Forces the satchel to close
 TriggerEvent("native_satchel:close_satchel")
