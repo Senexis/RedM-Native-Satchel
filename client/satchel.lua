@@ -99,11 +99,14 @@ Satchel.inventory = {
         stars = 3,
         txd = "toasts_mp_generic",
         texture = "toast_mp_standalone_sp",
-
-        -- TODO: Use something like { healthCore = 5, staminaCore = 3, deadEyeCore = 0 }
-        -- TODO: Rename this to effectIds = {} instead when above is implemented as effects = {}
-        -- TODO: Complete the missing effect IDs (not used in catalog, but useful here)
-        effects = { "EFFECT_HEALTH_CORE_GOLD_1D" },
+        effects = {
+            health = { value = 11, duration = 0 },
+            stamina = { value = 11, duration = 1 },
+            deadeye = { value = 11, duration = 2 },
+            healthCore = { value = 12, duration = 3 },
+            staminaCore = { value = 12, duration = 4 },
+            deadeyeCore = { value = -1, duration = 0 },
+        },
 
         -- List-only flags
         equipped = false,
@@ -417,7 +420,7 @@ function RefreshItems()
             priceValue = item.priceValue or database.priceValue or nil,
             txd = item.txd or database.txd,
             texture = item.texture or database.texture,
-            effects = item.effects or database.effectIds or {},
+            effects = item.effects or database.effects or {},
             stars = item.stars or database.stars or 0,
             special = item.special or database.special or false,
 
@@ -478,116 +481,6 @@ function RefreshHashMaps()
         Satchel.mapItems[item.id] = index
         Satchel.mapItemsJoaat[joaat(item.id)] = index
     end
-end
-
-function LoadEffectMaps()
-    Satchel.effects = {}
-
-    -- These are the effect maps from the base game (catalog_sp and catalog_mp), feel free to add more
-    Satchel.effects.data = {
-        { id = "EFFECT_HEALTH_MINUS_2",               type = "health",           value = -2, duration = 0 },
-        { id = "EFFECT_HEALTH_10",                    type = "health",           value = 10, duration = 0 },
-        { id = "EFFECT_HEALTH_OVERPOWERED_2H",        type = "health",           value = 11, duration = 1 },
-        { id = "EFFECT_HEALTH_OVERPOWERED_3H",        type = "health",           value = 11, duration = 1 },
-        { id = "EFFECT_HEALTH_OVERPOWERED_4H",        type = "health",           value = 11, duration = 2 },
-        { id = "EFFECT_HEALTH_OVERPOWERED_6H",        type = "health",           value = 11, duration = 2 },
-        { id = "EFFECT_HEALTH_OVERPOWERED_9H",        type = "health",           value = 11, duration = 3 },
-
-        { id = "EFFECT_STAMINA_10",                   type = "stamina",          value = 10, duration = 0 },
-        { id = "EFFECT_STAMINA_OVERPOWERED_2H",       type = "stamina",          value = 11, duration = 1 },
-        { id = "EFFECT_STAMINA_OVERPOWERED_3H",       type = "stamina",          value = 11, duration = 1 },
-        { id = "EFFECT_STAMINA_OVERPOWERED_4H",       type = "stamina",          value = 11, duration = 2 },
-        { id = "EFFECT_STAMINA_OVERPOWERED_6H",       type = "stamina",          value = 11, duration = 2 },
-        { id = "EFFECT_STAMINA_OVERPOWERED_9H",       type = "stamina",          value = 11, duration = 3 },
-
-        { id = "EFFECT_DEADEYE_10",                   type = "deadeye",          value = 10, duration = 0 },
-        { id = "EFFECT_DEADEYE_OVERPOWERED_2H",       type = "deadeye",          value = 11, duration = 1 },
-        { id = "EFFECT_DEADEYE_OVERPOWERED_3H",       type = "deadeye",          value = 11, duration = 1 },
-        { id = "EFFECT_DEADEYE_OVERPOWERED_4H",       type = "deadeye",          value = 11, duration = 2 },
-        { id = "EFFECT_DEADEYE_OVERPOWERED_6H",       type = "deadeye",          value = 11, duration = 2 },
-        { id = "EFFECT_DEADEYE_OVERPOWERED_9H",       type = "deadeye",          value = 11, duration = 3 },
-
-        { id = "EFFECT_HEALTH_CORE_MINUS_2",          type = "healthCore",       value = -2, duration = 0 },
-        { id = "EFFECT_HEALTH_CORE_MINUS_1",          type = "healthCore",       value = -1, duration = 0 },
-        { id = "EFFECT_HEALTH_CORE_1",                type = "healthCore",       value = 1,  duration = 0 },
-        { id = "EFFECT_HEALTH_CORE_2",                type = "healthCore",       value = 2,  duration = 0 },
-        { id = "EFFECT_HEALTH_CORE_3",                type = "healthCore",       value = 3,  duration = 0 },
-        { id = "EFFECT_HEALTH_CORE_4",                type = "healthCore",       value = 4,  duration = 0 },
-        { id = "EFFECT_HEALTH_CORE_6",                type = "healthCore",       value = 6,  duration = 0 },
-        { id = "EFFECT_HEALTH_CORE_8",                type = "healthCore",       value = 8,  duration = 0 },
-        { id = "EFFECT_HEALTH_CORE_GOLD_1D",          type = "healthCore",       value = 12, duration = 4 },
-        { id = "EFFECT_HEALTH_CORE_GOLD_72H",         type = "healthCore",       value = 12, duration = 4 },
-
-        { id = "EFFECT_STAMINA_CORE_MINUS_1",         type = "staminaCore",      value = -1, duration = 0 },
-        { id = "EFFECT_STAMINA_CORE_1",               type = "staminaCore",      value = 1,  duration = 0 },
-        { id = "EFFECT_STAMINA_CORE_2",               type = "staminaCore",      value = 2,  duration = 0 },
-        { id = "EFFECT_STAMINA_CORE_3",               type = "staminaCore",      value = 3,  duration = 0 },
-        { id = "EFFECT_STAMINA_CORE_4",               type = "staminaCore",      value = 4,  duration = 0 },
-        { id = "EFFECT_STAMINA_CORE_5",               type = "staminaCore",      value = 5,  duration = 0 },
-        { id = "EFFECT_STAMINA_CORE_6",               type = "staminaCore",      value = 6,  duration = 0 },
-        { id = "EFFECT_STAMINA_CORE_8",               type = "staminaCore",      value = 8,  duration = 0 },
-        { id = "EFFECT_STAMINA_CORE_GOLD_1D",         type = "staminaCore",      value = 12, duration = 4 },
-        { id = "EFFECT_STAMINA_CORE_GOLD_12H",        type = "staminaCore",      value = 12, duration = 4 },
-        { id = "EFFECT_STAMINA_CORE_GOLD_36H",        type = "staminaCore",      value = 12, duration = 4 },
-        { id = "EFFECT_STAMINA_CORE_GOLD_72H",        type = "staminaCore",      value = 12, duration = 4 },
-
-        { id = "EFFECT_DEADEYE_CORE_MINUS_1",         type = "deadeyeCore",      value = -1, duration = 0 },
-        { id = "EFFECT_DEADEYE_CORE_1",               type = "deadeyeCore",      value = 1,  duration = 0 },
-        { id = "EFFECT_DEADEYE_CORE_2",               type = "deadeyeCore",      value = 2,  duration = 0 },
-        { id = "EFFECT_DEADEYE_CORE_3",               type = "deadeyeCore",      value = 3,  duration = 0 },
-        { id = "EFFECT_DEADEYE_CORE_4",               type = "deadeyeCore",      value = 4,  duration = 0 },
-        { id = "EFFECT_DEADEYE_CORE_5",               type = "deadeyeCore",      value = 5,  duration = 0 },
-        { id = "EFFECT_DEADEYE_CORE_6",               type = "deadeyeCore",      value = 6,  duration = 0 },
-        { id = "EFFECT_DEADEYE_CORE_8",               type = "deadeyeCore",      value = 8,  duration = 0 },
-        { id = "EFFECT_DEADEYE_CORE_GOLD_1D",         type = "deadeyeCore",      value = 12, duration = 4 },
-        { id = "EFFECT_DEADEYE_CORE_GOLD_12H",        type = "deadeyeCore",      value = 12, duration = 4 },
-        { id = "EFFECT_DEADEYE_CORE_GOLD_36H",        type = "deadeyeCore",      value = 12, duration = 4 },
-        { id = "EFFECT_DEADEYE_CORE_GOLD_72H",        type = "deadeyeCore",      value = 12, duration = 4 },
-
-        { id = "EFFECT_HORSE_HEALTH_5",               type = "horseHealth",      value = 5,  duration = 0 },
-        { id = "EFFECT_HORSE_HEALTH_10",              type = "horseHealth",      value = 10, duration = 0 },
-        { id = "EFFECT_HORSE_HEALTH_OVERPOWERED_3H",  type = "horseHealth",      value = 11, duration = 1 },
-        { id = "EFFECT_HORSE_HEALTH_OVERPOWERED_6H",  type = "horseHealth",      value = 11, duration = 2 },
-        { id = "EFFECT_HORSE_HEALTH_OVERPOWERED_9H",  type = "horseHealth",      value = 11, duration = 3 },
-
-        { id = "EFFECT_HORSE_STAMINA_10",             type = "horseStamina",     value = 10, duration = 0 },
-        { id = "EFFECT_HORSE_STAMINA_OVERPOWERED_3H", type = "horseStamina",     value = 11, duration = 1 },
-        { id = "EFFECT_HORSE_STAMINA_OVERPOWERED_6H", type = "horseStamina",     value = 11, duration = 2 },
-        { id = "EFFECT_HORSE_STAMINA_OVERPOWERED_9H", type = "horseStamina",     value = 11, duration = 3 },
-
-        { id = "EFFECT_HORSE_HEALTH_CORE_1",          type = "horseHealthCore",  value = 1,  duration = 0 },
-        { id = "EFFECT_HORSE_HEALTH_CORE_2",          type = "horseHealthCore",  value = 2,  duration = 0 },
-        { id = "EFFECT_HORSE_HEALTH_CORE_4",          type = "horseHealthCore",  value = 4,  duration = 0 },
-        { id = "EFFECT_HORSE_HEALTH_CORE_5",          type = "horseHealthCore",  value = 5,  duration = 0 },
-        { id = "EFFECT_HORSE_HEALTH_CORE_GOLD_1D",    type = "horseHealthCore",  value = 12, duration = 4 },
-        { id = "EFFECT_HORSE_HEALTH_CORE_GOLD_12H",   type = "horseHealthCore",  value = 12, duration = 4 },
-
-        { id = "EFFECT_HORSE_STAMINA_CORE_1",         type = "horseStaminaCore", value = 1,  duration = 0 },
-        { id = "EFFECT_HORSE_STAMINA_CORE_2",         type = "horseStaminaCore", value = 2,  duration = 0 },
-        { id = "EFFECT_HORSE_STAMINA_CORE_4",         type = "horseStaminaCore", value = 4,  duration = 0 },
-        { id = "EFFECT_HORSE_STAMINA_CORE_5",         type = "horseStaminaCore", value = 5,  duration = 0 },
-        { id = "EFFECT_HORSE_STAMINA_CORE_GOLD_1D",   type = "horseStaminaCore", value = 12, duration = 4 },
-        { id = "EFFECT_HORSE_STAMINA_CORE_GOLD_12H",  type = "horseStaminaCore", value = 12, duration = 4 },
-    }
-
-    -- Since the game will only be in hash, create a hash map
-    Satchel.effects.mapEffects = {}
-    Satchel.effects.mapEffectsJoaat = {}
-
-    for index, item in ipairs(Satchel.effects.data) do
-        Satchel.effects.mapEffects[item.id] = index
-        Satchel.effects.mapEffectsJoaat[joaat(item.id)] = index
-    end
-
-    -- These are the effect duration IDs to simplify usage
-    Satchel.effects.durations =
-    {
-        [0] = 0,
-        [1] = 3059683677,
-        [2] = 3969809883,
-        [3] = 585722480,
-        [4] = 3373446852,
-    }
 end
 
 function InitializeSatchelMainData()
@@ -1141,7 +1034,7 @@ function UpdateSatchelSelectedData(itemId, folderId)
     local description = nil
     local priceLabelHash = nil
     local priceValue = nil
-    local effectIds = {}
+    local effects = {}
     local droppable = nil
     local discardable = nil
     local breakable = nil
@@ -1168,7 +1061,7 @@ function UpdateSatchelSelectedData(itemId, folderId)
         description = item.description or ""
         priceLabelHash = item.priceLabelHash or nil
         priceValue = item.priceValue or nil
-        effectIds = item.effects or {}
+        effects = item.effects or {}
         droppable = item.droppable or false
         breakable = item.breakable or false
         cookable = item.cookable or false
@@ -1188,6 +1081,7 @@ function UpdateSatchelSelectedData(itemId, folderId)
             edible = edible,
             readable = readable,
         })
+
     else
         local folder = Satchel.folders[folderId]
 
@@ -1235,7 +1129,7 @@ function UpdateSatchelSelectedData(itemId, folderId)
 
     DatabindingWriteStringFromParent(datastoreSelected, "Tip", tipDescription)
 
-    UpdateSatchelSelectedEffects(effectIds)
+    UpdateSatchelSelectedEffects(effects)
 end
 
 function EmptyCategorySatchelSelectedData(category)
@@ -1276,7 +1170,7 @@ function ClearSatchelSelectedData()
     ClearSatchelSelectedEffects()
 end
 
-function UpdateSatchelSelectedEffects(ids)
+function UpdateSatchelSelectedEffects(effects)
     local datastoreEffects = GetPersistedInt("RefSelectedEffectsData")
 
     if (datastoreEffects == 0 or DatabindingIsEntryValid(datastoreEffects) ~= 1) then
@@ -1284,91 +1178,49 @@ function UpdateSatchelSelectedEffects(ids)
         return
     end
 
-    -- Check the IDs for valid mapped effects
-    local validEffects = {}
-
-    for _, hash in ipairs(ids) do
-        if (Satchel.effects.mapEffectsJoaat[hash]) then
-            local index = Satchel.effects.mapEffectsJoaat[hash]
-            table.insert(validEffects, Satchel.effects.data[index])
-        end
-    end
-
     ClearSatchelSelectedEffects()
 
-    -- If we don't have any valid mapped effects, we're done here
-    if (#validEffects == 0) then
-        return
-    end
+    local durations = {
+        [0] = 0,
+        [1] = 0xB65F115D,
+        [2] = 0xEC9E7DDB,
+        [3] = 0x22E96A70,
+        [4] = 0xC912B6C4,
+    }
 
-    for _, data in ipairs(validEffects) do
-        if (data.type == "health") then
-            DatabindingWriteDataIntFromParent(datastoreEffects, "health", data.value)
+    for key, effect in pairs(effects) do
+        local value = effect.value or 0
+        local duration = durations[effect.duration] or 0
 
-            local duration = Satchel.effects.durations[data.duration]
+        if (key == "health") then
+            DatabindingWriteDataIntFromParent(datastoreEffects, "health", value)
             DatabindingWriteDataHashStringFromParent(datastoreEffects, "healthDurationCategory", duration)
-        end
-
-        if (data.type == "stamina") then
-            DatabindingWriteDataIntFromParent(datastoreEffects, "stamina", data.value)
-
-            local duration = Satchel.effects.durations[data.duration]
+        elseif (key == "stamina") then
+            DatabindingWriteDataIntFromParent(datastoreEffects, "stamina", value)
             DatabindingWriteDataHashStringFromParent(datastoreEffects, "staminaDurationCategory", duration)
-        end
-
-        if (data.type == "deadeye") then
-            DatabindingWriteDataIntFromParent(datastoreEffects, "deadeye", data.value)
-
-            local duration = Satchel.effects.durations[data.duration]
+        elseif (key == "deadeye") then
+            DatabindingWriteDataIntFromParent(datastoreEffects, "deadeye", value)
             DatabindingWriteDataHashStringFromParent(datastoreEffects, "deadeyeDurationCategory", duration)
-        end
-
-        if (data.type == "healthCore") then
-            DatabindingWriteDataIntFromParent(datastoreEffects, "healthCore", data.value)
-
-            local duration = Satchel.effects.durations[data.duration]
+        elseif (key == "healthCore") then
+            DatabindingWriteDataIntFromParent(datastoreEffects, "healthCore", value)
             DatabindingWriteDataHashStringFromParent(datastoreEffects, "healthCoreDurationCategory", duration)
-        end
-
-        if (data.type == "staminaCore") then
-            DatabindingWriteDataIntFromParent(datastoreEffects, "staminaCore", data.value)
-
-            local duration = Satchel.effects.durations[data.duration]
+        elseif (key == "staminaCore") then
+            DatabindingWriteDataIntFromParent(datastoreEffects, "staminaCore", value)
             DatabindingWriteDataHashStringFromParent(datastoreEffects, "staminaCoreDurationCategory", duration)
-        end
-
-        if (data.type == "deadeyeCore") then
-            DatabindingWriteDataIntFromParent(datastoreEffects, "deadeyeCore", data.value)
-
-            local duration = Satchel.effects.durations[data.duration]
+        elseif (key == "deadeyeCore") then
+            DatabindingWriteDataIntFromParent(datastoreEffects, "deadeyeCore", value)
             DatabindingWriteDataHashStringFromParent(datastoreEffects, "deadeyeCoreDurationCategory", duration)
-        end
-
-        if (data.type == "horseHealth") then
-            DatabindingWriteDataIntFromParent(datastoreEffects, "healthHorse", data.value)
-
-            local duration = Satchel.effects.durations[data.duration]
+        elseif (key == "horseHealth") then
+            DatabindingWriteDataIntFromParent(datastoreEffects, "healthHorse", value)
             DatabindingWriteDataHashStringFromParent(datastoreEffects, "healthHorseDurationCategory", duration)
-        end
-
-        if (data.type == "horseStamina") then
-            DatabindingWriteDataIntFromParent(datastoreEffects, "staminaHorse", data.value)
-
-            local duration = Satchel.effects.durations[data.duration]
+        elseif (key == "horseStamina") then
+            DatabindingWriteDataIntFromParent(datastoreEffects, "staminaHorse", value)
             DatabindingWriteDataHashStringFromParent(datastoreEffects, "staminaHorseDurationCategory", duration)
-        end
-
-        if (data.type == "horseHealthCore") then
-            DatabindingWriteDataIntFromParent(datastoreEffects, "healthCoreHorse", data.value)
-
-            local duration = Satchel.effects.durations[data.duration]
+        elseif (key == "horseHealthCore") then
+            DatabindingWriteDataIntFromParent(datastoreEffects, "healthCoreHorse", value)
             DatabindingWriteDataHashStringFromParent(datastoreEffects, "healthCoreHorseDurationCategory", duration)
-        end
-
-        if (data.type == "horseStaminaCore") then
-            DatabindingWriteDataIntFromParent(datastoreEffects, "staminaCoreHorse", data.value)
-
-            local duration = Satchel.effects.durations[data.duration]
+        elseif (key == "horseStaminaCore") then
+            DatabindingWriteDataIntFromParent(datastoreEffects, "staminaCoreHorse", value)
             DatabindingWriteDataHashStringFromParent(datastoreEffects, "staminaCoreHorseDurationCategory", duration)
         end
     end
@@ -1603,6 +1455,7 @@ function GetItemFromDatabase(item)
         texture = "",
         category = nil,
         folder = nil,
+        effects = {},
         effectIds = {},
         stars = 0,
         special = false,
@@ -1632,6 +1485,65 @@ function GetItemFromDatabase(item)
     local effectIds = GetItemEffectIds(hash)
     if (effectIds) then
         result.effectIds = effectIds
+
+        local durations =
+        {
+            [joaat("EFFECT_DURATION_CATEGORY_NONE")] = 0,
+            [joaat("EFFECT_DURATION_CATEGORY_1")]    = 1,
+            [joaat("EFFECT_DURATION_CATEGORY_2")]    = 2,
+            [joaat("EFFECT_DURATION_CATEGORY_3")]    = 3,
+            [joaat("EFFECT_DURATION_CATEGORY_4")]    = 4,
+        }
+
+        for _, effectId in pairs(effectIds) do
+            local effect = GetItemEffectData(effectId)
+            if (effect) then
+                local value = tonumber(effect.value or 0)
+                local duration = durations[effect.durationcategory] or 0
+
+                if (effect.type == joaat("EFFECT_HEALTH")) then
+                    result.effects["health"] = { value = value, duration = duration }
+                elseif (effect.type == joaat("EFFECT_HEALTH_OVERPOWERED")) then
+                    result.effects["health"] = { value = 11, duration = duration }
+                elseif (effect.type == joaat("EFFECT_STAMINA")) then
+                    result.effects["stamina"] = { value = value, duration = duration }
+                elseif (effect.type == joaat("EFFECT_STAMINA_OVERPOWERED")) then
+                    result.effects["stamina"] = { value = 11, duration = duration }
+                elseif (effect.type == joaat("EFFECT_DEADEYE")) then
+                    result.effects["deadeye"] = { value = value, duration = duration }
+                elseif (effect.type == joaat("EFFECT_DEADEYE_OVERPOWERED")) then
+                    result.effects["deadeye"] = { value = 11, duration = duration }
+                elseif (effect.type == joaat("EFFECT_HEALTH_CORE")) then
+                    result.effects["healthCore"] = { value = value, duration = duration }
+                elseif (effect.type == joaat("EFFECT_HEALTH_CORE_GOLD")) then
+                    result.effects["healthCore"] = { value = 12, duration = duration }
+                elseif (effect.type == joaat("EFFECT_STAMINA_CORE")) then
+                    result.effects["staminaCore"] = { value = value, duration = duration }
+                elseif (effect.type == joaat("EFFECT_STAMINA_CORE_GOLD")) then
+                    result.effects["staminaCore"] = { value = 12, duration = duration }
+                elseif (effect.type == joaat("EFFECT_DEADEYE_CORE")) then
+                    result.effects["deadeyeCore"] = { value = value, duration = duration }
+                elseif (effect.type == joaat("EFFECT_DEADEYE_CORE_GOLD")) then
+                    result.effects["deadeyeCore"] = { value = 12, duration = duration }
+                elseif (effect.type == joaat("EFFECT_HORSE_HEALTH")) then
+                    result.effects["horseHealth"] = { value = value, duration = duration }
+                elseif (effect.type == joaat("EFFECT_HORSE_HEALTH_OVERPOWERED")) then
+                    result.effects["horseHealth"] = { value = 11, duration = duration }
+                elseif (effect.type == joaat("EFFECT_HORSE_STAMINA")) then
+                    result.effects["horseStamina"] = { value = value, duration = duration }
+                elseif (effect.type == joaat("EFFECT_HORSE_STAMINA_OVERPOWERED")) then
+                    result.effects["horseStamina"] = { value = 11, duration = duration }
+                elseif (effect.type == joaat("EFFECT_HORSE_HEALTH_CORE")) then
+                    result.effects["horseHealthCore"] = { value = value, duration = duration }
+                elseif (effect.type == joaat("EFFECT_HORSE_HEALTH_CORE_GOLD")) then
+                    result.effects["horseHealthCore"] = { value = 12, duration = duration }
+                elseif (effect.type == joaat("EFFECT_HORSE_STAMINA_CORE")) then
+                    result.effects["horseStaminaCore"] = { value = value, duration = duration }
+                elseif (effect.type == joaat("EFFECT_HORSE_STAMINA_CORE_GOLD")) then
+                    result.effects["horseStaminaCore"] = { value = 12, duration = duration }
+                end
+            end
+        end
     end
 
     local tagIds = GetItemTagIds(hash)
@@ -1901,7 +1813,6 @@ function InitializeData()
     InitializePersistence()
     RefreshItems()
     RefreshHashMaps()
-    LoadEffectMaps()
 end
 
 function InitializeSatchel()

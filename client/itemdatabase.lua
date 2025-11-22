@@ -46,6 +46,24 @@ function GetItemEffectIds(item)
     return effectIds
 end
 
+---Gets effect data for a specific effect ID
+---@param effectId number The effect ID to get data for
+---@return table info Effect information including id, type, value, time, timeUnits, corePercent, and durationcategory
+function GetItemEffectData(effectId)
+    local struct = DataView.ArrayBuffer(256)
+    Citizen.InvokeNative(0xCF2D360D27FD1ABF, effectId, struct:Buffer()) -- ITEMDATABASE_FILLOUT_ITEM_EFFECT_ID_INFO
+
+    return {
+        id = struct:GetInt32(0), -- f_0 | same as effectId
+        type = struct:GetInt32(8), -- f_1 | effect kind hash. Example values: `EFFECT_HEALTH`, `EFFECT_HEALTH_CORE`, `EFFECT_HEALTH_CORE_GOLD`, `EFFECT_HEALTH_OVERPOWERED`
+        value = struct:GetInt32(16), -- f_2 | converted into a float, usually divided by 1.0f or 2.0f. Possibly 2.0f when Arthur is sick
+        time = struct:GetInt32(24), -- f_3 | converted into a float by scripts
+        timeUnits = struct:GetInt32(32), -- f_4 | some enum, possible values: 0, 1, 2, 3
+        corePercent = struct:GetFloat32(40), -- f_5 | confirmed float, usually 12.5 or 100.0
+        durationcategory = struct:GetInt32(48), -- f_6 | category hash. effect_duration_category_none, effect_duration_category_1 through 4
+    }
+end
+
 ---Gets UI data for an item including label, description, and texture information
 ---@param item number The item hash
 ---@return table data UI data with label, description, textureId, and textureDict fields
