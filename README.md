@@ -43,8 +43,8 @@ local item = {
     -- Required: The amount of items for that specific item
     count = 1,
 
-    -- Required if missing item.catalog or Satchel.enableAutoCategorization is disabled
-    -- Optional if item.catalog is set and Satchel.enableAutoCategorization is enabled
+    -- Required if missing item.catalog or Config.enableAutoCategorization is disabled
+    -- Optional if item.catalog is set and Config.enableAutoCategorization is enabled
     -- The category the item belongs to, see the category type
     category = "provisions",
 
