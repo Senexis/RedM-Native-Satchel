@@ -1759,8 +1759,10 @@ function AddMenuFolder(index, folder)
 
     local id = folder.id
     local hash = joaat(id)
-    local txd = folder.txd
-    local texture = folder.texture
+    local count = folder.count or 1
+    local maxCount = folder.maxCount or false
+    local txd = folder.txd or "inventory_items"
+    local texture = folder.texture or "_placeholder"
 
     EnsureTxdIsLoaded(txd)
 
@@ -1776,8 +1778,14 @@ function AddMenuFolder(index, folder)
 
     -- Not sure why, but folders technically support counts
     -- To prevent lingering counts (datacontainer is reused), reset to default
-    DatabindingAddDataInt(data, "count", 1)
-    DatabindingAddDataBool(data, "maxCount", false)
+    DatabindingAddDataInt(data, "count", count)
+
+    -- Makes the count red
+    if (maxCount and count >= maxCount) then
+        DatabindingAddDataBool(data, "maxCount", Satchel.enableRedCountOnMax or false)
+    else
+        DatabindingAddDataBool(data, "maxCount", false)
+    end
 
     DatabindingSetTemplatedUiItemHashAlias(datastoreMain, index, joaat("folder_item"))
 
