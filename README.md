@@ -186,19 +186,21 @@ Triggers are client-side events that allow you to control the satchel's behavior
 
 ```lua
 -- Forces the satchel to open
--- Type can be "shop" for shop mode or "ingame" for in-game mode
-TriggerEvent("native_satchel:open_satchel", type)
+-- Mode can be "shop" for shop mode or anything else for regular ingame mode
+TriggerEvent("native_satchel:open_satchel", mode)
 
 -- Forces the satchel to close
-TriggerEvent("native_satchel:close_satchel")
-
--- Synchronizes the satchel to the given item table, see the item type above
-TriggerEvent("native_satchel:synchronize", items)
+-- Mode can be used to only close from a specific mode, e.g. "shop" or "ingame"
+-- Anything else or nil will close it regardless of mode
+TriggerEvent("native_satchel:close_satchel", mode)
 ```
 
 ### Item Triggers
 
 ```lua
+-- Synchronizes the satchel to the given item table, see the item type above
+TriggerEvent("native_satchel:synchronize", items)
+
 -- Adds a new item to the satchel, see the item type above
 TriggerEvent("native_satchel:add_item", item)
 

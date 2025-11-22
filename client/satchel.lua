@@ -46,6 +46,9 @@ Satchel.ignoreCannotDiscardTag = false
 -- This doesn't affect the tip text, which will always be marked red
 Satchel.enableRedCountOnMax = false
 
+-- Whether to show the item value section in regular satchel mode
+Satchel.enableItemValueInRegularSatchel = false
+
 -- Automatically categorize items based on their tags in the item database
 -- This requires the base game's categories to be present in Satchel.categories
 -- All of them are included by default in this file
@@ -309,6 +312,7 @@ Satchel.folders = {
 ---------------------------------------------------------------------------------
 
 Satchel._resourcesLoaded = false
+Satchel._isShopMode = false
 Satchel._cachePersistence = {}
 Satchel._cacheCategoryItems = {}
 Satchel._cacheItems = {}
@@ -1100,8 +1104,10 @@ function UpdateSatchelSelectedData(itemId, folderId)
     DatabindingWriteDataHashStringFromParent(datastoreSelected, "Description", 0)
     DatabindingWriteStringFromParent(datastoreSelected, "DescriptionAsString", description or "")
 
-    DatabindingWriteStringFromParent(datastoreSelected, "PriceLabel", priceLabelHash or "")
-    DatabindingWriteStringFromParent(datastoreSelected, "Price", priceValue or "")
+    if (Satchel._isShopMode or Satchel.enableItemValueInRegularSatchel) then
+        DatabindingWriteStringFromParent(datastoreSelected, "PriceLabel", priceLabelHash or "")
+        DatabindingWriteStringFromParent(datastoreSelected, "Price", priceValue or "")
+    end
 
     local tipDescription = ""
 
@@ -1900,7 +1906,7 @@ function SetShoppingMode(enabled)
     end
 end
 
-function OpenSatchel(entry)
+function OpenSatchel()
     if (Satchel._resourcesLoaded ~= true) then
         PostFeedTicker("Satchel resources are still loading, try again shortly.")
         return
@@ -1908,21 +1914,24 @@ function OpenSatchel(entry)
 
     SetPersistedInt("CurrentCategoryIndex", 0)
 
-    if (entry == "SHOP") then
+    local mode = "ingame"
+
+    if (Satchel._isShopMode) then
         SetShoppingMode(true)
+        mode = "shop"
     end
 
-    LaunchUiappByHashWithEntry(joaat("satchel"), joaat(entry or "INGAME"))
+    LaunchUiappByHashWithEntry(joaat("satchel"), joaat(mode))
     InitializeSatchel()
 
-    TriggerEvent(Satchel.eventHandlerKey .. ":satchel_opened")
+    TriggerEvent(Satchel.eventHandlerKey .. ":satchel_opened", mode)
 
     Citizen.CreateThread(function()
         while IsUiappRunningByHash(uiAppChannel) == 1 do
             Citizen.Wait(0)
         end
 
-        if (entry == "SHOP") then
+        if (Satchel._isShopMode) then
             SetShoppingMode(false)
         end
 
@@ -1931,7 +1940,13 @@ function OpenSatchel(entry)
 end
 
 function CloseSatchel()
-    TriggerEvent(Satchel.eventHandlerKey .. ":satchel_closed")
+    local mode = "ingame"
+
+    if (Satchel._isShopMode) then
+        mode = "shop"
+    end
+
+    TriggerEvent(Satchel.eventHandlerKey .. ":satchel_closed", mode)
 end
 
 -- Event debouncing utility
@@ -2039,7 +2054,8 @@ Citizen.CreateThread(function()
                     end
 
                     if UiPromptGetProgress(prompt) == 1.0 then
-                        OpenSatchel("INGAME")
+                        Satchel._isShopMode = false
+                        OpenSatchel()
                     end
 
                     PromptDelete(prompt)
@@ -2102,16 +2118,21 @@ AddEventHandler("onResourceStop", function(resourceName)
 end)
 
 -- Satchel Control Triggers
-AddEventHandler(Satchel.eventHandlerKey .. ":open_satchel", function(type)
-    if (type == "shop") then
-        OpenSatchel("SHOP")
-    else
-        OpenSatchel("INGAME")
-    end
+AddEventHandler(Satchel.eventHandlerKey .. ":open_satchel", function(mode)
+    Satchel._isShopMode = mode == "shop"
+    OpenSatchel()
 end)
 
-AddEventHandler(Satchel.eventHandlerKey .. ":close_satchel", function()
-    if IsUiappActiveByHash(uiAppChannel) then
+AddEventHandler(Satchel.eventHandlerKey .. ":close_satchel", function(mode)
+    if (Satchel._isShopMode and mode == "ingame") then
+        return
+    end
+
+    if (not Satchel._isShopMode and mode == "shop") then
+        return
+    end
+
+    if IsUiappRunningByHash(uiAppChannel) then
         CloseUiappByHash(uiAppChannel)
     end
 end)
