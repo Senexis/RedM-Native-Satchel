@@ -4,8 +4,8 @@ game "rdr3"
 
 name "Native Satchel"
 author "Senexis <https://github.com/Senexis>"
-description "A work-in-progress implementation of the truly native satch UI"
-version "ALPHA"
+description "A full implementation of the truly native satchel UI"
+version "1.0.0"
 repository "https://github.com/Senexis/RedM-Native-Satchel"
 license "GNU GPL v3"
 
