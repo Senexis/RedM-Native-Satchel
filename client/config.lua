@@ -74,7 +74,7 @@ Config.enableFolderItemsInRecent = true
 -- Maximum number of items to show in the "Recent" category
 -- This prevents the recent category from becoming too crowded
 -- Be careful when increasing this value, as it may impact performance
-Config.maxRecentItems = 48
+Config.maxRecentItems = 16
 
 -- Minimum number of items required to show as a folder
 -- If a folder contains fewer items than this threshold, items will be shown individually
