@@ -9,4 +9,18 @@ version "1.0.0"
 repository "https://github.com/Senexis/RedM-Native-Satchel"
 license "GNU GPL v3"
 
-client_script "client/*.lua"
+client_scripts {
+    'client/config.lua',
+    'client/utils.lua',
+    'client/player-state.lua',
+    'client/itemdatabase.lua',
+    'client/ui-databinding.lua',
+    'client/satchel-renderer.lua',
+    'client/event-handlers.lua',
+    'client/dataview.lua',
+    'client/ticker.lua',
+    'client/satchel.lua',
+
+    -- Remove the line below to disable debug commands and event logging
+    'client/debug.lua'
+}

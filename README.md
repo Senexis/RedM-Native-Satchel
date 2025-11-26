@@ -288,6 +288,29 @@ AddEventHandler("native_satchel:folder_focused", function(folderId)
 end)
 ```
 
+## Architecture
+
+Native Satchel has been refactored into a modular architecture for better maintainability and code organization. The system is composed of several focused modules:
+
+### Core Modules
+
+- **`satchel.lua`** - Main entry point and UI event processing
+- **`config.lua`** - Configuration data and settings
+- **`player-state.lua`** - State management and data persistence
+- **`utils.lua`** - Utility functions and resource initialization
+- **`ui-databinding.lua`** - UI databinding setup and updates
+- **`satchel-renderer.lua`** - UI rendering and item management logic
+- **`event-handlers.lua`** - Event handling and user interaction processing
+- **`itemdatabase.lua`** - Game database integration and item data retrieval
+
+### Supporting Modules
+
+- **`dataview.lua`** - Low-level memory operations and data structures
+- **`debug.lua`** - Development and debugging utilities
+- **`ticker.lua`** - UI notification system
+
+This modular design follows dependency injection patterns, with each module having clearly defined responsibilities and interfaces. The architecture is inspired by the Native Abilities project structure while preserving all existing functionality and event systems.
+
 ## Attribution
 
 This project builds upon the hard work and research of many talented individuals in the RedM community. Their contributions made this native satchel implementation possible:

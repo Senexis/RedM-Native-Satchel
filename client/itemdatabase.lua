@@ -1,5 +1,14 @@
--- Item database utility functions for accessing game data
--- Based on research by aaron1a12: https://github.com/aaron1a12/wild/
+---------------------------------------------------------------------------------
+--                            REDM NATIVE SATCHEL                              --
+--                           Item Database Module                              --
+--           Utility functions for accessing game item data and cache          --
+--     Based on research by aaron1a12: https://github.com/aaron1a12/wild/      --
+--                                                                             --
+--   Consolidated from original satchel.lua GetItemFromDatabase function      --
+--   with attribution to original implementation and research                  --
+---------------------------------------------------------------------------------
+
+local ItemDatabase = {}
 
 ---Gets tag IDs for an item with optional filtering by tag type
 ---@param item number The item hash
@@ -124,3 +133,204 @@ function ReadString(stringPtr)
     Citizen.InvokeNative(0xDFFC15AA63D04AAB, stringPtr) -- _SET_LAUNCH_PARAM_STRING
     return N_0xc59ab6a04333c502()
 end
+
+---Gets comprehensive item data from the database with caching
+---@param item string The item identifier
+---@return table itemData Comprehensive item data including effects, tags, and properties
+---
+--- CONSOLIDATED ATTRIBUTION:
+--- Originally implemented in satchel.lua as GetItemFromDatabase function
+--- Combines game database queries with custom categorization and caching logic
+--- Uses research and utilities from aaron1a12 for native database access
+function ItemDatabase.getItemFromDatabase(item)
+    local hash = joaat(item)
+
+    if Ephemeral.cacheItemDatabase[hash] then
+        return Ephemeral.cacheItemDatabase[hash]
+    end
+
+    local result = {
+        label = "",
+        labelHash = 0,
+        description = "",
+        descriptionHash = 0,
+        txd = "",
+        texture = "",
+        category = nil,
+        folder = nil,
+        effects = {},
+        effectIds = {},
+        stars = 0,
+        special = false,
+        droppable = true,
+        breakable = false,
+        cookable = false,
+        usable = false,
+        drinkable = false,
+        edible = false,
+        readable = false,
+    }
+
+    if ItemdatabaseIsKeyValid(hash, 0) == 0 then
+        return result
+    end
+
+    local uiData = GetItemUiData(hash)
+    if uiData then
+        result.label = GetStringFromHashKey(uiData.label)
+        result.labelHash = uiData.label
+        result.description = GetStringFromHashKey(uiData.description)
+        result.descriptionHash = uiData.description
+        result.txd = uiData.textureDict
+        result.texture = uiData.textureId
+    end
+
+    local effectIds = GetItemEffectIds(hash)
+    if effectIds then
+        result.effectIds = effectIds
+
+        local durations = {
+            [joaat("EFFECT_DURATION_CATEGORY_NONE")] = 0,
+            [joaat("EFFECT_DURATION_CATEGORY_1")]    = 1,
+            [joaat("EFFECT_DURATION_CATEGORY_2")]    = 2,
+            [joaat("EFFECT_DURATION_CATEGORY_3")]    = 3,
+            [joaat("EFFECT_DURATION_CATEGORY_4")]    = 4,
+        }
+
+        for _, effectId in pairs(effectIds) do
+            local effect = GetItemEffectData(effectId)
+            if effect then
+                local value = tonumber(effect.value or 0)
+                local duration = durations[effect.durationcategory] or 0
+
+                if effect.type == joaat("EFFECT_HEALTH") then
+                    result.effects["health"] = { value = value, duration = duration }
+                elseif effect.type == joaat("EFFECT_HEALTH_OVERPOWERED") then
+                    result.effects["health"] = { value = 11, duration = duration }
+                elseif effect.type == joaat("EFFECT_STAMINA") then
+                    result.effects["stamina"] = { value = value, duration = duration }
+                elseif effect.type == joaat("EFFECT_STAMINA_OVERPOWERED") then
+                    result.effects["stamina"] = { value = 11, duration = duration }
+                elseif effect.type == joaat("EFFECT_DEADEYE") then
+                    result.effects["deadeye"] = { value = value, duration = duration }
+                elseif effect.type == joaat("EFFECT_DEADEYE_OVERPOWERED") then
+                    result.effects["deadeye"] = { value = 11, duration = duration }
+                elseif effect.type == joaat("EFFECT_HEALTH_CORE") then
+                    result.effects["healthCore"] = { value = value, duration = duration }
+                elseif effect.type == joaat("EFFECT_HEALTH_CORE_GOLD") then
+                    result.effects["healthCore"] = { value = 12, duration = duration }
+                elseif effect.type == joaat("EFFECT_STAMINA_CORE") then
+                    result.effects["staminaCore"] = { value = value, duration = duration }
+                elseif effect.type == joaat("EFFECT_STAMINA_CORE_GOLD") then
+                    result.effects["staminaCore"] = { value = 12, duration = duration }
+                elseif effect.type == joaat("EFFECT_DEADEYE_CORE") then
+                    result.effects["deadeyeCore"] = { value = value, duration = duration }
+                elseif effect.type == joaat("EFFECT_DEADEYE_CORE_GOLD") then
+                    result.effects["deadeyeCore"] = { value = 12, duration = duration }
+                elseif effect.type == joaat("EFFECT_HORSE_HEALTH") then
+                    result.effects["horseHealth"] = { value = value, duration = duration }
+                elseif effect.type == joaat("EFFECT_HORSE_HEALTH_OVERPOWERED") then
+                    result.effects["horseHealth"] = { value = 11, duration = duration }
+                elseif effect.type == joaat("EFFECT_HORSE_STAMINA") then
+                    result.effects["horseStamina"] = { value = value, duration = duration }
+                elseif effect.type == joaat("EFFECT_HORSE_STAMINA_OVERPOWERED") then
+                    result.effects["horseStamina"] = { value = 11, duration = duration }
+                elseif effect.type == joaat("EFFECT_HORSE_HEALTH_CORE") then
+                    result.effects["horseHealthCore"] = { value = value, duration = duration }
+                elseif effect.type == joaat("EFFECT_HORSE_HEALTH_CORE_GOLD") then
+                    result.effects["horseHealthCore"] = { value = 12, duration = duration }
+                elseif effect.type == joaat("EFFECT_HORSE_STAMINA_CORE") then
+                    result.effects["horseStaminaCore"] = { value = value, duration = duration }
+                elseif effect.type == joaat("EFFECT_HORSE_STAMINA_CORE_GOLD") then
+                    result.effects["horseStaminaCore"] = { value = 12, duration = duration }
+                end
+            end
+        end
+    end
+
+    local tagIds = GetItemTagIds(hash)
+    for _, value in pairs(tagIds) do
+        if value == joaat("CI_TAG_ITEM_OVERPOWERED") or value == joaat("CI_TAG_ITEM_QUALITY_LEGENDARY") then
+            result.special = true
+        end
+
+        if not Config.ignoreCannotDiscardTag and value == joaat("CI_TAG_ITEM_CANNOT_DISCARD") then
+            result.droppable = false
+        end
+
+        if value == joaat("CI_TAG_ITEM_CAN_BREAKDOWN") then
+            result.breakable = true
+        end
+
+        if hash ~= joaat("PROVISION_ROTTEN_MEAT") and hash ~= joaat("CONSUMABLE_CORNEDBEEF_CAN") then
+            if value == joaat("CI_TAG_ITEM_MEAT_ANIMAL") or value == joaat("CI_TAG_ITEM_MEAT_FISH") then
+                result.cookable = true
+            end
+        end
+
+        if value == joaat("CI_TAG_ITEM_CONSUMABLE") then
+            result.usable = true
+        end
+
+        if value == -273840653 or value == 238865292 or value == 999632878 or value == 1130235258 or value == 1177617310 then
+            result.drinkable = true
+        end
+
+        if value == -1915958659 or value == -809056541 or value == 89124942 or value == 1451036371 or value == 1859991422 or value == 1891031775 then
+            result.edible = true
+        end
+
+        if value == joaat("CI_TAG_ITEM_DOCUMENT") then
+            result.readable = true
+        end
+
+        if Config.enableAutoCategorization then
+            for _, category in pairs(Config.categories) do
+                for _, tag in pairs(category.tags) do
+                    if value == joaat(tag) then
+                        result.category = category.id
+                    end
+                end
+            end
+
+            if Config.enableAutoFolderAssignment then
+                for _, folder in pairs(Config.folders) do
+                    for _, tag in pairs(folder.tags) do
+                        if value == joaat(tag) then
+                            result.folder = folder.id
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    if not result.category and Config.enableAutoCategorization then
+        print("[NativeSatchel] GetItemFromDatabase: Could not auto-assign category for item " .. item)
+    end
+
+    local isQualityLegendary = InventoryIsInventoryItemFlagEnabled(hash, 1 << 2)
+    local isQualityPerfect = InventoryIsInventoryItemFlagEnabled(hash, 1 << 30)
+    local isQualityHigh = InventoryIsInventoryItemFlagEnabled(hash, 1 << 29)
+    local isQualityPoor = InventoryIsInventoryItemFlagEnabled(hash, 1 << 28)
+
+    if isQualityLegendary == 1 then
+        result.special = true
+        result.stars = 3
+    elseif isQualityPerfect == 1 then
+        result.stars = 3
+    elseif isQualityHigh == 1 then
+        result.stars = 2
+    elseif isQualityPoor == 1 then
+        result.stars = 1
+    else
+        result.stars = 0
+    end
+
+    Ephemeral.cacheItemDatabase[hash] = result
+
+    return result
+end
+
+-- Make ItemDatabase globally available
+_G.ItemDatabase = ItemDatabase

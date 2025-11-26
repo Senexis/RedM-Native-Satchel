@@ -38,6 +38,9 @@ Config.discardingLabelHash = "SATCHEL_PROMPT_DISCARD_ALL"
 -- Default category index to open to when opening the satchel
 Config.defaultCategoryIndex = 0
 
+-- Default category ID for items that don't specify a category
+Config.defaultCategoryId = "provisions"
+
 -- Whether to enable the item preview on items that have a valid catalog entry
 -- Item previews show the before/after core states of the highlighted item
 Config.enableItemPreview = true
@@ -71,12 +74,16 @@ Config.enableFolderItemsInRecent = true
 -- Maximum number of items to show in the "Recent" category
 -- This prevents the recent category from becoming too crowded
 -- Be careful when increasing this value, as it may impact performance
-Config.maxRecentItems = 16
+Config.maxRecentItems = 48
 
 -- Minimum number of items required to show as a folder
 -- If a folder contains fewer items than this threshold, items will be shown individually
 -- Set to 1 to always show folders, set to 2 or higher to show individual items when below threshold
 Config.minItemsForFolder = 2
+
+-- Whether to show item count on folder icons
+-- When enabled, folders will display the number of items they contain
+Config.enableFolderItemCount = false
 
 -- Items
 -- This determines which items are visible in the UI by category
