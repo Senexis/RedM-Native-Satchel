@@ -11,6 +11,12 @@ Unlike traditional web-based or custom UI implementations, Native Satchel levera
 
 📖 **[Jump to Documentation](#types)**
 
+## Showcase
+
+You can click below to watch a short demonstration of Native Satchel.
+
+[![A preview of the showcase video showing an open Satchel menu](http://img.youtube.com/vi/WU2u2pa0SLg/0.jpg)](http://www.youtube.com/watch?v=WU2u2pa0SLg "Showcase - RedM Native Satchel")
+
 ## Feature Requests
 
 If you're missing functionality or have ideas for new features that would improve Native Satchel, please don't hesitate to [open an issue](https://github.com/Senexis/RedM-Native-Satchel/issues). Feature requests from the community are always welcome, and feedback about use cases and requirements helps shape the direction of this project!
