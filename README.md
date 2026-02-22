@@ -70,14 +70,26 @@ local item = {
     -- Optional: Sets the display label for the item (free string, can be anything)
     label = "My Custom Item",
 
+    -- Optional: The hash of the UI label to use for the item (must be valid game text key)
+    labelHash = nil,
+
     -- Optional: Sets the description text for the item (free string, can be anything)
     description = "This is my custom item.",
 
-    -- Optional: The hash of the price label to show in shop mode
+    -- Optional: The hash of the UI description to use for the item (must be valid game text key)
+    descriptionHash = nil,
+
+    -- Optional: The price label to show in shop mode (free string, can be anything)
+    priceLabel = nil,
+
+    -- Optional: The hash of the price label to show in shop mode (must be valid game text key)
     priceLabelHash = nil,
 
-    -- Optional: The price value to show in shop mode
+    -- Optional: The price value to show in shop mode (free string, can be anything)
     priceValue = nil,
+
+    -- Optional: The hash of the price value to show in shop mode (must be valid game text key)
+    priceValueHash = nil,
 
     -- Optional: The texture dictionary for the icon of this item
     txd = "toasts_mp_generic",
@@ -98,8 +110,26 @@ local item = {
     -- Optional: Whether to mark the item as special, which gives the texture a yellow hue
     special = true,
 
-    -- Optional: Whether the item appears equipped in list view
+    -- Optional: Whether the item appears equipped (only visible in folders)
     equipped = false,
+
+    -- Optional: The text of the "Use" prompt for the item (overrides usable, free string, can be anything)
+    useLabel = nil,
+
+    -- Optional: The hash of the "Use" prompt for the item (overrides usable, must be valid game text key)
+    useLabelHash = nil,
+
+    -- Optional: The text of the "Craft" prompt for the item (overrides usable, free string, can be anything)
+    craftLabel = nil,
+
+    -- Optional: The hash of the "Craft" prompt for the item (overrides usable, must be valid game text key)
+    craftLabelHash = nil,
+
+    -- Optional: The text of the "Discard" prompt for the item (overrides discardable, free string, can be anything)
+    discardLabel = nil,
+
+    -- Optional: The hash of the "Discard" prompt for the item (overrides discardable, must be valid game text key)
+    discardLabelHash = nil,
 
     -- Optional: Whether the item can be dropped
     droppable = false,
@@ -124,6 +154,9 @@ local item = {
 
     -- Optional: Whether the item can be read
     readable = false,
+
+    -- Optional: Whether the item can be sent (only visible in folders)
+    sendable = false,
 }
 ```
 
@@ -141,7 +174,10 @@ local category = {
     -- Due to UI limitations it has to be in the "satchel_textures" dictionary
     texture = "satchel_nav_all",
 
-    -- Required: The hash of the UI label to use for the category title (must be valid game text key)
+    -- Alternative to titleHash: Custom title (free string, use either this or titleHash)
+    title = nil,
+
+    -- Alternative to title: The hash of the UI label to use for the category title (must be valid game text key)
     titleHash = 0x504364F1,
 
     -- Alternative to emptyLabelHash: Custom label (free string, use either this or emptyLabelHash)
@@ -171,7 +207,10 @@ local folder = {
     -- Required: Which category the folder belongs to, see the category type
     category = "valuables",
 
-    -- Required: The hash for the folder title (must be valid game text key)
+    -- Alternative to titleHash: Custom title (free string, use either this or titleHash)
+    title = nil,
+
+    -- Alternative to title: The hash for the folder title (must be valid game text key)
     titleHash = "CI_TAG_FOLDER_COLLECTOR_ARROWHEADS",
 
     -- Alternative to labelHash: Custom label (free string, use either this or labelHash)

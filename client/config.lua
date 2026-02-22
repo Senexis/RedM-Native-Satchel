@@ -27,8 +27,8 @@ Config.allowDropping = true
 -- Enable/disable prompts for discarding items
 Config.allowDiscarding = true
 
--- Enable/disable prompts for sending all items (folder only)
-Config.allowSendingAll = true
+-- Enable/disable prompts for sending items (folder only)
+Config.allowSending = true
 
 -- Default category index to open to when opening the satchel
 Config.defaultCategoryIndex = 0
@@ -119,8 +119,8 @@ Config.inventory = {
         },
 
         -- Prompts
-        selectLabel = "Select prompt",
-        holdSelectLabel = "Hold prompt",
+        useLabel = "Use prompt",
+        craftLabel = "Craft prompt",
         discardLabel = "Discard prompt",
         droppable = false,
         discardable = false,
@@ -133,7 +133,7 @@ Config.inventory = {
 
         -- Folder-only flags
         equipped = false,
-        sendAll = false,
+        sendable = false,
     },
 
     { id = "big_game_meat_cooked",           count = 5,  maxCount = nil, catalog = "CONSUMABLE_BIG_GAME_MEAT_COOKED", },

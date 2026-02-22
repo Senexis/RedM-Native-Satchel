@@ -498,12 +498,12 @@ function SatchelUI.Prompts.SetFromItem(item)
     -- Note: For UI events to work, both this AND the hold labels must be set
     local selectLabel, selectEnabled, selectVisible = nil, nil, nil
 
-    if item.selectLabel and item.selectLabel ~= "" then
-        selectLabel = SatchelUI.CreateTextEntry("select_label", item.id, item.selectLabel)
+    if item.useLabel and item.useLabel ~= "" then
+        selectLabel = SatchelUI.CreateTextEntry("select_label", item.id, item.useLabel)
         selectEnabled = Config.allowUsing or false
         selectVisible = Config.allowUsing or false
-    elseif item.selectLabelHash and item.selectLabelHash ~= 0 then
-        selectLabel = item.selectLabelHash
+    elseif item.useLabelHash and item.useLabelHash ~= 0 then
+        selectLabel = item.useLabelHash
         selectEnabled = Config.allowUsing or false
         selectVisible = Config.allowUsing or false
     elseif item.drinkable then
@@ -532,12 +532,12 @@ function SatchelUI.Prompts.SetFromItem(item)
     -- Note: For UI events to work, both this AND the select labels must be set
     local holdSelectLabel, holdSelectEnabled, holdSelectVisible = nil, nil, nil
 
-    if item.holdSelectLabel and item.holdSelectLabel ~= "" then
-        holdSelectLabel = SatchelUI.CreateTextEntry("hold_select_label", item.id, item.holdSelectLabel)
+    if item.craftLabel and item.craftLabel ~= "" then
+        holdSelectLabel = SatchelUI.CreateTextEntry("hold_select_label", item.id, item.craftLabel)
         holdSelectEnabled = Config.allowUsing or false
         holdSelectVisible = Config.allowUsing or false
-    elseif item.holdSelectLabelHash and item.holdSelectLabelHash ~= 0 then
-        holdSelectLabel = item.holdSelectLabelHash
+    elseif item.craftLabelHash and item.craftLabelHash ~= 0 then
+        holdSelectLabel = item.craftLabelHash
         holdSelectEnabled = Config.allowUsing or false
         holdSelectVisible = Config.allowUsing or false
     elseif item.breakable then
@@ -581,8 +581,8 @@ function SatchelUI.Prompts.SetFromItem(item)
 
     -- Folder item exclusive: Send all prompt
     local sendAllVisible = false
-    if item.sendAll then
-        sendAllVisible = Config.allowSendingAll or false
+    if item.sendable then
+        sendAllVisible = Config.allowSending or false
     end
 
     SatchelUI.Prompts.SetSelectPrompt(selectLabel, selectEnabled, selectVisible)
