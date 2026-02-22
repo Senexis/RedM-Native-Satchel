@@ -112,14 +112,15 @@ function SatchelUI.Open(mode, index)
     SatchelUI.LoadResources()
     SatchelUI.SetupNavigator()
     SatchelUI.Initialize()
-    SatchelUI.UpdateMenuTitle()
-    SatchelData.Startup()
 
     if type(index) == "number" then
         SatchelNavigator:setCategory(index)
     else
         SatchelNavigator:setCategory(Config.defaultCategoryIndex or 1)
     end
+
+    SatchelUI.UpdateMenuTitle()
+    SatchelData.Startup()
 
     LaunchUiappWithEntry("satchel", SatchelUI.state.entry)
 
