@@ -177,38 +177,33 @@ function SatchelNavigator:_rebuildCurrentItems()
         end
     else
         local minItems = Config.minItemsForFolder or 2
+        local seenFolders = {}
 
         for _, item in ipairs(self.inventory) do
-            local isMatch = false
-
-            if item.category == activeCategory.id and not item.folder then
-                isMatch = true
-            elseif item.folder then
-                local folderDef = self.folderMap[item.folder]
-                if folderDef and folderDef.category == activeCategory.id then
-                    local fCount = folderCounts[item.folder] or 0
-                    if fCount < minItems then
-                        isMatch = true
+            if item.count > 0 and item.enabled ~= false then
+                if item.category == activeCategory.id and not item.folder then
+                    local displayItem = shallowCopy(item)
+                    displayItem.type = "item"
+                    table.insert(displayList, displayItem)
+                elseif item.folder then
+                    local folderDef = self.folderMap[item.folder]
+                    if folderDef and folderDef.category == activeCategory.id then
+                        local fCount = folderCounts[item.folder] or 0
+                        if fCount < minItems then
+                            local displayItem = shallowCopy(item)
+                            displayItem.type = "item"
+                            table.insert(displayList, displayItem)
+                        elseif not seenFolders[item.folder] then
+                            local displayFolder = shallowCopy(folderDef)
+                            displayFolder.type = "folder"
+                            if Config.enableFolderItemCount then
+                                displayFolder.count = fCount
+                            end
+                            table.insert(displayList, displayFolder)
+                            seenFolders[item.folder] = true
+                        end
                     end
                 end
-            end
-
-            if isMatch and item.count > 0 and item.enabled ~= false then
-                local displayItem = shallowCopy(item)
-                displayItem.type = "item"
-                table.insert(displayList, displayItem)
-            end
-        end
-
-        for _, folder in ipairs(self.folders) do
-            local fCount = folderCounts[folder.id] or 0
-            if folder.category == activeCategory.id and fCount >= minItems then
-                local displayFolder = shallowCopy(folder)
-                displayFolder.type = "folder"
-                if Config.enableFolderItemCount then
-                    displayFolder.count = fCount
-                end
-                table.insert(displayList, displayFolder)
             end
         end
     end
