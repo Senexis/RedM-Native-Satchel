@@ -44,6 +44,22 @@ function SatchelData.MaintainEvents()
         end
     end
 
+    -- Disable controls that the default satchel disables
+    if Config.preventConflictingControls and not SatchelData.state.shuttingDown then
+        UiPromptEnablePromptTypeThisFrame(0)
+        DisableControlAction(0, `INPUT_NEXT_CAMERA`, false);
+        DisableControlAction(0, `INPUT_HORSE_SPRINT`, false);
+        DisableControlAction(0, `INPUT_JUMP`, false);
+        DisableControlAction(0, `INPUT_SPRINT`, false);
+        DisableControlAction(0, `INPUT_ENTER`, false);
+        DisableControlAction(0, `INPUT_MELEE_ATTACK`, false);
+        DisableControlAction(0, `INPUT_PHONE`, false);
+        DisableControlAction(0, `INPUT_RADIAL_MENU_SLOT_NAV_NEXT`, false);
+        DisableControlAction(0, `INPUT_RADIAL_MENU_SLOT_NAV_PREV`, false);
+        DisableControlAction(0, `INPUT_COVER`, false);
+        DisableControlAction(0, `INPUT_OPEN_WHEEL_MENU`, false);
+    end
+
     -- Early return if we don't have anything to do to prevent unnecessary flag checks
     if not SatchelEvents.GetEventFlag(SatchelEvents.FLAG_STATE_CHANGED) then
         return

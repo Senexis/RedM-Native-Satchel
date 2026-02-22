@@ -8,6 +8,9 @@ Config = {}
 -- Enable/disable the default satchel opening prompt
 Config.enableDefaultOpenPrompt = true
 
+-- Enable/disable conflicting control prevention
+Config.preventConflictingControls = true
+
 -- Enable/disable prompts for opening folders
 Config.allowOpeningFolders = true
 
