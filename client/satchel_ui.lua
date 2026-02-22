@@ -119,7 +119,7 @@ function SatchelUI.Open(mode, index)
         SatchelNavigator:setCategory(Config.defaultCategoryIndex or 1)
     end
 
-    SatchelUI.UpdateMenuTitle()
+    SatchelUI.Events.HandleNavigation()
     SatchelData.Startup()
 
     LaunchUiappWithEntry("satchel", SatchelUI.state.entry)
@@ -215,8 +215,7 @@ function SatchelUI.ClearListItems()
 end
 
 function SatchelUI.RefreshMenu()
-    SatchelUI.Events.HandleUnfocus()
-    SatchelUI.UpdateMenuTitle()
+    SatchelUI.Events.HandleNavigation()
     SatchelUI.Builder.AddMenuItems()
 end
 
@@ -484,6 +483,11 @@ function SatchelUI.Events.HandleUnfocus()
     if Config.enableItemPreview == true and SatchelUI.state.entry ~= "shop" then
         StopItemPreview()
     end
+end
+
+function SatchelUI.Events.HandleNavigation()
+    SatchelUI.Events.HandleUnfocus()
+    SatchelUI.UpdateMenuTitle()
 end
 
 function SatchelUI.Prompts.SetFolderPrompts()
