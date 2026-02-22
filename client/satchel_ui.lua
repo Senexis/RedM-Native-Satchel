@@ -172,6 +172,10 @@ function SatchelUI.OnShutdown()
 
     TriggerEvent("native_satchel:closed", SatchelUI.state.entry)
     TriggerEvent("native_satchel:satchel_closed", SatchelUI.state.entry)
+
+    if Config.enableItemPreview == true then
+        StopItemPreview()
+    end
 end
 
 function SatchelUI.LoadResources()
@@ -473,7 +477,7 @@ function SatchelUI.Events.HandleItemFocus(id)
     if Config.enableItemPreview == true and SatchelUI.state.entry ~= "shop" then
         if item.catalog and ItemdatabaseIsKeyValid(item.catalog, 0) then
             -- 1 for player, 2 for horse
-            StartItemPreview(item.catalog, 1)
+            StartItemPreview(joaat(item.catalog), 1)
         end
     end
 
