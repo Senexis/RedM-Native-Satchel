@@ -122,6 +122,10 @@ function SatchelUI.Open(mode, index)
     SatchelUI.Events.HandleNavigation()
     SatchelData.Startup()
 
+    if SatchelUI.state.entry == "shop" then
+        EnableHudContext("HUD_CTX_INSPECT_ITEM")
+    end
+
     LaunchUiappWithEntry("satchel", SatchelUI.state.entry)
 
     TriggerEvent("native_satchel:opened", SatchelUI.state.entry)
@@ -169,6 +173,8 @@ function SatchelUI.OnShutdown()
 
     DatabindingRemoveDataEntry(SatchelUI.bindings.dscSatchelListItems)
     SatchelUI.bindings.dscSatchelListItems = 0
+
+    DisableHudContext("HUD_CTX_INSPECT_ITEM")
 
     TriggerEvent("native_satchel:closed", SatchelUI.state.entry)
     TriggerEvent("native_satchel:satchel_closed", SatchelUI.state.entry)
