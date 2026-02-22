@@ -217,6 +217,10 @@ end
 function SatchelUI.RefreshMenu()
     SatchelUI.Events.HandleNavigation()
     SatchelUI.Builder.AddMenuItems()
+
+    if SatchelData.state.hydratedList then
+        SatchelUI.Builder.AddListItems(SatchelData.state.hydratedList)
+    end
 end
 
 function SatchelUI.UpdateMenuTitle()
@@ -282,7 +286,7 @@ end
 
 function SatchelUI.Builder.AddMenuItems()
     -- Game defined constants (see satchel_launcher_flow.ymt)
-    local MAX_SIZE <const> = 448
+    local MAX_SIZE <const> = 447
     local MAX_ELEMENTS_BUILT_PER_FRAME <const> = 112
 
     local dscItems = SatchelUI.bindings.dscSatchelMenuItems
