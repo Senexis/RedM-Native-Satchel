@@ -13,19 +13,19 @@ DataView = setmetatable({
         Uint32 = { code = "I4" },
         Int64 = { code = "i8" },
         Uint64 = { code = "I8" },
-        Float32 = { code = "f", size = 4 }, -- Float (native size)
-        Float64 = { code = "d", size = 8 }, -- Double (native size)
+        Float32 = { code = "f", size = 4 },  -- Float (native size)
+        Float64 = { code = "d", size = 8 },  -- Double (native size)
 
-        LuaInt = { code = "j" }, -- lua_Integer
-        UluaInt = { code = "J" }, -- lua_Unsigned
-        LuaNum = { code = "n" }, -- lua_Number
+        LuaInt = { code = "j" },             -- lua_Integer
+        UluaInt = { code = "J" },            -- lua_Unsigned
+        LuaNum = { code = "n" },             -- lua_Number
         String = { code = "z", size = -1, }, -- Zero terminated string
     },
 
     FixedTypes = {
         String = { code = "c" }, -- Fixed-sized string with n bytes
-        Int = { code = "i" }, -- Signed int with n bytes
-        Uint = { code = "I" }, -- Unsigned int with n bytes
+        Int = { code = "i" },    -- Signed int with n bytes
+        Uint = { code = "I" },   -- Unsigned int with n bytes
     },
 }, {
     __call = function(_, length)
@@ -181,4 +181,13 @@ for label, datatype in pairs(DataView.FixedTypes) do
         end
         return self
     end
+end
+
+---Converts a string to a bigint for native function compatibility
+---@param text string|number The text string to convert
+---@return number bigint The converted bigint value
+function BigInt(text, endian)
+    local stringBuffer = DataView.ArrayBuffer(16)
+    stringBuffer:SetInt64(0, text, endian)
+    return stringBuffer:GetInt64(0)
 end
