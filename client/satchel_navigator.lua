@@ -160,19 +160,43 @@ function SatchelNavigator:_rebuildCurrentItems()
         local count = 0
         local maxItems = Config.maxRecentItems or 16
         local includeFolderItems = Config.enableFolderItemsInRecent
+        local seenRecentFolders = {}
 
         for _, item in ipairs(self.inventory) do
             if count >= maxItems then break end
             local isValid = true
 
             if item.enabled == false or item.count <= 0 then isValid = false end
-            if isValid and item.folder and not includeFolderItems then isValid = false end
 
             if isValid then
-                local displayItem = shallowCopy(item)
-                displayItem.type = "item"
-                table.insert(displayList, displayItem)
-                count = count + 1
+                if item.folderOnly and item.folder then
+                    if not seenRecentFolders[item.folder] then
+                        local folderDef = self.folderMap[item.folder]
+                        if folderDef then
+                            local displayFolder = shallowCopy(folderDef)
+                            displayFolder.type = "folder"
+
+                            if Config.enableFolderItemCount then
+                                displayFolder.count = folderCounts[item.folder] or 0
+                            end
+
+                            table.insert(displayList, displayFolder)
+                            seenRecentFolders[item.folder] = true
+                            count = count + 1
+                        end
+                    end
+                else
+                    if item.folder and not includeFolderItems then
+                        isValid = false
+                    end
+
+                    if isValid then
+                        local displayItem = shallowCopy(item)
+                        displayItem.type = "item"
+                        table.insert(displayList, displayItem)
+                        count = count + 1
+                    end
+                end
             end
         end
     else
@@ -189,7 +213,7 @@ function SatchelNavigator:_rebuildCurrentItems()
                     local folderDef = self.folderMap[item.folder]
                     if folderDef and folderDef.category == activeCategory.id then
                         local fCount = folderCounts[item.folder] or 0
-                        if fCount < minItems then
+                        if fCount < minItems and not item.folderOnly then
                             local displayItem = shallowCopy(item)
                             displayItem.type = "item"
                             table.insert(displayList, displayItem)

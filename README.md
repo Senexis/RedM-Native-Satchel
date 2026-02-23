@@ -67,6 +67,10 @@ local item = {
     -- Optional: Groups the item in a folder, see the folder type
     folder = nil,
 
+    -- Optional: Whether the item should only be shown in its folder and never as a standalone entry
+    -- Useful if you don't want to provide a texture for the item and want to only use text
+    folderOnly = false,
+
     -- Optional: Sets the display label for the item (free string, can be anything)
     label = "My Custom Item",
 
