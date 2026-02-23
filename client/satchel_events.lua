@@ -208,20 +208,23 @@ end)
 
 if Config.enableDefaultOpenPrompt then
     Citizen.CreateThread(function()
+        local input = Config.defaultOpenPromptInput or "INPUT_OPEN_SATCHEL_MENU"
+
         while true do
             if IsUiappRunning("satchel") == 1 then
                 Citizen.Wait(250)
                 goto continue
             end
 
-            if IsControlJustPressed(0, "INPUT_OPEN_SATCHEL_MENU") and IsUiappRunning("satchel") ~= 1 then
+            if IsControlJustPressed(0, input) and IsUiappRunning("satchel") ~= 1 then
                 local prompt = 0
+                local label = GetStringFromHashKey("SATCHEL_TITLE")
 
                 -- Create prompt
                 if prompt == 0 then
                     prompt = UiPromptRegisterBegin()
-                    UiPromptSetControlAction(prompt, GetHashKey("INPUT_OPEN_SATCHEL_MENU"))
-                    UiPromptSetText(prompt, VarString(10, "LITERAL_STRING", "Satchel"))
+                    UiPromptSetControlAction(prompt, input)
+                    UiPromptSetText(prompt, VarString(10, "LITERAL_STRING", label))
                     UiPromptSetHoldMode(prompt, 250)
                     UiPromptSetAttribute(prompt, 2, true)
                     UiPromptSetAttribute(prompt, 4, true)

@@ -11,6 +11,9 @@ Config.defaultTitle = "Satchel"
 -- Enable/disable the default satchel opening prompt
 Config.enableDefaultOpenPrompt = true
 
+-- Configures the input key for the default satchel prompt
+Config.defaultOpenPromptInput = "INPUT_OPEN_SATCHEL_MENU"
+
 -- Enable/disable conflicting control prevention
 Config.preventConflictingControls = true
 
