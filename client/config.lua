@@ -82,10 +82,8 @@ Config.minItemsForFolder = 2
 -- When enabled, folders will display the number of items they contain
 Config.enableFolderItemCount = false
 
--- Items
--- This determines which items are visible in the UI by category
--- You can see this as the base inventory for any player
--- It can then be modified by using the Satchel API to add/remove items
+-- Player items
+-- This determines which items are visible in the UI by category for the "player" inventory
 Config.inventory = {
     {
         -- Required fields
@@ -196,19 +194,22 @@ Config.inventory = {
 -- Categories
 -- This determines what categories are visible in the UI
 Config.categories = {
-    { id = "recent",      recent = true,  texture = "satchel_nav_all",         title = nil, titleHash = 0x504364F1, emptyLabel = nil, emptyLabelHash = 0x504364F1, emptyDescription = nil, emptyDescriptionHash = 0x4E6F9F15, tags = {} },
-    { id = "provisions",  recent = false, texture = "satchel_nav_provisions",  title = nil, titleHash = 0x3B1DCCD8, emptyLabel = nil, emptyLabelHash = 0x3B1DCCD8, emptyDescription = nil, emptyDescriptionHash = 0x058002A1, tags = { "CI_TAG_CATEGORY_PROVISION" } },
-    { id = "tonics",      recent = false, texture = "satchel_nav_remedies",    title = nil, titleHash = 0x855B3FAE, emptyLabel = nil, emptyLabelHash = 0x855B3FAE, emptyDescription = nil, emptyDescriptionHash = 0x176ABFC5, tags = { "CI_TAG_CATEGORY_REMEDY" } },
-    { id = "ingredients", recent = false, texture = "satchel_nav_ingredients", title = nil, titleHash = 0x3268E974, emptyLabel = nil, emptyLabelHash = 0x3268E974, emptyDescription = nil, emptyDescriptionHash = 0x5A0CC2DE, tags = { "CI_TAG_CATEGORY_INGREDIENT" } },
-    { id = "materials",   recent = false, texture = "satchel_nav_materials",   title = nil, titleHash = 0xEB0408D2, emptyLabel = nil, emptyLabelHash = 0xEB0408D2, emptyDescription = nil, emptyDescriptionHash = 0x9AF912F2, tags = { "CI_TAG_CATEGORY_MATERIAL", "CI_TAG_CATEGORY_HORSE_CARGO" } },
-    { id = "kit",         recent = false, texture = "satchel_nav_kit",         title = nil, titleHash = 0x7A0D8994, emptyLabel = nil, emptyLabelHash = 0x7A0D8994, emptyDescription = nil, emptyDescriptionHash = 0xA1DF90FC, tags = { "CI_TAG_CATEGORY_KIT" } },
-    { id = "valuables",   recent = false, texture = "satchel_nav_valuables",   title = nil, titleHash = 0xFA827B50, emptyLabel = nil, emptyLabelHash = 0xFA827B50, emptyDescription = nil, emptyDescriptionHash = 0x3A9E6C4A, tags = { "CI_TAG_CATEGORY_VALUABLE" } },
-    { id = "documents",   recent = false, texture = "satchel_nav_documents",   title = nil, titleHash = 0xFDD0A576, emptyLabel = nil, emptyLabelHash = 0xFDD0A576, emptyDescription = nil, emptyDescriptionHash = 0xE7055490, tags = { "CI_TAG_CATEGORY_DOCUMENT" } },
-    -- { id = "horse",       recent = false, texture = "satchel_nav_horse",       title = nil, titleHash = 0x0FA40D69,     emptyLabel = nil, emptyLabelHash = 0x0FA40D69,     emptyDescription = nil, emptyDescriptionHash = 0xB8507365,          tags = { "CI_TAG_CATEGORY_HORSE_CARGO" } },
-    -- { id = "wagon",       recent = false, texture = "satchel_nav_horse",       title = nil, titleHash = "HWAGON_TITLE", emptyLabel = nil, emptyLabelHash = "HWAGON_TITLE", emptyDescription = nil, emptyDescriptionHash = "HWAGON_TITLE_DESC", tags = { "CI_TAG_CATEGORY_HORSE_CARGO" } },
-    -- { id = "donations",   recent = false, texture = "satchel_nav_donate",      title = nil, titleHash = 0x61FAAEA1,     emptyLabel = nil, emptyLabelHash = 0x61FAAEA1,     emptyDescription = nil, emptyDescriptionHash = 0x0552C91D,          tags = {} },
-    -- { id = "send",        recent = false, texture = "satchel_nav_send",        title = nil, titleHash = 0xBFC37FEE,     emptyLabel = nil, emptyLabelHash = 0xBFC37FEE,     emptyDescription = nil, emptyDescriptionHash = 0x3BB66DA9,          tags = {} },
-    -- { id = "sell",        recent = false, texture = "satchel_nav_sell",        title = nil, titleHash = 0xF6614C1F,     emptyLabel = nil, emptyLabelHash = 0xF6614C1F,     emptyDescription = nil, emptyDescriptionHash = 0x11352E60,          tags = {} },
+    -- Categories for player inventory
+    { id = "recent",      inventory = "player", all = false, recent = true,  texture = "satchel_nav_all",         title = nil, titleHash = 0x504364F1, emptyLabel = nil, emptyLabelHash = 0x504364F1, emptyDescription = nil, emptyDescriptionHash = 0x4E6F9F15, tags = {} },
+    { id = "provisions",  inventory = "player", all = false, recent = false, texture = "satchel_nav_provisions",  title = nil, titleHash = 0x3B1DCCD8, emptyLabel = nil, emptyLabelHash = 0x3B1DCCD8, emptyDescription = nil, emptyDescriptionHash = 0x058002A1, tags = { "CI_TAG_CATEGORY_PROVISION" } },
+    { id = "tonics",      inventory = "player", all = false, recent = false, texture = "satchel_nav_remedies",    title = nil, titleHash = 0x855B3FAE, emptyLabel = nil, emptyLabelHash = 0x855B3FAE, emptyDescription = nil, emptyDescriptionHash = 0x176ABFC5, tags = { "CI_TAG_CATEGORY_REMEDY" } },
+    { id = "ingredients", inventory = "player", all = false, recent = false, texture = "satchel_nav_ingredients", title = nil, titleHash = 0x3268E974, emptyLabel = nil, emptyLabelHash = 0x3268E974, emptyDescription = nil, emptyDescriptionHash = 0x5A0CC2DE, tags = { "CI_TAG_CATEGORY_INGREDIENT" } },
+    { id = "materials",   inventory = "player", all = false, recent = false, texture = "satchel_nav_materials",   title = nil, titleHash = 0xEB0408D2, emptyLabel = nil, emptyLabelHash = 0xEB0408D2, emptyDescription = nil, emptyDescriptionHash = 0x9AF912F2, tags = { "CI_TAG_CATEGORY_MATERIAL", "CI_TAG_CATEGORY_HORSE_CARGO" } },
+    { id = "kit",         inventory = "player", all = false, recent = false, texture = "satchel_nav_kit",         title = nil, titleHash = 0x7A0D8994, emptyLabel = nil, emptyLabelHash = 0x7A0D8994, emptyDescription = nil, emptyDescriptionHash = 0xA1DF90FC, tags = { "CI_TAG_CATEGORY_KIT" } },
+    { id = "valuables",   inventory = "player", all = false, recent = false, texture = "satchel_nav_valuables",   title = nil, titleHash = 0xFA827B50, emptyLabel = nil, emptyLabelHash = 0xFA827B50, emptyDescription = nil, emptyDescriptionHash = 0x3A9E6C4A, tags = { "CI_TAG_CATEGORY_VALUABLE" } },
+    { id = "documents",   inventory = "player", all = false, recent = false, texture = "satchel_nav_documents",   title = nil, titleHash = 0xFDD0A576, emptyLabel = nil, emptyLabelHash = 0xFDD0A576, emptyDescription = nil, emptyDescriptionHash = 0xE7055490, tags = { "CI_TAG_CATEGORY_DOCUMENT" } },
+
+    -- Categories for other inventories
+    { id = "horse",       inventory = "horse",  all = true,  recent = false, texture = "satchel_nav_horse",       title = nil, titleHash = 0x0FA40D69, emptyLabel = nil, emptyLabelHash = 0x0FA40D69, emptyDescription = nil, emptyDescriptionHash = 0xB8507365, tags = {}, },
+    { id = "wagon",       inventory = "wagon",  all = true,  recent = false, texture = "satchel_nav_horse",       title = nil, titleHash = 0x27D39FA4, emptyLabel = nil, emptyLabelHash = 0x27D39FA4, emptyDescription = nil, emptyDescriptionHash = 0x90388FC6, tags = {} },
+    { id = "donations",   inventory = "donate", all = true,  recent = false, texture = "satchel_nav_donate",      title = nil, titleHash = 0x61FAAEA1, emptyLabel = nil, emptyLabelHash = 0x61FAAEA1, emptyDescription = nil, emptyDescriptionHash = 0x0552C91D, tags = {} },
+    { id = "send",        inventory = "send",   all = true,  recent = false, texture = "satchel_nav_send",        title = nil, titleHash = 0xBFC37FEE, emptyLabel = nil, emptyLabelHash = 0xBFC37FEE, emptyDescription = nil, emptyDescriptionHash = 0x3BB66DA9, tags = {} },
+    { id = "sell",        inventory = "sell",   all = true,  recent = false, texture = "satchel_nav_sell",        title = nil, titleHash = 0xF6614C1F, emptyLabel = nil, emptyLabelHash = 0xF6614C1F, emptyDescription = nil, emptyDescriptionHash = 0x11352E60, tags = {} },
 }
 
 -- Folders

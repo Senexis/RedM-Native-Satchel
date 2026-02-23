@@ -5,12 +5,13 @@ SatchelNavigator = {}
 -- State & Initialization
 -- ===================================================================
 
-SatchelNavigator.inventory = {}
+SatchelNavigator.inventories = {}
+SatchelNavigator.allCategories = {}
 SatchelNavigator.categories = {}
+SatchelNavigator.categoryMap = {}
+SatchelNavigator.activeInventoryIds = { ["player"] = true }
 SatchelNavigator.folders = {}
 SatchelNavigator.folderMap = {}
-SatchelNavigator.categoryMap = {}
-SatchelNavigator.itemMap = {}
 SatchelNavigator.currentItems = {}
 SatchelNavigator.currentCategoryIndex = 1
 
@@ -35,7 +36,9 @@ end
 -- ===================================================================
 
 function SatchelNavigator:processCategory(category)
-    -- Unused for now
+    if not category.inventory then
+        category.inventory = "player"
+    end
 end
 
 function SatchelNavigator:processItem(item)
@@ -139,92 +142,127 @@ function SatchelNavigator:_prepareCategory(raw)
     return category
 end
 
+function SatchelNavigator:_getInventoryContext(inventoryId)
+    local id = inventoryId or "player"
+    if not self.inventories[id] then
+        self.inventories[id] = { list = {}, map = {} }
+    end
+    return self.inventories[id]
+end
+
+function SatchelNavigator:_rebuildVisibleCategories()
+    self.categories = {}
+    self.categoryMap = {}
+
+    for _, cat in ipairs(self.allCategories) do
+        if self.activeInventoryIds[cat.inventory] == true then
+            table.insert(self.categories, cat)
+            self.categoryMap[cat.id] = cat
+        end
+    end
+
+    if self.currentCategoryIndex > #self.categories or self.currentCategoryIndex < 1 then
+        self.currentCategoryIndex = 1
+    end
+end
+
 function SatchelNavigator:_rebuildCurrentItems()
+    if #self.categories == 0 then
+        self.currentItems = {}
+        return
+    end
+
     local activeCategory = self.categories[self.currentCategoryIndex]
     if not activeCategory then
         self.currentItems = {}
         return
     end
 
+    local targetInvId = activeCategory.inventory or "player"
+    if not self.activeInventoryIds[targetInvId] then
+        self.currentItems = {}
+        return
+    end
+
+    local context = self:_getInventoryContext(targetInvId)
+    local itemList = context.list
+
     local displayList = {}
     local isRecentTab = activeCategory.recent == true
+    local isAllTab = activeCategory.all == true
+    if isRecentTab and isAllTab then isRecentTab = false end
+
+    local maxRecent = Config.maxRecentItems or 16
+    local includeFolderItemsInRecent = Config.enableFolderItemsInRecent
+    local minItemsForFolder = Config.minItemsForFolder or 2
+    local enableFolderCount = Config.enableFolderItemCount
 
     local folderCounts = {}
-    for _, item in ipairs(self.inventory) do
+    local seenRecentFolders = {}
+    local seenNormalFolders = {}
+    local recentCounter = 0
+
+    for _, item in ipairs(itemList) do
         if item.folder and item.count > 0 and item.enabled ~= false then
             folderCounts[item.folder] = (folderCounts[item.folder] or 0) + 1
         end
     end
 
-    if isRecentTab then
-        local count = 0
-        local maxItems = Config.maxRecentItems or 16
-        local includeFolderItems = Config.enableFolderItemsInRecent
-        local seenRecentFolders = {}
-
-        for _, item in ipairs(self.inventory) do
-            if count >= maxItems then break end
-            local isValid = true
-
-            if item.enabled == false or item.count <= 0 then isValid = false end
-
-            if isValid then
-                if item.folderOnly and item.folder then
-                    if not seenRecentFolders[item.folder] then
-                        local folderDef = self.folderMap[item.folder]
-                        if folderDef then
-                            local displayFolder = shallowCopy(folderDef)
-                            displayFolder.type = "folder"
-
-                            if Config.enableFolderItemCount then
-                                displayFolder.count = folderCounts[item.folder] or 0
+    for _, item in ipairs(itemList) do
+        if item.count > 0 and item.enabled ~= false then
+            if isRecentTab then
+                if recentCounter < maxRecent then
+                    local isRecentValid = true
+                    if item.folderOnly and item.folder then
+                        if not seenRecentFolders[item.folder] then
+                            local folderDef = self.folderMap[item.folder]
+                            if folderDef then
+                                local displayFolder = shallowCopy(folderDef)
+                                displayFolder.type = "folder"
+                                if enableFolderCount then
+                                    displayFolder.count = folderCounts[item.folder] or 0
+                                end
+                                table.insert(displayList, displayFolder)
+                                seenRecentFolders[item.folder] = true
+                                recentCounter = recentCounter + 1
                             end
-
-                            table.insert(displayList, displayFolder)
-                            seenRecentFolders[item.folder] = true
-                            count = count + 1
+                        end
+                        isRecentValid = false
+                    else
+                        if item.folder and not includeFolderItemsInRecent then
+                            isRecentValid = false
                         end
                     end
-                else
-                    if item.folder and not includeFolderItems then
-                        isValid = false
-                    end
-
-                    if isValid then
+                    if isRecentValid then
                         local displayItem = shallowCopy(item)
                         displayItem.type = "item"
                         table.insert(displayList, displayItem)
-                        count = count + 1
+                        recentCounter = recentCounter + 1
                     end
                 end
-            end
-        end
-    else
-        local minItems = Config.minItemsForFolder or 2
-        local seenFolders = {}
-
-        for _, item in ipairs(self.inventory) do
-            if item.count > 0 and item.enabled ~= false then
-                if item.category == activeCategory.id and not item.folder then
+            elseif isAllTab or item.category == activeCategory.id then
+                if not item.folder then
                     local displayItem = shallowCopy(item)
                     displayItem.type = "item"
                     table.insert(displayList, displayItem)
-                elseif item.folder then
+                else
                     local folderDef = self.folderMap[item.folder]
-                    if folderDef and folderDef.category == activeCategory.id then
+                    local folderMatches = isAllTab or (folderDef and folderDef.category == activeCategory.id)
+
+                    if folderMatches and folderDef then
                         local fCount = folderCounts[item.folder] or 0
-                        if fCount < minItems and not item.folderOnly then
+                        if fCount < minItemsForFolder and not item.folderOnly then
                             local displayItem = shallowCopy(item)
                             displayItem.type = "item"
                             table.insert(displayList, displayItem)
-                        elseif not seenFolders[item.folder] then
+                        elseif not seenNormalFolders[item.folder] then
                             local displayFolder = shallowCopy(folderDef)
                             displayFolder.type = "folder"
-                            if Config.enableFolderItemCount then
+                            if enableFolderCount then
                                 displayFolder.count = fCount
                             end
                             table.insert(displayList, displayFolder)
-                            seenFolders[item.folder] = true
+                            seenNormalFolders[item.folder] = true
                         end
                     end
                 end
@@ -236,18 +274,18 @@ function SatchelNavigator:_rebuildCurrentItems()
 end
 
 -- ===================================================================
--- Public API: Setters
+-- Public API: Configuration
 -- ===================================================================
 
 function SatchelNavigator:setCategories(categories)
-    self.categories = {}
-    self.categoryMap = {}
+    self.allCategories = {}
     for _, raw in ipairs(categories or {}) do
         local cat = self:_prepareCategory(raw)
-        table.insert(self.categories, cat)
-        self.categoryMap[cat.id] = cat
+        table.insert(self.allCategories, cat)
     end
-    if self.currentCategoryIndex > #self.categories then self.currentCategoryIndex = 1 end
+
+    self:_rebuildVisibleCategories()
+    self:_rebuildCurrentItems()
 end
 
 function SatchelNavigator:setFolders(folders)
@@ -260,14 +298,51 @@ function SatchelNavigator:setFolders(folders)
     end
 end
 
-function SatchelNavigator:setInventory(items)
-    self.inventory = {}
-    self.itemMap = {}
+-- ===================================================================
+-- Public API: Inventory Management
+-- ===================================================================
+
+function SatchelNavigator:activateInventory(inventoryId)
+    if not inventoryId then return end
+    self.activeInventoryIds[inventoryId] = true
+    self:_rebuildVisibleCategories()
+    self:_rebuildCurrentItems()
+end
+
+function SatchelNavigator:deactivateInventory(inventoryId)
+    if not inventoryId then return end
+    self.activeInventoryIds[inventoryId] = nil -- nil removes key
+    self:_rebuildVisibleCategories()
+    self:_rebuildCurrentItems()
+end
+
+function SatchelNavigator:resetActiveInventories()
+    self.activeInventoryIds = { ["player"] = true }
+    self:_rebuildVisibleCategories()
+    self:_rebuildCurrentItems()
+end
+
+function SatchelNavigator:hasActiveInventories()
+    for _, active in pairs(self.activeInventoryIds) do
+        if active then return true end
+    end
+    return false
+end
+
+function SatchelNavigator:setInventory(items, inventoryId)
+    local targetId = inventoryId or "player"
+    local context = self:_getInventoryContext(targetId)
+
+    context.list = {}
+    context.map = {}
+
     for _, raw in ipairs(items or {}) do
         local item = self:_prepareItem(raw)
-        table.insert(self.inventory, item)
-        self.itemMap[item.id] = item
+        item.inventoryId = targetId
+        table.insert(context.list, item)
+        context.map[item.id] = item
     end
+
     self:_rebuildCurrentItems()
 end
 
@@ -275,42 +350,56 @@ end
 -- Public API: Item Manipulation
 -- ===================================================================
 
-function SatchelNavigator:addItem(rawItem)
+function SatchelNavigator:addItem(rawItem, inventoryId)
+    local targetId = inventoryId or "player"
     if not rawItem or not rawItem.id then return end
 
-    if self.itemMap[rawItem.id] then
-        self:updateItem(rawItem.id, rawItem)
+    local context = self:_getInventoryContext(targetId)
+
+    if context.map[rawItem.id] then
+        self:updateItem(rawItem.id, rawItem, targetId)
         return
     end
 
     local item = self:_prepareItem(rawItem)
-    table.insert(self.inventory, 1, item)
-    self.itemMap[item.id] = item
+    item.inventoryId = targetId
+
+    table.insert(context.list, 1, item)
+    context.map[item.id] = item
     self:_rebuildCurrentItems()
 end
 
-function SatchelNavigator:incrementItem(itemId, count)
-    local item = self.itemMap[itemId]
+function SatchelNavigator:incrementItem(itemId, count, inventoryId)
+    local targetId = inventoryId or "player"
+    local context = self:_getInventoryContext(targetId)
+    local item = context.map[itemId]
+
     if not item then return end
     item.count = (item.count or 0) + count
     self:_rebuildCurrentItems()
 end
 
-function SatchelNavigator:decrementItem(itemId, count)
-    local item = self.itemMap[itemId]
+function SatchelNavigator:decrementItem(itemId, count, inventoryId)
+    local targetId = inventoryId or "player"
+    local context = self:_getInventoryContext(targetId)
+    local item = context.map[itemId]
+
     if not item then return end
 
     item.count = math.max((item.count or 0) - count, 0)
     if item.count <= 0 then
-        self:removeItem(itemId)
+        self:removeItem(itemId, targetId)
         return
     end
 
     self:_rebuildCurrentItems()
 end
 
-function SatchelNavigator:updateItem(itemId, updates)
-    local item = self.itemMap[itemId]
+function SatchelNavigator:updateItem(itemId, updates, inventoryId)
+    local targetId = inventoryId or "player"
+    local context = self:_getInventoryContext(targetId)
+    local item = context.map[itemId]
+
     if item then
         for k, v in pairs(updates) do item[k] = v end
         self:processItem(item)
@@ -318,15 +407,43 @@ function SatchelNavigator:updateItem(itemId, updates)
     end
 end
 
-function SatchelNavigator:removeItem(itemId)
-    for i, item in ipairs(self.inventory) do
+function SatchelNavigator:removeItem(itemId, inventoryId)
+    local targetId = inventoryId or "player"
+    local context = self:_getInventoryContext(targetId)
+
+    for i, item in ipairs(context.list) do
         if item.id == itemId then
-            table.remove(self.inventory, i)
-            self.itemMap[itemId] = nil
+            table.remove(context.list, i)
+            context.map[itemId] = nil
             self:_rebuildCurrentItems()
             break
         end
     end
+end
+
+function SatchelNavigator:moveItem(itemId, fromInvId, toInvId, count)
+    if count <= 0 then return false end
+
+    local sourceContext = self:_getInventoryContext(fromInvId)
+    local sourceItem = sourceContext.map[itemId]
+
+    if not sourceItem or sourceItem.count < count then
+        return false
+    end
+
+    local itemData = shallowCopy(sourceItem)
+    itemData.count = count
+
+    self:decrementItem(itemId, count, fromInvId)
+
+    local targetContext = self:_getInventoryContext(toInvId)
+    if targetContext.map[itemId] then
+        self:incrementItem(itemId, count, toInvId)
+    else
+        self:addItem(itemData, toInvId)
+    end
+
+    return true
 end
 
 -- ===================================================================
@@ -354,6 +471,11 @@ function SatchelNavigator:getCurrentItems()
     return self.currentItems
 end
 
+function SatchelNavigator:getActiveInventoryId()
+    local category = self.categories[self.currentCategoryIndex]
+    return category and category.inventory or "player"
+end
+
 -- ===================================================================
 -- Public API: Retrieval Helpers
 -- ===================================================================
@@ -362,22 +484,29 @@ function SatchelNavigator:isFolder(id)
     return self.folderMap[id] ~= nil
 end
 
-function SatchelNavigator:isItem(id)
-    return self.itemMap[id] ~= nil
+function SatchelNavigator:isItem(id, inventoryId)
+    local targetId = inventoryId or self:getActiveInventoryId()
+    local context = self:_getInventoryContext(targetId)
+    return context.map[id] ~= nil
 end
 
 function SatchelNavigator:getFolderById(id)
     return self.folderMap[id]
 end
 
-function SatchelNavigator:getItemById(id)
-    return self.itemMap[id]
+function SatchelNavigator:getItemById(id, inventoryId)
+    local targetId = inventoryId or self:getActiveInventoryId()
+    local context = self:_getInventoryContext(targetId)
+    return context.map[id]
 end
 
-function SatchelNavigator:getFolderContents(folderId)
+function SatchelNavigator:getFolderContents(folderId, inventoryId)
+    local targetId = inventoryId or self:getActiveInventoryId()
+    local context = self:_getInventoryContext(targetId)
     local results = {}
     if not folderId then return results end
-    for _, item in ipairs(self.inventory) do
+
+    for _, item in ipairs(context.list) do
         if item.folder == folderId and item.count > 0 and item.enabled ~= false then
             local display = shallowCopy(item)
             display.type = "item"
@@ -416,7 +545,6 @@ function SatchelNavigator:setCategory(indexOrId)
 end
 
 function SatchelNavigator:refresh()
-    self:setCategories(self.categories)
-    self:setFolders(self.folders)
-    self:setInventory(self.inventory)
+    self:_rebuildVisibleCategories()
+    self:_rebuildCurrentItems()
 end

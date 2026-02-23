@@ -103,6 +103,12 @@ function SatchelUI.Open(mode, index)
         return
     end
 
+    if not SatchelNavigator:hasActiveInventories() then
+        print("[NativeSatchel] No active inventories found. Please activate an inventory before opening the satchel.")
+        PostFeedTicker("You are unable to use this right now.")
+        return
+    end
+
     if mode == "shop" then
         SatchelUI.state.entry = "shop"
     else
