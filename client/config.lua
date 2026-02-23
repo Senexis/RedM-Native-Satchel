@@ -5,6 +5,9 @@
 ---------------------------------------------------------------------------------
 Config = {}
 
+-- Set the title that is used when no override is set
+Config.defaultTitle = "Satchel"
+
 -- Enable/disable the default satchel opening prompt
 Config.enableDefaultOpenPrompt = true
 
