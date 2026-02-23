@@ -1,3 +1,7 @@
+AddEventHandler("native_satchel:title", function(title)
+    SatchelUI.SetTitleOverride(title)
+end)
+
 AddEventHandler("native_satchel:open", function(mode, index)
     SatchelUI.Open(mode, index)
 end)

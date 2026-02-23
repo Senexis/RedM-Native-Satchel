@@ -115,6 +115,12 @@ function SatchelUI.Open(mode, index)
         SatchelUI.state.entry = "ingame"
     end
 
+    if SatchelUI.state.titleOverride then
+        AddTextEntry("SATCHEL_TITLE", SatchelUI.state.titleOverride)
+    else
+        AddTextEntry("SATCHEL_TITLE", Config.defaultTitle or "Satchel")
+    end
+
     SatchelUI.LoadResources()
     SatchelUI.SetupNavigator()
     SatchelUI.Initialize()
@@ -236,6 +242,14 @@ function SatchelUI.RefreshMenu()
 
     if SatchelData.state.hydratedList then
         SatchelUI.Builder.AddListItems(SatchelData.state.hydratedList)
+    end
+end
+
+function SatchelUI.SetTitleOverride(title)
+    if type(title) == "string" and title ~= "" then
+        SatchelUI.state.titleOverride = title
+    else
+        SatchelUI.state.titleOverride = nil
     end
 end
 

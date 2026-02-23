@@ -44,6 +44,12 @@ end)
 
 -- Register commands for testing the satchel triggers
 
+RegisterCommand("satchel_title", function(source, args)
+    local title = table.concat(args, " ")
+    print("Setting satchel title override to:", title)
+    TriggerEvent("native_satchel:title", title)
+end, false)
+
 RegisterCommand("satchel_open", function(source, args)
     local index = tonumber(args[1])
 
