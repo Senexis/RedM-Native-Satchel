@@ -240,7 +240,7 @@ function SatchelNavigator:_rebuildCurrentItems()
                         recentCounter = recentCounter + 1
                     end
                 end
-            elseif isAllTab or item.category == activeCategory.id then
+            elseif isAllTab or item.folder or item.category == activeCategory.id then
                 if not item.folder then
                     local displayItem = shallowCopy(item)
                     displayItem.type = "item"
