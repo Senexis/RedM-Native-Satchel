@@ -241,7 +241,7 @@ if Config.enableDefaultOpenPrompt then
                         end
 
                         if UiPromptGetProgress(prompt) == 1.0 then
-                            TriggerEvent("native_satchel:open")
+                            SatchelUI.Open("ingame")
                         end
 
                         UiPromptDelete(prompt)

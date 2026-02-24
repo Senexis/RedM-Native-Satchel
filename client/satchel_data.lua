@@ -81,6 +81,8 @@ function SatchelData.MaintainEvents()
             DatabindingWriteDataInt(SatchelUI.bindings.dsiCategoryDefault, value)
         end
 
+        SatchelUI.RefreshMenu()
+
         local categoryId = SatchelNavigator:getCurrentCategoryId()
         TriggerEvent("native_satchel:category_changed", categoryId)
 

@@ -1,4 +1,4 @@
-AddEventHandler("native_satchel:title", function(title)
+AddEventHandler("native_satchel:set_title", function(title)
     SatchelUI.SetTitleOverride(title)
 end)
 
@@ -16,10 +16,6 @@ end)
 
 AddEventHandler("native_satchel:close_satchel", function(mode)
     SatchelUI.Exit(mode)
-end)
-
-AddEventHandler("native_satchel:category_changed", function()
-    SatchelUI.RefreshMenu()
 end)
 
 AddEventHandler("native_satchel:synchronize", function(items, inventory)
@@ -52,19 +48,19 @@ AddEventHandler("native_satchel:move_item", function(item, fromInventory, toInve
     SatchelUI.RefreshMenu()
 end)
 
-AddEventHandler("native_shop:activate_inventory", function(inventory)
+AddEventHandler("native_satchel:activate_inventory", function(inventory)
     SatchelNavigator:activateInventory(inventory)
-    TriggerEvent("native_satchel:close")
+    SatchelUI.Exit()
 end)
 
-AddEventHandler("native_shop:deactivate_inventory", function(inventory)
+AddEventHandler("native_satchel:deactivate_inventory", function(inventory)
     SatchelNavigator:deactivateInventory(inventory)
-    TriggerEvent("native_satchel:close")
+    SatchelUI.Exit()
 end)
 
 AddEventHandler("native_satchel:reset_inventory", function(inventory)
     SatchelNavigator:resetActiveInventories()
-    TriggerEvent("native_satchel:close")
+    SatchelUI.Exit()
 end)
 
 AddEventHandler("onResourceStop", function(resourceName)
