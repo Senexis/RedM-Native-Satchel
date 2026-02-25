@@ -14,6 +14,7 @@ client_scripts {
     "client/util_dataview.lua",
     "client/util_items.lua",
     "client/util_ticker.lua",
+    "client/satchel_validator.lua",
     "client/satchel_events.lua",
     "client/satchel_navigator.lua",
     "client/satchel_ui.lua",

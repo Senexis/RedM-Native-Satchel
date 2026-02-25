@@ -279,9 +279,14 @@ end
 
 function SatchelNavigator:setCategories(categories)
     self.allCategories = {}
-    for _, raw in ipairs(categories or {}) do
-        local cat = self:_prepareCategory(raw)
-        table.insert(self.allCategories, cat)
+    for i, raw in ipairs(categories or {}) do
+        local ok, result = pcall(SatchelValidator.Category, raw)
+        if ok then
+            local cat = self:_prepareCategory(result)
+            table.insert(self.allCategories, cat)
+        else
+            self.onError("Error validating category at index " .. tostring(i) .. ": " .. tostring(result))
+        end
     end
 
     self:_rebuildVisibleCategories()
@@ -291,10 +296,15 @@ end
 function SatchelNavigator:setFolders(folders)
     self.folders = {}
     self.folderMap = {}
-    for _, raw in ipairs(folders or {}) do
-        local folder = self:_prepareFolder(raw)
-        table.insert(self.folders, folder)
-        self.folderMap[folder.id] = folder
+    for i, raw in ipairs(folders or {}) do
+        local ok, result = pcall(SatchelValidator.Folder, raw)
+        if ok then
+            local folder = self:_prepareFolder(result)
+            table.insert(self.folders, folder)
+            self.folderMap[folder.id] = folder
+        else
+            self.onError("Error validating folder at index " .. tostring(i) .. ": " .. tostring(result))
+        end
     end
 end
 
@@ -336,11 +346,16 @@ function SatchelNavigator:setInventory(items, inventoryId)
     context.list = {}
     context.map = {}
 
-    for _, raw in ipairs(items or {}) do
-        local item = self:_prepareItem(raw)
-        item.inventoryId = targetId
-        table.insert(context.list, item)
-        context.map[item.id] = item
+    for i, raw in ipairs(items or {}) do
+        local ok, validated = pcall(SatchelValidator.Item, raw)
+        if ok then
+            local item = self:_prepareItem(validated)
+            item.inventoryId = targetId
+            table.insert(context.list, item)
+            context.map[item.id] = item
+        else
+            self.onError("Error validating item at index " .. tostring(i) .. " for inventory '" .. tostring(targetId) .. "': " .. tostring(validated))
+        end
     end
 
     self:_rebuildCurrentItems()
@@ -361,20 +376,25 @@ function SatchelNavigator:addItem(rawItem, inventoryId)
         return
     end
 
-    local item = self:_prepareItem(rawItem)
-    item.inventoryId = targetId
+    local ok, validated = pcall(SatchelValidator.Item, rawItem)
+    if ok then
+        local item = self:_prepareItem(validated)
+        item.inventoryId = targetId
 
-    table.insert(context.list, 1, item)
-    context.map[item.id] = item
-    self:_rebuildCurrentItems()
+        table.insert(context.list, 1, item)
+        context.map[item.id] = item
+        self:_rebuildCurrentItems()
+    else
+        self.onError("Error validating item for inventory '" .. tostring(targetId) .. "': " .. tostring(validated))
+    end
 end
 
 function SatchelNavigator:incrementItem(itemId, count, inventoryId)
     local targetId = inventoryId or "player"
     local context = self:_getInventoryContext(targetId)
     local item = context.map[itemId]
-
     if not item then return end
+
     item.count = (item.count or 0) + count
     self:_rebuildCurrentItems()
 end
@@ -383,7 +403,6 @@ function SatchelNavigator:decrementItem(itemId, count, inventoryId)
     local targetId = inventoryId or "player"
     local context = self:_getInventoryContext(targetId)
     local item = context.map[itemId]
-
     if not item then return end
 
     item.count = math.max((item.count or 0) - count, 0)
@@ -399,11 +418,18 @@ function SatchelNavigator:updateItem(itemId, updates, inventoryId)
     local targetId = inventoryId or "player"
     local context = self:_getInventoryContext(targetId)
     local item = context.map[itemId]
+    if not item then return end
 
-    if item then
-        for k, v in pairs(updates) do item[k] = v end
+    for k, v in pairs(updates) do
+        item[k] = v
+    end
+
+    local ok, result = pcall(SatchelValidator.Item, item)
+    if ok then
         self:processItem(item)
         self:_rebuildCurrentItems()
+    else
+        self.onError("Error validating updated item '" .. tostring(itemId) .. "' for inventory '" .. tostring(targetId) .. "': " .. tostring(result))
     end
 end
 
@@ -426,10 +452,7 @@ function SatchelNavigator:moveItem(itemId, fromInvId, toInvId, count)
 
     local sourceContext = self:_getInventoryContext(fromInvId)
     local sourceItem = sourceContext.map[itemId]
-
-    if not sourceItem or sourceItem.count < count then
-        return false
-    end
+    if not sourceItem or sourceItem.count < count then return false end
 
     local itemData = shallowCopy(sourceItem)
     itemData.count = count
