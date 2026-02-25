@@ -73,17 +73,17 @@ local SCHEMAS <const> = {
         sendable = { type = "boolean", optional = true },
         metadata = { type = "table", optional = true },
 
-        validate = function(data)
+        validate = function(data, label)
             if not data.category and not data.catalog then
-                error("At least one of 'category' or 'catalog' must be provided")
+                error(string.format("[%s] At least one of 'category' or 'catalog' must be provided", label))
             end
 
             if data.count <= 0 then
-                error("'count' must be greater than 0")
+                error(string.format("[%s] 'count' must be greater than 0", label))
             end
 
             if data.maxCount and data.maxCount <= 0 then
-                error("'maxCount' must be greater than 0")
+                error(string.format("[%s] 'maxCount' must be greater than 0", label))
             end
         end,
     },
@@ -119,12 +119,22 @@ local SCHEMAS <const> = {
 }
 
 local function wrap(schema, data, label)
+    if type(schema) == "string" then
+        local resolved = SCHEMAS[schema]
+        if not resolved then
+            error(string.format("[System] Schema '%s' not found", schema), 2)
+        end
+        schema = resolved
+    elseif type(schema) == "function" then
+        schema = schema()
+    end
+
     local proxy = {}
 
     local function verify(key, rule, value)
         if value == nil then
             if not rule.optional then
-                error(string.format("Field '%s' is required", key), 3)
+                error(string.format("[%s] Field '%s' is required", label, key), 3)
             end
             return nil
         end
@@ -149,7 +159,8 @@ local function wrap(schema, data, label)
                     table.concat(rule.type, "|") or rule.type
                 error(
                     string.format(
-                        "Field '%s' must be %s (got %s)",
+                        "[%s] Field '%s' must be %s (got %s)",
+                        label,
                         key,
                         expected,
                         value_type
@@ -180,7 +191,7 @@ local function wrap(schema, data, label)
 
     for k, _ in pairs(data) do
         if not schema[k] then
-            error(string.format("Field '%s' is not valid. If you need extra data, use 'metadata'", k), 2)
+            error(string.format("[%s] Field '%s' is not valid. If you need extra data, use 'Metadata'", label, k), 2)
         end
     end
 
@@ -197,7 +208,7 @@ local function wrap(schema, data, label)
         __newindex = function(_, k, v)
             local rule = schema[k]
             if not rule then
-                error(string.format("Field '%s' is not valid. If you need extra data, use 'metadata'", k), 2)
+                error(string.format("[%s] Field '%s' is not valid. If you need extra data, use 'Metadata'", label, k), 2)
             end
 
             local old_val = data[k]
