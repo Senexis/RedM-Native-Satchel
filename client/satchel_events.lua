@@ -30,8 +30,10 @@ SatchelEvents.state = {
     pageIndex = 0,
 }
 
-function SatchelEvents.GetEventFlags()
-    return SatchelEvents.state.eventFlags
+function SatchelEvents.PopEventFlags()
+    local flags = SatchelEvents.state.eventFlags
+    SatchelEvents.state.eventFlags = 0
+    return flags
 end
 
 function SatchelEvents.GetEventFlag(flag)
@@ -41,20 +43,6 @@ end
 function SatchelEvents.SetEventFlag(flag)
     SatchelEvents.state.eventFlags = SatchelEvents.state.eventFlags | flag
     return SatchelEvents.state.eventFlags
-end
-
-function SatchelEvents.ClearEventFlag(flag)
-    SatchelEvents.state.eventFlags = SatchelEvents.state.eventFlags & (~flag)
-    return SatchelEvents.state.eventFlags
-end
-
-function SatchelEvents.ClearItemTypeFlags()
-    SatchelEvents.ClearEventFlag(SatchelEvents.FLAG_ITEM_TYPE_FOLDER)
-    SatchelEvents.ClearEventFlag(SatchelEvents.FLAG_ITEM_TYPE_USABLE)
-    SatchelEvents.ClearEventFlag(SatchelEvents.FLAG_ITEM_TYPE_CRAFTABLE)
-    SatchelEvents.ClearEventFlag(SatchelEvents.FLAG_ITEM_TYPE_DROP)
-    SatchelEvents.ClearEventFlag(SatchelEvents.FLAG_ITEM_TYPE_DISCARD_ALL)
-    SatchelEvents.ClearEventFlag(SatchelEvents.FLAG_ITEM_TYPE_SEND_ALL)
 end
 
 function SatchelEvents.GetUiEventType(id)

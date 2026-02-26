@@ -1,6 +1,7 @@
 SatchelData = {}
 
 SatchelData.state = {
+    eventFlags = 0,
     shuttingDown = false,
     hydratedList = nil,
     streamedSatchelCategoryItems = false,
@@ -17,6 +18,10 @@ end
 
 function SatchelData.Shutdown()
     SatchelData.state.shuttingDown = true
+end
+
+function SatchelData.GetEventFlag(flag)
+    return SatchelData.state.eventFlags & flag ~= 0
 end
 
 function SatchelData.MaintainEvents()
@@ -60,17 +65,20 @@ function SatchelData.MaintainEvents()
         DisableControlAction(0, `INPUT_OPEN_WHEEL_MENU`, false);
     end
 
+    -- Pop the event flags for this frame so we can react to them
+    -- This prevents race conditions by flags getting cleared before we can react to them
+    SatchelData.state.eventFlags = SatchelEvents.PopEventFlags()
+
     -- Early return if we don't have anything to do to prevent unnecessary flag checks
-    if not SatchelEvents.GetEventFlag(SatchelEvents.FLAG_STATE_CHANGED) then
+    if not SatchelData.GetEventFlag(SatchelEvents.FLAG_STATE_CHANGED) then
         return
     end
 
-    if SatchelEvents.GetEventFlag(SatchelEvents.FLAG_ITEM_UNFOCUSED) then
+    if SatchelData.GetEventFlag(SatchelEvents.FLAG_ITEM_UNFOCUSED) then
         SatchelUI.Events.HandleUnfocus()
-        SatchelEvents.ClearEventFlag(SatchelEvents.FLAG_ITEM_UNFOCUSED)
     end
 
-    if SatchelEvents.GetEventFlag(SatchelEvents.FLAG_TAB_INCREMENT) or SatchelEvents.GetEventFlag(SatchelEvents.FLAG_TAB_DECREMENT) then
+    if SatchelData.GetEventFlag(SatchelEvents.FLAG_TAB_INCREMENT) or SatchelData.GetEventFlag(SatchelEvents.FLAG_TAB_DECREMENT) then
         SatchelUI.Events.HandleUnfocus()
         SatchelUI.ClearListItems()
         SatchelUI.Index.Clear()
@@ -85,12 +93,9 @@ function SatchelData.MaintainEvents()
 
         local categoryId = SatchelNavigator:getCurrentCategoryId()
         TriggerEvent("native_satchel:category_changed", categoryId)
-
-        SatchelEvents.ClearEventFlag(SatchelEvents.FLAG_TAB_INCREMENT)
-        SatchelEvents.ClearEventFlag(SatchelEvents.FLAG_TAB_DECREMENT)
     end
 
-    if SatchelEvents.GetEventFlag(SatchelEvents.FLAG_ITEM_FOCUSED) then
+    if SatchelData.GetEventFlag(SatchelEvents.FLAG_ITEM_FOCUSED) then
         local index = SatchelEvents.state.focusedIndex
         local itemId = SatchelEvents.GetFocusedItemId()
         local type = SatchelEvents.GetFocusedItemType()
@@ -112,45 +117,35 @@ function SatchelData.MaintainEvents()
         else
             SatchelUI.Index.SetCurrent("menu", index)
         end
-
-
-        SatchelEvents.ClearEventFlag(SatchelEvents.FLAG_ITEM_FOCUSED)
     end
 
-    if SatchelEvents.GetEventFlag(SatchelEvents.FLAG_ITEM_SELECTED) then
+    if SatchelData.GetEventFlag(SatchelEvents.FLAG_ITEM_SELECTED) then
         local itemId = SatchelEvents.GetSelectedItemId()
 
-        if SatchelEvents.GetEventFlag(SatchelEvents.FLAG_ITEM_TYPE_FOLDER) and itemId then
+        if SatchelData.GetEventFlag(SatchelEvents.FLAG_ITEM_TYPE_FOLDER) and itemId then
             SatchelUI.UpdateListTitle(itemId)
         end
 
-        if SatchelEvents.GetEventFlag(SatchelEvents.FLAG_ITEM_TYPE_FOLDER) then
+        if SatchelData.GetEventFlag(SatchelEvents.FLAG_ITEM_TYPE_FOLDER) then
             TriggerEvent("native_satchel:folder_opened", itemId)
-        elseif SatchelEvents.GetEventFlag(SatchelEvents.FLAG_ITEM_TYPE_USABLE) then
+        elseif SatchelData.GetEventFlag(SatchelEvents.FLAG_ITEM_TYPE_USABLE) then
             TriggerEvent("native_satchel:item_used", itemId)
-        elseif SatchelEvents.GetEventFlag(SatchelEvents.FLAG_ITEM_TYPE_CRAFTABLE) then
+        elseif SatchelData.GetEventFlag(SatchelEvents.FLAG_ITEM_TYPE_CRAFTABLE) then
             TriggerEvent("native_satchel:item_crafted", itemId)
-        elseif SatchelEvents.GetEventFlag(SatchelEvents.FLAG_ITEM_TYPE_DROP) then
+        elseif SatchelData.GetEventFlag(SatchelEvents.FLAG_ITEM_TYPE_DROP) then
             TriggerEvent("native_satchel:item_dropped", itemId)
-        elseif SatchelEvents.GetEventFlag(SatchelEvents.FLAG_ITEM_TYPE_DISCARD_ALL) then
+        elseif SatchelData.GetEventFlag(SatchelEvents.FLAG_ITEM_TYPE_DISCARD_ALL) then
             TriggerEvent("native_satchel:item_discarded", itemId)
-        elseif SatchelEvents.GetEventFlag(SatchelEvents.FLAG_ITEM_TYPE_SEND_ALL) then
+        elseif SatchelData.GetEventFlag(SatchelEvents.FLAG_ITEM_TYPE_SEND_ALL) then
             TriggerEvent("native_satchel:item_sent_all", itemId)
         end
-
-        SatchelEvents.ClearItemTypeFlags()
-        SatchelEvents.ClearEventFlag(SatchelEvents.FLAG_ITEM_SELECTED)
     end
 
-    if SatchelEvents.GetEventFlag(SatchelEvents.FLAG_NEW_ACTIVITY) then
+    if SatchelData.GetEventFlag(SatchelEvents.FLAG_NEW_ACTIVITY) then
         -- Currently unused, used in game to force direct-to-folder situations
-        SatchelEvents.ClearEventFlag(SatchelEvents.FLAG_NEW_ACTIVITY)
     end
 
-    if SatchelEvents.GetEventFlag(SatchelEvents.FLAG_NEW_PAGE) then
+    if SatchelData.GetEventFlag(SatchelEvents.FLAG_NEW_PAGE) then
         -- Currently unused, used in game to force direct-to-folder situations
-        SatchelEvents.ClearEventFlag(SatchelEvents.FLAG_NEW_PAGE)
     end
-
-    SatchelEvents.ClearEventFlag(SatchelEvents.FLAG_STATE_CHANGED)
 end
