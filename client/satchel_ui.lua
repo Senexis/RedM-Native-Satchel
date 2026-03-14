@@ -408,6 +408,26 @@ function SatchelUI.Builder.BuildMenuItem(container, index, item)
     local stars = item.stars or 0
     local color = item.color or `COLOR_PURE_WHITE`
 
+    if item.type == "empty" then
+        count = 1
+        maxCount = nil
+        enabled = false
+        txd = ""
+        texture = ""
+        special = false
+        stars = 0
+        color = `COLOR_PURE_WHITE`
+    elseif item.type == "locked" then
+        count = 1
+        maxCount = nil
+        enabled = false
+        txd = Config.lockedSlotTxd or "generic_textures"
+        texture = Config.lockedSlotTexture or "lock"
+        special = false
+        stars = 0
+        color = `COLOR_PURE_WHITE`
+    end
+
     local data = DatabindingGetDataContainerFromChildIndex(container, index - 1)
     while DatabindingIsEntryValid(data) ~= 1 do
         data = DatabindingGetDataContainerFromChildIndex(container, index - 1)
@@ -513,6 +533,20 @@ function SatchelUI.Events.HandleItemFocus(id)
     end
 
     TriggerEvent("native_satchel:item_focused", id)
+end
+
+function SatchelUI.Events.HandleEmptyFocus(id)
+    SatchelUI.Prompts.Clear()
+    SatchelUI.Scene.SetCategorySlotEmpty()
+
+    TriggerEvent("native_satchel:empty_slot_focused", id)
+end
+
+function SatchelUI.Events.HandleLockedFocus(id)
+    SatchelUI.Prompts.Clear()
+    SatchelUI.Scene.SetCategorySlotLocked()
+
+    TriggerEvent("native_satchel:locked_slot_focused", id)
 end
 
 function SatchelUI.Events.HandleUnfocus()
@@ -736,6 +770,11 @@ function SatchelUI.Index.Clear()
 end
 
 function SatchelUI.Scene.SetCategoryEmpty()
+    SatchelUI.Scene.SetCategoryEmptyLabel()
+    SatchelUI.Scene.SetCategoryEmptyDescription()
+end
+
+function SatchelUI.Scene.SetCategoryEmptyLabel()
     local category = SatchelNavigator:getCurrentCategory()
     if not category then return end
 
@@ -746,6 +785,11 @@ function SatchelUI.Scene.SetCategoryEmpty()
     else
         SatchelUI.Scene.ClearName()
     end
+end
+
+function SatchelUI.Scene.SetCategoryEmptyDescription()
+    local category = SatchelNavigator:getCurrentCategory()
+    if not category then return end
 
     if category.emptyDescription and category.emptyDescription ~= "" then
         SatchelUI.Scene.SetDescription(category.emptyDescription)
@@ -753,6 +797,48 @@ function SatchelUI.Scene.SetCategoryEmpty()
         SatchelUI.Scene.SetDescription(category.emptyDescriptionHash, true)
     else
         SatchelUI.Scene.ClearDescription()
+    end
+end
+
+function SatchelUI.Scene.SetCategorySlotEmpty()
+    local category = SatchelNavigator:getCurrentCategory()
+    if not category then return end
+
+    if category.slotEmptyLabel and category.slotEmptyLabel ~= "" then
+        SatchelUI.Scene.SetName(category.slotEmptyLabel)
+    elseif category.slotEmptyLabelHash and category.slotEmptyLabelHash ~= 0 then
+        SatchelUI.Scene.SetName(category.slotEmptyLabelHash, true)
+    else
+        SatchelUI.Scene.SetCategoryEmptyLabel()
+    end
+
+    if category.slotEmptyDescription and category.slotEmptyDescription ~= "" then
+        SatchelUI.Scene.SetDescription(category.slotEmptyDescription)
+    elseif category.slotEmptyDescriptionHash and category.slotEmptyDescriptionHash ~= 0 then
+        SatchelUI.Scene.SetDescription(category.slotEmptyDescriptionHash, true)
+    else
+        SatchelUI.Scene.SetCategoryEmptyDescription()
+    end
+end
+
+function SatchelUI.Scene.SetCategorySlotLocked()
+    local category = SatchelNavigator:getCurrentCategory()
+    if not category then return end
+
+    if category.slotLockedLabel and category.slotLockedLabel ~= "" then
+        SatchelUI.Scene.SetName(category.slotLockedLabel)
+    elseif category.slotLockedLabelHash and category.slotLockedLabelHash ~= 0 then
+        SatchelUI.Scene.SetName(category.slotLockedLabelHash, true)
+    else
+        SatchelUI.Scene.SetCategoryEmptyLabel()
+    end
+
+    if category.slotLockedDescription and category.slotLockedDescription ~= "" then
+        SatchelUI.Scene.SetDescription(category.slotLockedDescription)
+    elseif category.slotLockedDescriptionHash and category.slotLockedDescriptionHash ~= 0 then
+        SatchelUI.Scene.SetDescription(category.slotLockedDescriptionHash, true)
+    else
+        SatchelUI.Scene.SetCategoryEmptyDescription()
     end
 end
 

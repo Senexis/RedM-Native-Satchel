@@ -270,6 +270,39 @@ function SatchelNavigator:_rebuildCurrentItems()
         end
     end
 
+    local invItems = #displayList
+    local unlockedSlots = activeCategory.slots
+
+    if type(unlockedSlots) == "number" then
+        local rowWidth = 4
+        local currentFieldEnd = math.ceil(invItems / rowWidth) * rowWidth
+        local fillTo = 0
+
+        if unlockedSlots < 16 then
+            fillTo = 16
+        elseif invItems > 0 and invItems % rowWidth ~= 0 then
+            if unlockedSlots < currentFieldEnd then
+                fillTo = currentFieldEnd
+            end
+        end
+
+        if fillTo > invItems then
+            for index = invItems + 1, fillTo do
+                if index <= unlockedSlots then
+                    table.insert(displayList, {
+                        id = string.format("empty_slot_%d", index),
+                        type = "empty",
+                    })
+                else
+                    table.insert(displayList, {
+                        id = string.format("locked_slot_%d", index),
+                        type = "locked",
+                    })
+                end
+            end
+        end
+    end
+
     self.currentItems = displayList
 end
 

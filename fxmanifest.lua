@@ -22,6 +22,6 @@ client_scripts {
     "client/res_events.lua",
     "client/res_exports.lua",
 
-    -- Remove the line below to disable debug commands and event logging
-    "client/debug.lua",
+    -- Enable the following for some debug commands and event logging
+    -- "client/debug.lua",
 }

@@ -107,6 +107,10 @@ function SatchelData.MaintainEvents()
                     SatchelUI.Builder.AddListItems(itemId)
                     SatchelData.state.hydratedList = itemId
                 end
+            elseif itemId:find("empty_slot", 1, true) == 1 then
+                SatchelUI.Events.HandleEmptyFocus(itemId)
+            elseif itemId:find("locked_slot", 1, true) == 1 then
+                SatchelUI.Events.HandleLockedFocus(itemId)
             else
                 SatchelUI.Events.HandleItemFocus(itemId)
             end
