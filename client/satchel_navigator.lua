@@ -215,14 +215,16 @@ function SatchelNavigator:_rebuildCurrentItems()
                     local isRecentValid = true
                     if item.folderOnly and item.folder then
                         if not seenRecentFolders[item.folder] then
-                            local folderDef = self.folderMap[item.folder]
-                            if folderDef then
-                                local displayFolder = shallowCopy(folderDef)
-                                displayFolder.type = "folder"
+                            local folder = self.folderMap[item.folder]
+                            if folder then
+                                local entry = shallowCopy(folder)
+                                entry.type = "folder"
+                                entry.priority = tonumber(folder.priority) or 0
                                 if enableFolderCount then
-                                    displayFolder.count = folderCounts[item.folder] or 0
+                                    entry.count = folderCounts[item.folder] or 0
                                 end
-                                table.insert(displayList, displayFolder)
+                                entry._index = #displayList + 1
+                                table.insert(displayList, entry)
                                 seenRecentFolders[item.folder] = true
                                 recentCounter = recentCounter + 1
                             end
@@ -234,40 +236,58 @@ function SatchelNavigator:_rebuildCurrentItems()
                         end
                     end
                     if isRecentValid then
-                        local displayItem = shallowCopy(item)
-                        displayItem.type = "item"
-                        table.insert(displayList, displayItem)
+                        local entry = shallowCopy(item)
+                        entry.type = "item"
+                        entry.priority = tonumber(item.priority) or 0
+                        entry._index = #displayList + 1
+                        table.insert(displayList, entry)
                         recentCounter = recentCounter + 1
                     end
                 end
             elseif isAllTab or item.folder or item.category == activeCategory.id then
                 if not item.folder then
-                    local displayItem = shallowCopy(item)
-                    displayItem.type = "item"
-                    table.insert(displayList, displayItem)
+                    local entry = shallowCopy(item)
+                    entry.type = "item"
+                    entry.priority = tonumber(item.priority) or 0
+                    entry._index = #displayList + 1
+                    table.insert(displayList, entry)
                 else
-                    local folderDef = self.folderMap[item.folder]
-                    local folderMatches = isAllTab or (folderDef and folderDef.category == activeCategory.id)
+                    local folder = self.folderMap[item.folder]
+                    local folderValid = isAllTab or (folder and folder.category == activeCategory.id)
 
-                    if folderMatches and folderDef then
+                    if folderValid and folder then
                         local fCount = folderCounts[item.folder] or 0
                         if fCount < minItemsForFolder and not item.folderOnly then
-                            local displayItem = shallowCopy(item)
-                            displayItem.type = "item"
-                            table.insert(displayList, displayItem)
+                            local entry = shallowCopy(item)
+                            entry.type = "item"
+                            entry.priority = tonumber(item.priority) or 0
+                            entry._index = #displayList + 1
+                            table.insert(displayList, entry)
                         elseif not seenNormalFolders[item.folder] then
-                            local displayFolder = shallowCopy(folderDef)
-                            displayFolder.type = "folder"
+                            local entry = shallowCopy(folder)
+                            entry.type = "folder"
+                            entry.priority = tonumber(folder.priority) or 0
                             if enableFolderCount then
-                                displayFolder.count = fCount
+                                entry.count = fCount
                             end
-                            table.insert(displayList, displayFolder)
+                            entry._index = #displayList + 1
+                            table.insert(displayList, entry)
                             seenNormalFolders[item.folder] = true
                         end
                     end
                 end
             end
         end
+    end
+
+    if not isRecentTab then
+        table.sort(displayList, function(a, b)
+            if a.priority ~= b.priority then
+                print(string.format("Comparing '%s' (priority %s) with '%s' (priority %s)", a.id, tostring(a.priority), b.id, tostring(b.priority)))
+                return a.priority > b.priority
+            end
+            return a._index < b._index
+        end)
     end
 
     local invItems = #displayList
@@ -564,11 +584,21 @@ function SatchelNavigator:getFolderContents(folderId, inventoryId)
 
     for _, item in ipairs(context.list) do
         if item.folder == folderId and item.count > 0 and item.enabled ~= false then
-            local display = shallowCopy(item)
-            display.type = "item"
-            table.insert(results, display)
+            local entry = shallowCopy(item)
+            entry.type = "item"
+            entry.priority = tonumber(item.priority) or 0
+            entry._index = #results + 1
+            table.insert(results, entry)
         end
     end
+
+    table.sort(results, function(a, b)
+        if a.priority ~= b.priority then
+            return a.priority > b.priority
+        end
+        return a._index < b._index
+    end)
+
     return results
 end
 
