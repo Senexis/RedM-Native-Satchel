@@ -283,7 +283,6 @@ function SatchelNavigator:_rebuildCurrentItems()
     if not isRecentTab then
         table.sort(displayList, function(a, b)
             if a.priority ~= b.priority then
-                print(string.format("Comparing '%s' (priority %s) with '%s' (priority %s)", a.id, tostring(a.priority), b.id, tostring(b.priority)))
                 return a.priority > b.priority
             end
             return a._index < b._index
