@@ -660,8 +660,20 @@ end
 ---Determines if the item is "special" (Overpowered or Legendary)
 ---@return boolean
 function ItemDatabase:IsSpecial()
-    if self:HasTag(`CI_TAG_ITEM_OVERPOWERED`) or self:HasTag(`CI_TAG_ITEM_QUALITY_LEGENDARY`) then
+    if ItemdatabaseIsOverpoweredItem(self.hash) == 1 then
         return true
+    end
+
+    local SPECIAL_TAGS <const> = {
+        [`CI_TAG_ITEM_OVERPOWERED`] = true,
+        [`CI_TAG_ITEM_QUALITY_LEGENDARY`] = true,
+        [`CI_TAG_SHOP_ANIMAL_LEGENDARY`] = true,
+    }
+
+    for tag, _ in pairs(SPECIAL_TAGS) do
+        if self:HasTag(tag) then
+            return true
+        end
     end
 
     return InventoryIsInventoryItemFlagEnabled(self.hash, 1 << 2) == 1
@@ -670,7 +682,6 @@ end
 ---Gets the warmth rating of a clothing item
 ---@return number|nil
 function ItemDatabase:GetWarmth()
-    -- Value Map (Hash -> Value)
     local WARMTH_TAGS <const> = {
         [-1938332139] = 1,
         [-821065926]  = 2,

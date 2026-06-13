@@ -92,6 +92,10 @@ Config.enableFolderItemCount = false
 Config.lockedSlotTxd = "generic_textures"
 Config.lockedSlotTexture = "lock"
 
+-- Whether to show alternative text for catalog items that have it
+-- This usually means more lore-friendly text instead of gameplay-oriented text
+Config.useAlternativeCatalogText = true
+
 -- Player items
 -- This determines which items are visible in the UI by category for the "player" inventory
 Config.inventory = {

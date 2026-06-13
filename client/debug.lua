@@ -104,7 +104,7 @@ RegisterCommand("satchel_inventory_reset", function()
 end, false)
 
 RegisterCommand("satchel_add", function(source, args)
-    local inventory = tostring(args[1]) or "player"
+    local inventory = tostring(args[1] or "player")
     local item = args[2] or "test_bread"
     local count = tonumber(args[3]) or 1
     local maxCount = tonumber(args[4]) or nil
@@ -121,8 +121,8 @@ RegisterCommand("satchel_add", function(source, args)
 end, false)
 
 RegisterCommand("satchel_increment", function(source, args)
-    local inventory = tostring(args[1]) or "player"
-    local item = args[2] or "test_bread"
+    local inventory = tostring(args[1] or "player")
+    local item = tostring(args[2] or "test_bread")
     local count = tonumber(args[3]) or 1
 
     print("Incrementing item:", item, "by:", count)
@@ -130,8 +130,8 @@ RegisterCommand("satchel_increment", function(source, args)
 end, false)
 
 RegisterCommand("satchel_decrement", function(source, args)
-    local inventory = tostring(args[1]) or "player"
-    local item = args[2] or "test_bread"
+    local inventory = tostring(args[1] or "player")
+    local item = tostring(args[2] or "test_bread")
     local count = tonumber(args[3]) or 1
 
     print("Decrementing item:", item, "by:", count)
@@ -139,17 +139,17 @@ RegisterCommand("satchel_decrement", function(source, args)
 end, false)
 
 RegisterCommand("satchel_remove", function(source, args)
-    local inventory = tostring(args[1]) or "player"
-    local item = args[2] or "test_bread"
+    local inventory = tostring(args[1] or "player")
+    local item = tostring(args[2] or "test_bread")
 
     print("Removing item:", item)
     TriggerEvent("native_satchel:remove_item", item, inventory)
 end, false)
 
 RegisterCommand("satchel_move", function(source, args)
-    local fromInventory = tostring(args[1]) or "player"
-    local toInventory = tostring(args[2]) or "player"
-    local item = args[3] or "test_bread"
+    local fromInventory = tostring(args[1] or "player")
+    local toInventory = tostring(args[2] or "player")
+    local item = tostring(args[3] or "test_bread")
     local count = tonumber(args[4]) or 1
 
     print("Moving item:", item, "from:", fromInventory, "to:", toInventory, "count:", count)
@@ -157,7 +157,7 @@ RegisterCommand("satchel_move", function(source, args)
 end, false)
 
 RegisterCommand("satchel_sync", function(source, args)
-    local inventory = tostring(args[1]) or "player"
+    local inventory = tostring(args[1] or "player")
 
     local items = {
         { id = "test_bread", count = 3, maxCount = 10, catalog = "CONSUMABLE_BREAD_CHUNK" },

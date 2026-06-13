@@ -231,6 +231,41 @@ function SatchelUI.ClearListItems()
     SatchelData.state.hydratedList = nil
 end
 
+function SatchelUI.RefreshItemOrMenu(itemId)
+    SatchelUI.Events.HandleUnfocus()
+
+    if not itemId then
+        SatchelUI.RefreshMenu()
+        return
+    end
+
+    local item = SatchelNavigator:getItemById(itemId)
+    if not item then
+        SatchelUI.RefreshMenu()
+        return
+    end
+
+    local focusedItemId = SatchelEvents.GetFocusedItemId()
+    if not focusedItemId or focusedItemId ~= itemId then
+        SatchelUI.RefreshMenu()
+        return
+    end
+
+    local focusedDatastore = SatchelEvents.state.focusedDatastore
+    local focusedItemType = SatchelEvents.GetFocusedItemType()
+    if focusedItemType == "folder_item" or focusedItemType == "inventory_item" then
+        SatchelUI.Builder.FillMenuItem(focusedDatastore, item)
+    elseif focusedItemType == "list_item" then
+        SatchelUI.Builder.FillListItem(focusedDatastore, item)
+    end
+
+    if focusedItemId == "folder_item" then
+        SatchelUI.Events.HandleFolderFocus(itemId)
+    else
+        SatchelUI.Events.HandleItemFocus(itemId)
+    end
+end
+
 function SatchelUI.RefreshMenu()
     SatchelUI.Events.HandleNavigation()
     SatchelUI.Builder.AddMenuItems()
@@ -396,6 +431,21 @@ function SatchelUI.Builder.BuildCategory(container, index, item, current)
 end
 
 function SatchelUI.Builder.BuildMenuItem(container, index, item)
+    local type = item.type == "folder" and "folder_item" or "inventory_item"
+
+    local data = DatabindingGetDataContainerFromChildIndex(container, index - 1)
+    while DatabindingIsEntryValid(data) ~= 1 do
+        data = DatabindingGetDataContainerFromChildIndex(container, index - 1)
+        Citizen.Wait(0)
+    end
+
+    SatchelUI.Builder.FillMenuItem(data, item)
+    DatabindingSetTemplatedUiItemHashAlias(container, index - 1, type)
+
+    return data
+end
+
+function SatchelUI.Builder.FillMenuItem(container, item)
     local id = item.id
     local hash = joaat(id)
     local type = item.type == "folder" and "folder_item" or "inventory_item"
@@ -428,84 +478,76 @@ function SatchelUI.Builder.BuildMenuItem(container, index, item)
         color = `COLOR_PURE_WHITE`
     end
 
+    DatabindingAddDataHash(container, "item", hash)
+    DatabindingAddDataString(container, "uiItemID", id)
+    DatabindingAddDataString(container, "uiItemType", type)
+    DatabindingAddDataBool(container, "focusable", enabled)
+    DatabindingAddDataHash(container, "color", color)
+    DatabindingAddDataHash(container, "ItemTXD", txd)
+    DatabindingAddDataHash(container, "ItemTexture", texture)
+    DatabindingAddDataInt(container, "quality", stars)
+    DatabindingAddDataBool(container, "overpowered", special)
+
+    if not Config.enableFolderItemCount and item.type == "folder" then
+        DatabindingAddDataInt(container, "count", 1)
+        DatabindingAddDataBool(container, "maxCount", false)
+    else
+        DatabindingAddDataInt(container, "count", count)
+
+        if Config.enableRedCountOnMax and maxCount and count >= maxCount then
+            DatabindingAddDataBool(container, "maxCount", true)
+        else
+            DatabindingAddDataBool(container, "maxCount", false)
+        end
+    end
+end
+
+function SatchelUI.Builder.BuildListItem(container, index, item)
     local data = DatabindingGetDataContainerFromChildIndex(container, index - 1)
     while DatabindingIsEntryValid(data) ~= 1 do
         data = DatabindingGetDataContainerFromChildIndex(container, index - 1)
         Citizen.Wait(0)
     end
 
-    DatabindingAddDataHash(data, "item", hash)
-    DatabindingAddDataString(data, "uiItemID", id)
-    DatabindingAddDataString(data, "uiItemType", type)
-    DatabindingAddDataBool(data, "focusable", enabled)
-    DatabindingAddDataHash(data, "color", color)
-    DatabindingAddDataHash(data, "ItemTXD", txd)
-    DatabindingAddDataHash(data, "ItemTexture", texture)
-    DatabindingAddDataInt(data, "quality", stars)
-    DatabindingAddDataBool(data, "overpowered", special)
-
-    if not Config.enableFolderItemCount and item.type == "folder" then
-        DatabindingAddDataInt(data, "count", 1)
-        DatabindingAddDataBool(data, "maxCount", false)
-    else
-        DatabindingAddDataInt(data, "count", count)
-
-        if Config.enableRedCountOnMax and maxCount and count >= maxCount then
-            DatabindingAddDataBool(data, "maxCount", true)
-        else
-            DatabindingAddDataBool(data, "maxCount", false)
-        end
-    end
-
-    DatabindingSetTemplatedUiItemHashAlias(container, index - 1, type)
+    SatchelUI.Builder.FillListItem(data, item)
+    DatabindingSetTemplatedUiItemHashAlias(container, index - 1, "list_item")
 
     return data
 end
 
-function SatchelUI.Builder.BuildListItem(container, index, item)
+function SatchelUI.Builder.FillListItem(container, item)
     local id = item.id
     local hash = joaat(id)
     local count = item.count
     local maxCount = item.maxCount
     local enabled = item.enabled
-    local label = item.label or id
     local color = item.color or `COLOR_PURE_WHITE`
     local isEquipped = item.equipped or false
 
-    local data = DatabindingGetDataContainerFromChildIndex(container, index - 1)
-    while DatabindingIsEntryValid(data) ~= 1 do
-        data = DatabindingGetDataContainerFromChildIndex(container, index - 1)
-        Citizen.Wait(0)
-    end
-
-    DatabindingAddDataHash(data, "item", hash)
-    DatabindingAddDataString(data, "uiItemID", id)
-    DatabindingAddDataString(data, "uiItemType", "list_item")
-    DatabindingAddDataInt(data, "count", count)
-    DatabindingAddDataBool(data, "focusable", enabled)
-    DatabindingAddDataHash(data, "color", color)
-    DatabindingAddDataBool(data, "equipped", isEquipped)
+    DatabindingAddDataHash(container, "item", hash)
+    DatabindingAddDataString(container, "uiItemID", id)
+    DatabindingAddDataString(container, "uiItemType", "list_item")
+    DatabindingAddDataInt(container, "count", count)
+    DatabindingAddDataBool(container, "focusable", enabled)
+    DatabindingAddDataHash(container, "color", color)
+    DatabindingAddDataBool(container, "equipped", isEquipped)
 
     if item.label and item.label ~= "" then
-        DatabindingAddDataHash(data, "label", 0)
-        DatabindingAddDataString(data, "label_as_string", item.label)
+        DatabindingAddDataHash(container, "label", 0)
+        DatabindingAddDataString(container, "label_as_string", item.label)
     elseif item.labelHash and item.labelHash ~= 0 then
-        DatabindingAddDataHash(data, "label", item.labelHash)
-        DatabindingAddDataString(data, "label_as_string", "")
+        DatabindingAddDataHash(container, "label", item.labelHash)
+        DatabindingAddDataString(container, "label_as_string", "")
     else
-        DatabindingAddDataHash(data, "label", 0)
-        DatabindingAddDataString(data, "label_as_string", id)
+        DatabindingAddDataHash(container, "label", 0)
+        DatabindingAddDataString(container, "label_as_string", id)
     end
 
     if Config.enableRedCountOnMax and maxCount and count >= maxCount then
-        DatabindingAddDataBool(data, "maxCount", true)
+        DatabindingAddDataBool(container, "maxCount", true)
     else
-        DatabindingAddDataBool(data, "maxCount", false)
+        DatabindingAddDataBool(container, "maxCount", false)
     end
-
-    DatabindingSetTemplatedUiItemHashAlias(container, index - 1, "list_item")
-
-    return data
 end
 
 function SatchelUI.Events.HandleFolderFocus(id)
@@ -519,6 +561,14 @@ function SatchelUI.Events.HandleFolderFocus(id)
 end
 
 function SatchelUI.Events.HandleItemFocus(id)
+    if id:find("empty_slot", 1, true) == 1 then
+        SatchelUI.Events.HandleEmptyFocus(id)
+        return
+    elseif id:find("locked_slot", 1, true) == 1 then
+        SatchelUI.Events.HandleLockedFocus(id)
+        return
+    end
+
     local item = SatchelNavigator:getItemById(id)
     if not item then return end
 

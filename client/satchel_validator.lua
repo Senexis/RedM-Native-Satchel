@@ -202,7 +202,7 @@ local function wrap(schema, data, label)
 
     for k, _ in pairs(data) do
         if not schema[k] then
-            error(string.format("[%s] Field '%s' is not valid. If you need extra data, use 'Metadata'", label, k), 2)
+            error(string.format("[%s] Field '%s' is not valid. If you need extra data, use 'metadata'", label, k), 2)
         end
     end
 
@@ -219,7 +219,7 @@ local function wrap(schema, data, label)
         __newindex = function(_, k, v)
             local rule = schema[k]
             if not rule then
-                error(string.format("[%s] Field '%s' is not valid. If you need extra data, use 'Metadata'", label, k), 2)
+                error(string.format("[%s] Field '%s' is not valid. If you need extra data, use 'metadata'", label, k), 2)
             end
 
             local old_val = data[k]

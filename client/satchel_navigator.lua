@@ -48,11 +48,12 @@ function SatchelNavigator:processItem(item)
 
         local txd, texture = helper:GetTexture()
         local interactions = helper:GetInteractionFlags()
+        local useAlternativeText = Config.useAlternativeCatalogText == true
 
         local result = {
             enabled = item.enabled ~= false,
-            labelHash = helper:GetLabelHash(true),
-            descriptionHash = helper:GetDescriptionHash(true),
+            labelHash = helper:GetLabelHash(useAlternativeText),
+            descriptionHash = helper:GetDescriptionHash(useAlternativeText),
             txd = txd,
             texture = texture,
             special = helper:IsSpecial(),
